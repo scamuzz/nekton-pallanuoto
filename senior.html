@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>?? Senior — Nekton</title>
+  <title>ğŸ¤½ Senior ï¿½ Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -137,13 +137,13 @@
 
 <div class="header">
   <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn">??</button>
-  <span class="icons">??</span>
+  <button class="pin-btn" id="pin-btn">ğŸ”’</button>
+  <span class="icons">ğŸ¤½</span>
   <h1>Gruppo Senior</h1>
-  <div class="subtitle">Nati 2010 e precedenti — Prima Squadra + U16/U18</div>
+  <div class="subtitle">Nati 2010 e precedenti ï¿½ Prima Squadra + U16/U18</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso…</span>
+    <span id="sync-label">Connessione in corsoï¿½</span>
   </div>
 </div>
 
@@ -156,31 +156,31 @@
 <div class="container">
 
   <div class="manager-panel" id="manager-panel">
-    <h3>?? Pubblica una notizia</h3>
+    <h3>âœï¸ Pubblica una notizia</h3>
     <div class="form-group">
       <label>Titolo</label>
-      <input type="text" class="form-input" id="news-title" placeholder="Titolo della notizia…" maxlength="100"/>
+      <input type="text" class="form-input" id="news-title" placeholder="Titolo della notiziaï¿½" maxlength="100"/>
     </div>
     <div class="form-group">
       <label>Testo</label>
-      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio per il Gruppo Senior…"></textarea>
+      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio per il Gruppo Seniorï¿½"></textarea>
     </div>
-    <button class="pub-btn" id="pub-btn">?? Pubblica notizia</button>
+    <button class="pub-btn" id="pub-btn">ğŸ“¤ Pubblica notizia</button>
   </div>
 
-  <div class="section-title">?? Notizie e Avvisi</div>
+  <div class="section-title">ğŸ“¢ Notizie e Avvisi</div>
   <div id="news-container"></div>
 
 </div>
 
-<div class="page-footer">?? Senior — Nekton Pallanuoto</div>
+<div class="page-footer">ğŸ¤½ Senior ï¿½ Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3>?? Accesso Gestore</h3>
+    <h3>ğŸ”‘ Accesso Gestore</h3>
     <p>Inserisci il PIN per pubblicare notizie</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -214,8 +214,8 @@ function showToast(msg) {
 
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
-  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline — riconnessione…'; }
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = 'âœ… Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = 'âŒ Offline ï¿½ riconnessioneï¿½'; }
 });
 
 newsRef.orderByChild('data').on('value', snap => renderNews(snap.val() || {}));
@@ -223,23 +223,23 @@ newsRef.orderByChild('data').on('value', snap => renderNews(snap.val() || {}));
 function renderNews(data) {
   const container = document.getElementById('news-container');
   const entries = Object.entries(data).sort((a,b) => (b[1].data||'').localeCompare(a[1].data||''));
-  if (entries.length === 0) { container.innerHTML = '<div class="no-news">Nessuna notizia al momento. ??</div>'; return; }
+  if (entries.length === 0) { container.innerHTML = '<div class="no-news">Nessuna notizia al momento. ğŸ’¤</div>'; return; }
   container.innerHTML = '';
   entries.forEach(([id, item]) => {
     const d = new Date(item.data);
     const dateStr = isNaN(d) ? item.data : d.toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
     const card = document.createElement('div');
     card.className = 'news-card';
-    card.innerHTML = `<div class="news-meta">?? ${esc(dateStr)}</div>
+    card.innerHTML = `<div class="news-meta">ğŸ“… ${esc(dateStr)}</div>
       <div class="news-title">${esc(item.titolo)}</div>
       <div class="news-text">${esc(item.testo)}</div>
-      ${isManager() ? `<button class="news-del-btn" data-id="${esc(id)}" title="Elimina">???</button>` : ''}`;
+      ${isManager() ? `<button class="news-del-btn" data-id="${esc(id)}" title="Elimina">ğŸ—‘ï¸</button>` : ''}`;
     container.appendChild(card);
   });
   if (isManager()) {
     document.querySelectorAll('.news-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (confirm('Eliminare questa notizia?')) { newsRef.child(btn.dataset.id).remove(); showToast('??? Notizia eliminata'); }
+        if (confirm('Eliminare questa notizia?')) { newsRef.child(btn.dataset.id).remove(); showToast('âœ… Notizia eliminata'); }
       });
     });
   }
@@ -248,8 +248,8 @@ function renderNews(data) {
 document.getElementById('pub-btn').addEventListener('click', () => {
   const titolo = document.getElementById('news-title').value.trim();
   const testo  = document.getElementById('news-text').value.trim();
-  if (!titolo) { showToast('?? Inserisci un titolo!'); return; }
-  if (!testo)  { showToast('?? Inserisci il testo!'); return; }
+  if (!titolo) { showToast('âš ï¸ Inserisci un titolo!'); return; }
+  if (!testo)  { showToast('âš ï¸ Inserisci il testo!'); return; }
   newsRef.push({ titolo, testo, data: new Date().toISOString().slice(0,10) }).then(() => {
     document.getElementById('news-title').value = '';
     document.getElementById('news-text').value = '';
@@ -259,7 +259,7 @@ document.getElementById('pub-btn').addEventListener('click', () => {
 
 const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
-function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+function updatePinBtn() { pinBtn.textContent = isManager() ? 'ğŸ”' : 'ğŸ”’'; }
 updatePinBtn();
 if (isManager()) document.getElementById('manager-panel').classList.add('visible');
 
@@ -267,7 +267,7 @@ pinBtn.addEventListener('click', () => {
   if (isManager()) {
     setManager(false); document.getElementById('manager-panel').classList.remove('visible');
     updatePinBtn(); newsRef.orderByChild('data').once('value', snap => renderNews(snap.val() || {}));
-    showToast('?? Logout gestore effettuato');
+    showToast('ğŸ‘‹ Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
@@ -285,7 +285,7 @@ function checkPin() {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
     newsRef.orderByChild('data').once('value', snap => renderNews(snap.val() || {}));
-    showToast('? Modalità gestore attiva');
+    showToast('? Modalitï¿½ gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>
