@@ -10,7 +10,7 @@
     body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; }
 
     .header {
-      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      background: linear-gradient(160deg, #012AFE 0%, #0055cc 40%, #00b4d8 100%);
       color: white; padding: 36px 20px 24px;
       text-align: center; position: relative; overflow: hidden;
     }
@@ -39,7 +39,7 @@
     .week-info { font-size: 0.76rem; opacity: 0.8; margin-top: 4px; position: relative; }
 
     .wave-divider { display: block; line-height: 0; overflow: hidden;
-      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%); }
+      background: linear-gradient(160deg, #012AFE 0%, #0055cc 40%, #00b4d8 100%); }
     .wave-divider svg { display: block; width: 100%; }
 
     .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
@@ -203,6 +203,7 @@
       <select id="edit-week-select">
         <option value="current">Corrente</option>
         <option value="next">Prossima</option>
+        <option value="default">Predefinito (base)</option>
       </select>
     </div>
     <div id="edit-form"><!-- generato da JS --></div>
@@ -257,7 +258,7 @@ const db = firebase.database();
 function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
 function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
 
-// -- Default schedules
+// -- Hardcoded fallback schedules (used only when Firebase default is not set)
 const DEFAULT_ORARI = {
   acquagol: {
     mercoledi: { attivo: true, orario: '17:00–18:00', nota: '' },
@@ -276,6 +277,9 @@ const DEFAULT_ORARI = {
     sabato:    { attivo: true, orario: '19:00–20:00', nota: '' }
   }
 };
+
+// Firebase default schedule (overrides DEFAULT_ORARI when present)
+let defaultData = {};
 
 const GIORNI_IT = { lunedi: 'Lunedì', martedi: 'Martedì', mercoledi: 'Mercoledì',
   giovedi: 'Giovedì', venerdi: 'Venerdì', sabato: 'Sabato', domenica: 'Domenica' };
@@ -338,12 +342,30 @@ function listenWeek(wk) {
 listenWeek(currentWeekKey);
 listenWeek(nextWeekKey);
 
+// Listen for Firebase default schedule
+db.ref('nekton/orari/default').on('value', snap => {
+  defaultData = snap.val() || {};
+  renderSchedule();
+  if (isManager()) buildEditForm();
+});
+
+function getEffectiveDefaults(gruppo) {
+  // Merge hardcoded + Firebase default
+  const hard = DEFAULT_ORARI[gruppo] || {};
+  const fb   = defaultData[gruppo]   || {};
+  const merged = {};
+  for (const day of new Set([...Object.keys(hard), ...Object.keys(fb)])) {
+    merged[day] = Object.assign({}, hard[day] || {}, fb[day] || {});
+  }
+  return merged;
+}
+
 function mergeWithDefaults(weekObj, gruppo) {
-  const def = DEFAULT_ORARI[gruppo] || {};
+  const def = getEffectiveDefaults(gruppo);
   const ov  = (weekObj[gruppo]) || {};
   const result = {};
-  for (const g of Object.keys(def)) {
-    result[g] = Object.assign({}, def[g], ov[g] || {});
+  for (const day of new Set([...Object.keys(def), ...Object.keys(ov)])) {
+    result[day] = Object.assign({}, def[day] || {}, ov[day] || {});
   }
   return result;
 }
@@ -368,24 +390,28 @@ function renderSchedule() {
 
     let daysHtml = '';
     GIORNI_ORDER.forEach(giorno => {
-      if (!merged[giorno]) return;
       const info = merged[giorno];
+      if (!info && !isManager()) return; // Normal view: skip days without schedule
       const dow = GIORNI_DOW[giorno];
       const date = new Date(wkStart);
       const diff = (dow - 1 + 7) % 7;
       date.setDate(wkStart.getDate() + diff);
+
+      let content;
+      if (!info) {
+        content = `<div class="no-train" style="color:#c8d8e4;">– Non programmato</div>`;
+      } else if (info.attivo) {
+        content = `<div class="orario-time">${esc(info.orario)}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
+      } else {
+        content = `<div class="no-train">❌ Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`;
+      }
 
       daysHtml += `<div class="day-row">
         <div class="day-name">
           <div>${GIORNI_IT[giorno]}</div>
           <div class="day-date">${formatDate(date)}</div>
         </div>
-        <div class="orario-info">
-          ${info.attivo
-            ? `<div class="orario-time">${esc(info.orario)}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`
-            : `<div class="no-train">? Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`
-          }
-        </div>
+        <div class="orario-info">${content}</div>
       </div>`;
     });
 
@@ -414,10 +440,16 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 // -- MANAGER EDIT FORM
 function buildEditForm() {
-  const isNext = document.getElementById('edit-week-select').value === 'next';
-  const wk = isNext ? nextWeekKey : currentWeekKey;
-  const wkData = weekData[wk] || {};
-  const wkStart = weekStart(wk);
+  const weekMode = document.getElementById('edit-week-select').value;
+  let wkData, wkStart;
+  if (weekMode === 'default') {
+    wkData = {};
+    wkStart = weekStart(currentWeekKey);
+  } else {
+    const wk = weekMode === 'next' ? nextWeekKey : currentWeekKey;
+    wkData = weekData[wk] || {};
+    wkStart = weekStart(wk);
+  }
   const form = document.getElementById('edit-form');
   form.innerHTML = '';
 
@@ -427,16 +459,19 @@ function buildEditForm() {
     { key: 'senior',   label: '🤽 Senior' }
   ];
   gruppi.forEach(g => {
-    const merged = mergeWithDefaults(wkData, g.key);
+    // For "default" mode show effective defaults, otherwise merge week data on top
+    const merged = weekMode === 'default'
+      ? getEffectiveDefaults(g.key)
+      : mergeWithDefaults(wkData, g.key);
     let rowsHtml = '';
     GIORNI_ORDER.forEach(giorno => {
-      if (!DEFAULT_ORARI[g.key] || !DEFAULT_ORARI[g.key][giorno]) return;
-      const info = merged[giorno];
+      const info = merged[giorno] || { attivo: false, orario: '', nota: '' };
       const dow = GIORNI_DOW[giorno];
       const date = new Date(wkStart);
       date.setDate(wkStart.getDate() + (dow - 1 + 7) % 7);
+      const dateLabel = weekMode === 'default' ? '' : `<span style="font-size:0.65rem;color:#90a4ae">${formatDate(date)}</span>`;
       rowsHtml += `<div class="edit-row">
-        <label>${GIORNI_IT[giorno]} <span style="font-size:0.65rem;color:#90a4ae">${formatDate(date)}</span></label>
+        <label>${GIORNI_IT[giorno]} ${dateLabel}</label>
         <label style="font-size:0.7rem;gap:4px;display:flex;align-items:center;min-width:auto;">
           <input type="checkbox" class="edit-check" data-g="${g.key}" data-d="${giorno}" data-t="attivo" ${info.attivo ? 'checked' : ''}> Attivo
         </label>
@@ -454,8 +489,7 @@ function buildEditForm() {
 document.getElementById('edit-week-select').addEventListener('change', buildEditForm);
 
 document.getElementById('save-orari-btn').addEventListener('click', () => {
-  const isNext = document.getElementById('edit-week-select').value === 'next';
-  const wk = isNext ? nextWeekKey : currentWeekKey;
+  const weekMode = document.getElementById('edit-week-select').value;
   const updates = {};
   document.querySelectorAll('.edit-input, .edit-check').forEach(el => {
     const { g, d, t } = el.dataset;
@@ -463,16 +497,17 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     if (!updates[g][d]) updates[g][d] = {};
     updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
   });
-  // Also copy defaults for unchanged fields
-  ['acquagol','under13','senior'].forEach(g => {
-    if (!updates[g]) return;
-    Object.keys(DEFAULT_ORARI[g] || {}).forEach(day => {
-      if (!updates[g][day]) updates[g][day] = Object.assign({}, DEFAULT_ORARI[g][day]);
-    });
-  });
-  db.ref(`nekton/orari/${wk}`).set(updates).then(() => {
-    showToast('? Orari salvati!');
-  }).catch(() => showToast('? Errore nel salvataggio'));
+
+  let ref;
+  if (weekMode === 'default') {
+    ref = db.ref('nekton/orari/default');
+  } else {
+    const wk = weekMode === 'next' ? nextWeekKey : currentWeekKey;
+    ref = db.ref(`nekton/orari/${wk}`);
+  }
+  ref.set(updates).then(() => {
+    showToast('✅ Orari salvati!');
+  }).catch(() => showToast('❌ Errore nel salvataggio'));
 });
 
 // -- PIN MODAL
@@ -512,9 +547,9 @@ function checkPin() {
     document.getElementById('manager-panel').classList.add('visible');
     updatePinBtn();
     buildEditForm();
-    showToast('? Modalità gestore attiva');
+    showToast('🔓 Modalità gestore attiva');
   } else {
-    document.getElementById('modal-error').textContent = '? PIN non corretto';
+    document.getElementById('modal-error').textContent = '❌ PIN non corretto';
   }
 }
 
