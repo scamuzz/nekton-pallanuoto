@@ -109,6 +109,28 @@
       color: #e65100; background: #fff3e0; border-radius: 6px;
       padding: 1px 7px; margin-left: 6px; vertical-align: middle;
     }
+    .modified-tag.tag-extra { background: #e8f5e9; color: #2e7d32; }
+
+    .day-row.extra-day {
+      background: #f1f8e9;
+      border-left: 3px solid #43a047;
+      margin-left: -3px;
+      padding-left: 7px;
+      border-radius: 4px;
+    }
+
+    .week-section-label {
+      font-size: 0.75rem; font-weight: 800; color: #006994;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin: 20px 0 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .week-section-label::after {
+      content: ''; flex: 1; height: 1px; background: #b3d9f7;
+    }
+    .next-week-note {
+      font-size: 0.73rem; color: #607d8b; margin-bottom: 6px; font-style: italic;
+    }
 
     /* PANNELLO GESTORE */
     .manager-panel {
@@ -387,7 +409,9 @@ function mergeWithDefaults(weekObj, gruppo) {
 
 function renderSchedule() {
   const wkData = weekData[currentWeekKey] || {};
+  const nxData = weekData[nextWeekKey]    || {};
   const wkStart = weekStart(currentWeekKey);
+  const nxStart = weekStart(nextWeekKey);
   const container = document.getElementById('schedule-container');
   container.innerHTML = '';
 
@@ -397,6 +421,7 @@ function renderSchedule() {
     { key: 'senior',   label: 'Senior',   emoji: '🤽', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
   ];
 
+  // --- SETTIMANA CORRENTE ---
   gruppi.forEach(g => {
     const merged = mergeWithDefaults(wkData, g.key);
     const defaults = getEffectiveDefaults(g.key);
@@ -423,19 +448,22 @@ function renderSchedule() {
       const hasActiveDefault = defInfo && defInfo.attivo;
       const hasOverriddenTime = ovInfo && ovInfo.orario && hasActiveDefault && ovInfo.orario !== defInfo.orario;
       const timeChanged = !isManager() && hasOverriddenTime;
-      const isModified = !isManager() && (isCancelled || timeChanged);
+      const isExtraDay  = !isManager() && ovInfo && ovInfo.attivo && !hasActiveDefault;
+      const isModified  = !isManager() && (isCancelled || timeChanged || isExtraDay);
 
       let content;
       if (!info) {
         content = `<div class="no-train" style="color:#c8d8e4;">– Non programmato</div>`;
       } else if (info.attivo) {
-        const modTag = timeChanged ? `<span class="modified-tag">⚠️ orario modificato</span>` : '';
+        let modTag = '';
+        if (isExtraDay)   modTag = `<span class="modified-tag tag-extra">➕ Giornata in più</span>`;
+        else if (timeChanged) modTag = `<span class="modified-tag">⚠️ orario modificato</span>`;
         content = `<div class="orario-time">${esc(info.orario)}${modTag}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
       } else {
         content = `<div class="no-train">❌ Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`;
       }
 
-      daysHtml += `<div class="day-row${isModified ? ' modified' : ''}">
+      daysHtml += `<div class="day-row${isExtraDay ? ' extra-day' : isModified ? ' modified' : ''}">
         <div class="day-name">
           <div>${GIORNI_IT[giorno]}</div>
           <div class="day-date">${formatDate(date)}</div>
@@ -453,6 +481,80 @@ function renderSchedule() {
     `;
     container.appendChild(card);
   });
+
+  // --- SETTIMANA PROSSIMA: solo variazioni rispetto al default ---
+  const nxEnd = new Date(nxStart); nxEnd.setDate(nxStart.getDate() + 6);
+  let hasNextDiffs = false;
+  const nextCards = [];
+
+  gruppi.forEach(g => {
+    const defaults = getEffectiveDefaults(g.key);
+    const nxOverrides = (nxData[g.key]) || {};
+    let daysHtml = '';
+
+    GIORNI_ORDER.forEach(giorno => {
+      const defInfo = defaults[giorno];
+      const ovInfo  = nxOverrides[giorno];
+      if (!ovInfo) return; // nessuna modifica = uguale al default
+
+      const nxHasActiveDefault = defInfo && defInfo.attivo;
+      const nxIsCancelled  = nxHasActiveDefault && ovInfo.attivo === false;
+      const nxTimeChanged  = ovInfo.orario && nxHasActiveDefault && ovInfo.orario !== defInfo.orario;
+      const nxIsExtraDay   = ovInfo.attivo && !nxHasActiveDefault;
+
+      if (!nxIsCancelled && !nxTimeChanged && !nxIsExtraDay) return;
+
+      const dow = GIORNI_DOW[giorno];
+      const date = new Date(nxStart);
+      date.setDate(nxStart.getDate() + (dow - 1 + 7) % 7);
+      const nxInfo = Object.assign({}, defInfo || {}, ovInfo);
+
+      let content, rowClass;
+      if (nxIsExtraDay) {
+        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag tag-extra">➕ Giornata in più</span></div>${nxInfo.nota ? `<div class="orario-nota">ℹ️ ${esc(nxInfo.nota)}</div>` : ''}`;
+        rowClass = ' extra-day';
+      } else if (nxIsCancelled) {
+        content  = `<div class="no-train">❌ Allenamento annullato${nxInfo.nota ? ' – ' + esc(nxInfo.nota) : ''}</div>`;
+        rowClass = ' modified';
+      } else {
+        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag">⚠️ orario modificato</span></div>${nxInfo.nota ? `<div class="orario-nota">ℹ️ ${esc(nxInfo.nota)}</div>` : ''}`;
+        rowClass = ' modified';
+      }
+
+      daysHtml += `<div class="day-row${rowClass}">
+        <div class="day-name">
+          <div>${GIORNI_IT[giorno]}</div>
+          <div class="day-date">${formatDate(date)}</div>
+        </div>
+        <div class="orario-info">${content}</div>
+      </div>`;
+      hasNextDiffs = true;
+    });
+
+    if (daysHtml) {
+      const card = document.createElement('div');
+      card.className = `gruppo-card${activeFilter !== 'all' && activeFilter !== g.key ? ' hidden' : ''}`;
+      card.dataset.gruppo = g.key;
+      card.innerHTML = `
+        <div class="gruppo-title">
+          ${g.emoji} ${g.label}
+          <span class="gruppo-badge ${g.badge}">${g.anni}</span>
+        </div>
+        <div class="next-week-note">Solo variazioni rispetto al programma standard</div>
+        ${daysHtml}
+      `;
+      nextCards.push(card);
+    }
+  });
+
+  if (hasNextDiffs) {
+    const divider = document.createElement('div');
+    divider.className = 'week-section-label';
+    divider.id = 'next-week-divider';
+    divider.textContent = `Settimana prossima · ${formatDate(nxStart)} – ${formatDate(nxEnd)}`;
+    container.appendChild(divider);
+    nextCards.forEach(c => container.appendChild(c));
+  }
 }
 
 // -- FILTER
@@ -464,6 +566,13 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     document.querySelectorAll('.gruppo-card').forEach(c => {
       c.classList.toggle('hidden', activeFilter !== 'all' && c.dataset.gruppo !== activeFilter);
     });
+    // Mostra/nascondi il separatore "Prossima settimana" in base al filtro
+    const divider = document.getElementById('next-week-divider');
+    if (divider) {
+      const anyNextVisible = Array.from(divider.parentElement.querySelectorAll('.gruppo-card'))
+        .some(c => c.compareDocumentPosition(divider) & Node.DOCUMENT_POSITION_PRECEDING && !c.classList.contains('hidden'));
+      divider.style.display = anyNextVisible ? '' : 'none';
+    }
   });
 });
 
