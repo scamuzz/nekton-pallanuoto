@@ -204,8 +204,8 @@ firebase.initializeApp({
 const db = firebase.database();
 const newsRef = db.ref('nekton/news/generale');
 
-function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
-function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
+function isManager() { return localStorage.getItem('nektonManager') === '1'; }
+function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');

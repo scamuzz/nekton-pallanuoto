@@ -256,8 +256,8 @@ firebase.initializeApp({
 const db = firebase.database();
 
 // -- Auth
-function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
-function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
+function isManager() { return localStorage.getItem('nektonManager') === '1'; }
+function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
 
 // -- Hardcoded fallback schedules (used only when Firebase default is not set)
 const DEFAULT_ORARI = {
@@ -386,6 +386,8 @@ function renderSchedule() {
 
   gruppi.forEach(g => {
     const merged = mergeWithDefaults(wkData, g.key);
+    const defaults = getEffectiveDefaults(g.key);
+    const weekOverrides = (wkData[g.key]) || {};
     const card = document.createElement('div');
     card.className = `gruppo-card${activeFilter !== 'all' && activeFilter !== g.key ? ' hidden' : ''}`;
     card.dataset.gruppo = g.key;
@@ -393,7 +395,13 @@ function renderSchedule() {
     let daysHtml = '';
     GIORNI_ORDER.forEach(giorno => {
       const info = merged[giorno];
-      if ((!info || !info.attivo) && !isManager()) return; // Normal view: show only active training days
+      if (!isManager()) {
+        // In normal view: show active days AND days explicitly cancelled vs default
+        const defInfo = defaults[giorno];
+        const ovInfo  = weekOverrides[giorno];
+        const isCancelled = defInfo && defInfo.attivo && ovInfo && ovInfo.attivo === false;
+        if (!info || (!info.attivo && !isCancelled)) return;
+      }
       const dow = GIORNI_DOW[giorno];
       const date = new Date(wkStart);
       const diff = (dow - 1 + 7) % 7;
@@ -472,12 +480,19 @@ function buildEditForm() {
       const date = new Date(wkStart);
       date.setDate(wkStart.getDate() + (dow - 1 + 7) % 7);
       const dateLabel = weekMode === 'default' ? '' : `<span style="font-size:0.65rem;color:#90a4ae">${formatDate(date)}</span>`;
+      const orParts = (info.orario || '').split('–');
+      const tStart = (orParts[0] || '').trim();
+      const tEnd   = (orParts[1] || '').trim();
       rowsHtml += `<div class="edit-row">
         <label>${GIORNI_IT[giorno]} ${dateLabel}</label>
         <label style="font-size:0.7rem;gap:4px;display:flex;align-items:center;min-width:auto;">
           <input type="checkbox" class="edit-check" data-g="${g.key}" data-d="${giorno}" data-t="attivo" ${info.attivo ? 'checked' : ''}> Attivo
         </label>
-        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario" value="${esc(info.orario)}" placeholder="es. 17:00–18:00" style="max-width:130px;"/>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <input type="time" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario-start" value="${esc(tStart)}" style="max-width:100px;padding:6px 8px;min-width:0;"/>
+          <span style="color:#888;font-weight:bold;flex-shrink:0;">–</span>
+          <input type="time" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario-end" value="${esc(tEnd)}" style="max-width:100px;padding:6px 8px;min-width:0;"/>
+        </div>
         <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore…" style="flex:2;"/>
       </div>`;
     });
@@ -497,8 +512,25 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     const { g, d, t } = el.dataset;
     if (!updates[g]) updates[g] = {};
     if (!updates[g][d]) updates[g][d] = {};
-    updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
+    if (t === 'orario-start' || t === 'orario-end') {
+      if (!updates[g][d]._timeInputs) updates[g][d]._timeInputs = {};
+      updates[g][d]._timeInputs[t === 'orario-start' ? 'start' : 'end'] = el.value.trim();
+    } else {
+      updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
+    }
   });
+
+  // Combine orario-start / orario-end into orario
+  for (const g of Object.keys(updates)) {
+    for (const d of Object.keys(updates[g])) {
+      if (updates[g][d]._timeInputs) {
+        const s = updates[g][d]._timeInputs.start || '';
+        const e = updates[g][d]._timeInputs.end   || '';
+        updates[g][d].orario = s && e ? `${s}–${e}` : '';
+        delete updates[g][d]._timeInputs;
+      }
+    }
+  }
 
   // Remove days that are inactive AND have no orario (not intentionally set)
   for (const g of Object.keys(updates)) {
