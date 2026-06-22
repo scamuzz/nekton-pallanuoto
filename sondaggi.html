@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>?? Sondaggi � Nekton</title>
+  <title>📊 Sondaggi � Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -214,13 +214,13 @@
 
 <div class="header">
   <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn">??</button>
-  <span class="icons">??</span>
+  <button class="pin-btn" id="pin-btn">🔒</button>
+  <span class="icons">📊</span>
   <h1>Sondaggi</h1>
   <div class="subtitle">Esprimi la tua opinione</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso�</span>
+    <span id="sync-label">Connessione in corso�</span>
   </div>
 </div>
 
@@ -234,24 +234,24 @@
 
   <!-- NOME -->
   <div class="card">
-    <h3>?? Il tuo nome</h3>
-    <input class="input-text" type="text" id="user-name" placeholder="Es. Marco, Giulia�" maxlength="30" autocomplete="off" spellcheck="false"/>
+    <h3>👤 Il tuo nome</h3>
+    <input class="input-text" type="text" id="user-name" placeholder="Es. Marco, Giulia�" maxlength="30" autocomplete="off" spellcheck="false"/>
   </div>
 
   <!-- PANNELLO GESTORE -->
   <div class="manager-panel" id="manager-panel">
-    <h3>?? Crea nuovo sondaggio</h3>
+    <h3>✏️ Crea nuovo sondaggio</h3>
     <div class="form-group">
       <label>Domanda / Titolo</label>
-      <input type="text" class="form-input-m" id="poll-title" placeholder="Qual � la tua domanda?" maxlength="120"/>
+      <input type="text" class="form-input-m" id="poll-title" placeholder="Qual � la tua domanda?" maxlength="120"/>
     </div>
     <div class="form-group">
       <label>Gruppo destinatario</label>
       <select class="form-input-m" id="poll-gruppo">
-        <option value="tutti">?? Tutti</option>
-        <option value="acquagol">?? Acquagol</option>
-        <option value="under13">?? Under 13</option>
-        <option value="senior">?? Senior</option>
+        <option value="tutti">👥 Tutti</option>
+        <option value="acquagol">🌊 Acquagol</option>
+        <option value="under13">🏊 Under 13</option>
+        <option value="senior">🤽 Senior</option>
       </select>
     </div>
     <div class="opzioni-setup" id="opzioni-setup-list">
@@ -267,30 +267,30 @@
       <input type="checkbox" id="poll-multi"/>
       <label for="poll-multi">Consenti scelta multipla</label>
     </div>
-    <button class="crea-btn" id="crea-btn">?? Pubblica sondaggio</button>
+    <button class="crea-btn" id="crea-btn">📤 Pubblica sondaggio</button>
   </div>
 
   <!-- FILTRO -->
   <div class="filter-row">
     <button class="filter-btn active" data-filter="tutti">Tutti</button>
-    <button class="filter-btn" data-filter="acquagol">?? Acquagol</button>
-    <button class="filter-btn" data-filter="under13">?? Under 13</button>
-    <button class="filter-btn" data-filter="senior">?? Senior</button>
+    <button class="filter-btn" data-filter="acquagol">🌊 Acquagol</button>
+    <button class="filter-btn" data-filter="under13">🏊 Under 13</button>
+    <button class="filter-btn" data-filter="senior">🤽 Senior</button>
   </div>
 
-  <div class="section-title">??? Sondaggi attivi</div>
+  <div class="section-title">📊 Sondaggi attivi</div>
   <div id="polls-container"></div>
 
 </div>
 
-<div class="page-footer">?? Sondaggi � Nekton Pallanuoto</div>
+<div class="page-footer">📊 Sondaggi � Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3>?? Accesso Gestore</h3>
+    <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per creare sondaggi</p>
-    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -336,13 +336,13 @@ nameInput.addEventListener('input', () => { localStorage.setItem('nektonName', c
 
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
-  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline � riconnessione�'; }
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline � riconnessione�'; }
 });
 
 sondaggiRef.on('value', snap => { pollsData = snap.val() || {}; render(); });
 
-const GRUPPO_LABELS = { tutti:'?? Tutti', acquagol:'?? Acquagol', under13:'?? Under 13', senior:'?? Senior' };
+const GRUPPO_LABELS = { tutti:'👥 Tutti', acquagol:'🌊 Acquagol', under13:'🏊 Under 13', senior:'🤽 Senior' };
 const BORDER_COLORS = ['#006994','#00b4d8','#0077b6','#0096c7','#023e8a'];
 
 function render() {
@@ -352,7 +352,7 @@ function render() {
     return activeFilter === 'tutti' || g === 'tutti' || g === activeFilter;
   });
   if (ids.length === 0) {
-    container.innerHTML = '<div class="no-items">Nessun sondaggio attivo. ??</div>';
+    container.innerHTML = '<div class="no-items">Nessun sondaggio attivo. 💤</div>';
     return;
   }
   container.innerHTML = '';
@@ -380,7 +380,7 @@ function render() {
           <div class="progress-bar-fill" style="width:${pct}%;"></div>
           <div class="voto-meta">
             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">${esc(opt.testo)}</span>
-            <span style="flex-shrink:0">${numVoti} ?? (${pct}%)</span>
+            <span style="flex-shrink:0">${numVoti} 🗳️ (${pct}%)</span>
           </div>
         </div>
         <div class="voti-nomi">${nomi}</div>
@@ -388,9 +388,9 @@ function render() {
     });
 
     const delBtn = isManager()
-      ? `<button class="del-sondaggio-btn" data-poll="${esc(pollId)}" title="Elimina sondaggio">???</button>`
+      ? `<button class="del-sondaggio-btn" data-poll="${esc(pollId)}" title="Elimina sondaggio">🗑️</button>`
       : '';
-    const gruppoLabel = GRUPPO_LABELS[info.gruppo] || info.gruppo || '?? Tutti';
+    const gruppoLabel = GRUPPO_LABELS[info.gruppo] || info.gruppo || '👥 Tutti';
 
     card.innerHTML = `
       <div class="sondaggio-header">
@@ -399,7 +399,7 @@ function render() {
           <div class="sondaggio-meta">Per: ${esc(gruppoLabel)}</div>
         </div>
         <div class="badge-row">
-          <span class="badge-tipo">${info.multipla ? '??? Multipla' : '?? Singola'}</span>
+          <span class="badge-tipo">${info.multipla ? '✅ Multipla' : '⭕ Singola'}</span>
           ${delBtn}
         </div>
       </div>
@@ -416,14 +416,14 @@ function render() {
       e.stopPropagation();
       if (confirm('Eliminare questo sondaggio?')) {
         sondaggiRef.child(btn.dataset.poll).remove();
-        showToast('??? Sondaggio eliminato');
+        showToast('✅ Sondaggio eliminato');
       }
     });
   });
 }
 
 function handleVoto(pollId, optId) {
-  if (!myName()) { nameInput.focus(); showToast('?? Inserisci prima il tuo nome!'); return; }
+  if (!myName()) { nameInput.focus(); showToast('⚠️ Inserisci prima il tuo nome!'); return; }
   const userKey = myNameKey();
   const poll = pollsData[pollId];
   const info = poll.info || {};
@@ -459,7 +459,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 const optSetupList = document.getElementById('opzioni-setup-list');
 document.getElementById('add-opt-btn').addEventListener('click', () => {
   const count = optSetupList.children.length + 1;
-  if (count > 6) { showToast('?? Massimo 6 opzioni!'); return; }
+  if (count > 6) { showToast('⚠️ Massimo 6 opzioni!'); return; }
   const row = document.createElement('div');
   row.className = 'opzione-input-row';
   row.innerHTML = `<input class="form-input-m opt-field" type="text" placeholder="Opzione ${count}" maxlength="60"/>
@@ -473,9 +473,9 @@ document.getElementById('crea-btn').addEventListener('click', () => {
   const titolo = document.getElementById('poll-title').value.trim();
   const gruppo = document.getElementById('poll-gruppo').value;
   const multipla = document.getElementById('poll-multi').checked;
-  if (!titolo) { showToast('?? Inserisci la domanda!'); return; }
+  if (!titolo) { showToast('⚠️ Inserisci la domanda!'); return; }
   const opts = [...document.querySelectorAll('.opt-field')].map(f => f.value.trim()).filter(Boolean);
-  if (opts.length < 2) { showToast('?? Inserisci almeno 2 opzioni!'); return; }
+  if (opts.length < 2) { showToast('⚠️ Inserisci almeno 2 opzioni!'); return; }
 
   const newRef = sondaggiRef.push();
   newRef.child('info').set({ titolo, gruppo, multipla, dataCreazione: new Date().toISOString().slice(0,10) });
@@ -487,20 +487,20 @@ document.getElementById('crea-btn').addEventListener('click', () => {
     <div class="opzione-input-row"><input class="form-input-m opt-field" type="text" placeholder="Opzione 1" maxlength="60"/></div>
     <div class="opzione-input-row"><input class="form-input-m opt-field" type="text" placeholder="Opzione 2" maxlength="60"/></div>
   `;
-  showToast('?? Sondaggio pubblicato!');
+  showToast('✅ Sondaggio pubblicato!');
 });
 
 // PIN
 const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
-function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+function updatePinBtn() { pinBtn.textContent = isManager() ? '🔐' : '🔒'; }
 updatePinBtn();
 if (isManager()) document.getElementById('manager-panel').classList.add('visible');
 
 pinBtn.addEventListener('click', () => {
   if (isManager()) {
     setManager(false); document.getElementById('manager-panel').classList.remove('visible');
-    updatePinBtn(); render(); showToast('?? Logout gestore effettuato');
+    updatePinBtn(); render(); showToast('🔐 Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
@@ -517,7 +517,7 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalit� gestore attiva');
+    render(); showToast('? Modalit� gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>

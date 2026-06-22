@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>?? Pagamenti — Nekton</title>
+  <title>ğŸ’° Pagamenti ï¿½ Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -176,13 +176,13 @@
 
 <div class="header">
   <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn">??</button>
-  <span class="icons">??</span>
+  <button class="pin-btn" id="pin-btn">ğŸ”’</button>
+  <span class="icons">ğŸ’°</span>
   <h1>Scadenze Pagamenti</h1>
   <div class="subtitle">Quote e versamenti da effettuare</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso…</span>
+    <span id="sync-label">Connessione in corsoï¿½</span>
   </div>
 </div>
 
@@ -199,11 +199,11 @@
     <h3>? Aggiungi Scadenza</h3>
     <div class="form-group">
       <label>Descrizione</label>
-      <input type="text" class="form-input" id="f-desc" placeholder="es. Quota annuale iscrizione…" maxlength="80"/>
+      <input type="text" class="form-input" id="f-desc" placeholder="es. Quota annuale iscrizioneï¿½" maxlength="80"/>
     </div>
     <div class="form-row">
       <div class="form-group" style="flex:1;min-width:120px;">
-        <label>Importo (€)</label>
+        <label>Importo (ï¿½)</label>
         <input type="number" class="form-input" id="f-importo" placeholder="es. 150" min="0" step="0.01"/>
       </div>
       <div class="form-group" style="flex:1;min-width:120px;">
@@ -214,10 +214,10 @@
     <div class="form-group">
       <label>Gruppo</label>
       <select class="form-input" id="f-gruppo">
-        <option value="tutti">?? Tutti</option>
-        <option value="acquagol">?? Acquagol</option>
-        <option value="under13">?? Under 13</option>
-        <option value="senior">?? Senior</option>
+        <option value="tutti">ğŸ‘¥ Tutti</option>
+        <option value="acquagol">ğŸŒŠ Acquagol</option>
+        <option value="under13">ğŸŠ Under 13</option>
+        <option value="senior">ğŸ¤½ Senior</option>
       </select>
     </div>
     <button class="pub-btn" id="add-btn">? Aggiungi scadenza</button>
@@ -226,24 +226,24 @@
   <!-- FILTRI -->
   <div class="filter-row">
     <button class="filter-btn active" data-filter="tutti">Tutti</button>
-    <button class="filter-btn" data-filter="acquagol">?? Acquagol</button>
-    <button class="filter-btn" data-filter="under13">?? Under 13</button>
-    <button class="filter-btn" data-filter="senior">?? Senior</button>
+    <button class="filter-btn" data-filter="acquagol">ğŸŒŠ Acquagol</button>
+    <button class="filter-btn" data-filter="under13">ğŸŠ Under 13</button>
+    <button class="filter-btn" data-filter="senior">ğŸ¤½ Senior</button>
   </div>
 
-  <div class="section-title">?? Scadenze</div>
+  <div class="section-title">ğŸ“‹ Scadenze</div>
   <div id="pag-container"></div>
 
 </div>
 
-<div class="page-footer">?? Pagamenti — Nekton Pallanuoto</div>
+<div class="page-footer">ğŸ’° Pagamenti ï¿½ Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3>?? Accesso Gestore</h3>
+    <h3>ğŸ”‘ Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire i pagamenti</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -280,13 +280,13 @@ let activeFilter = 'tutti';
 
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
-  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline — riconnessione…'; }
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = 'âœ… Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = 'âŒ Offline ï¿½ riconnessioneï¿½'; }
 });
 
 pagRef.on('value', snap => { allData = snap.val() || {}; render(); });
 
-const GRUPPO_LABELS = { tutti:'?? Tutti', acquagol:'?? Acquagol', under13:'?? Under 13', senior:'?? Senior' };
+const GRUPPO_LABELS = { tutti:'ğŸ‘¥ Tutti', acquagol:'ğŸŒŠ Acquagol', under13:'ğŸŠ Under 13', senior:'ğŸ¤½ Senior' };
 
 function render() {
   const today = new Date().toISOString().slice(0,10);
@@ -298,7 +298,7 @@ function render() {
     .sort((a,b) => (a[1].dataScadenza||'').localeCompare(b[1].dataScadenza||''));
 
   if (entries.length === 0) {
-    container.innerHTML = '<div class="no-items">Nessuna scadenza registrata. ??</div>';
+    container.innerHTML = '<div class="no-items">Nessuna scadenza registrata. ğŸ’¤</div>';
     return;
   }
   container.innerHTML = '';
@@ -311,7 +311,7 @@ function render() {
     const dateStr = isNaN(d) ? p.dataScadenza : d.toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
 
     let alertHtml = '';
-    if (isScaduta) alertHtml = '<div class="pag-alert scaduta">?? Scaduta!</div>';
+    if (isScaduta) alertHtml = '<div class="pag-alert scaduta">ğŸ”´ Scaduta!</div>';
     else if (isImminente) alertHtml = `<div class="pag-alert imminente">? Scade tra ${diffDays} giorn${diffDays===1?'o':'i'}!</div>`;
 
     const card = document.createElement('div');
@@ -319,21 +319,21 @@ function render() {
     card.innerHTML = `
       <div class="pag-top">
         <div class="pag-descrizione">${esc(p.descrizione)}</div>
-        <div class="pag-importo">€ ${parseFloat(p.importo||0).toFixed(2)}</div>
+        <div class="pag-importo">ï¿½ ${parseFloat(p.importo||0).toFixed(2)}</div>
       </div>
       <div class="pag-meta">
-        <span class="pag-data">?? Scadenza: ${esc(dateStr)}</span>
+        <span class="pag-data">ğŸ“… Scadenza: ${esc(dateStr)}</span>
         <span class="pag-gruppo-badge badge-${esc(p.gruppo||'tutti')}">${esc(GRUPPO_LABELS[p.gruppo]||p.gruppo)}</span>
       </div>
       ${alertHtml}
-      ${isManager() ? `<button class="pag-del-btn" data-id="${esc(id)}" title="Elimina">???</button>` : ''}
+      ${isManager() ? `<button class="pag-del-btn" data-id="${esc(id)}" title="Elimina">ğŸ—‘ï¸</button>` : ''}
     `;
     container.appendChild(card);
   });
   if (isManager()) {
     document.querySelectorAll('.pag-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (confirm('Eliminare questa scadenza?')) { pagRef.child(btn.dataset.id).remove(); showToast('??? Scadenza eliminata'); }
+        if (confirm('Eliminare questa scadenza?')) { pagRef.child(btn.dataset.id).remove(); showToast('âœ… Scadenza eliminata'); }
       });
     });
   }
@@ -355,8 +355,8 @@ document.getElementById('add-btn').addEventListener('click', () => {
   const importo       = document.getElementById('f-importo').value;
   const dataScadenza  = document.getElementById('f-data').value;
   const gruppo        = document.getElementById('f-gruppo').value;
-  if (!descrizione) { showToast('?? Inserisci una descrizione!'); return; }
-  if (!dataScadenza) { showToast('?? Inserisci la data di scadenza!'); return; }
+  if (!descrizione) { showToast('âš ï¸ Inserisci una descrizione!'); return; }
+  if (!dataScadenza) { showToast('âš ï¸ Inserisci la data di scadenza!'); return; }
   pagRef.push({ descrizione, importo: parseFloat(importo)||0, dataScadenza, gruppo }).then(() => {
     document.getElementById('f-desc').value = '';
     document.getElementById('f-importo').value = '';
@@ -368,14 +368,14 @@ document.getElementById('add-btn').addEventListener('click', () => {
 // PIN
 const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
-function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+function updatePinBtn() { pinBtn.textContent = isManager() ? 'ğŸ”' : 'ğŸ”’'; }
 updatePinBtn();
 if (isManager()) document.getElementById('manager-panel').classList.add('visible');
 
 pinBtn.addEventListener('click', () => {
   if (isManager()) {
     setManager(false); document.getElementById('manager-panel').classList.remove('visible');
-    updatePinBtn(); render(); showToast('?? Logout gestore effettuato');
+    updatePinBtn(); render(); showToast('ğŸ” Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
@@ -392,7 +392,7 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalità gestore attiva');
+    render(); showToast('? Modalitï¿½ gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>

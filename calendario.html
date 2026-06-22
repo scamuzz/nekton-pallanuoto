@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>?? Calendario Partite — Nekton</title>
+  <title>ğŸ“… Calendario Partite ï¿½ Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -180,13 +180,13 @@
 
 <div class="header">
   <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn">??</button>
-  <span class="icons">??</span>
+  <button class="pin-btn" id="pin-btn">ğŸ”’</button>
+  <span class="icons">ğŸ“…</span>
   <h1>Calendario Partite</h1>
   <div class="subtitle">Tutti i campionati Nekton</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso…</span>
+    <span id="sync-label">Connessione in corsoï¿½</span>
   </div>
 </div>
 
@@ -224,14 +224,14 @@
     </div>
     <div class="form-group">
       <label>Avversario</label>
-      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria…" maxlength="60"/>
+      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversariaï¿½" maxlength="60"/>
     </div>
     <div class="form-row">
       <div class="form-group" style="flex:1;">
         <label>Casa / Trasferta</label>
         <select class="form-input" id="f-luogo">
-          <option value="casa">?? Casa</option>
-          <option value="trasferta">?? Trasferta</option>
+          <option value="casa">ğŸ  Casa</option>
+          <option value="trasferta">âœˆï¸ Trasferta</option>
         </select>
       </div>
       <div class="form-group" style="flex:1;">
@@ -253,19 +253,19 @@
     <button class="filter-btn" data-filter="Promozione">Promozione</button>
   </div>
 
-  <div class="section-title">?? Partite</div>
+  <div class="section-title">ğŸ Partite</div>
   <div id="calendario-container"></div>
 
 </div>
 
-<div class="page-footer">?? Calendario — Nekton Pallanuoto</div>
+<div class="page-footer">ğŸ“… Calendario ï¿½ Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3>?? Accesso Gestore</h3>
+    <h3>ğŸ”‘ Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire il calendario</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -302,8 +302,8 @@ let activeFilter = 'tutti';
 
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
-  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline — riconnessione…'; }
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = 'âœ… Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = 'âŒ Offline ï¿½ riconnessioneï¿½'; }
 });
 
 calRef.on('value', snap => { allData = snap.val() || {}; render(); });
@@ -316,7 +316,7 @@ function render() {
     .sort((a,b) => (a[1].data||'').localeCompare(b[1].data||''));
 
   if (entries.length === 0) {
-    container.innerHTML = '<div class="no-items">Nessuna partita in programma. ??</div>';
+    container.innerHTML = '<div class="no-items">Nessuna partita in programma. ğŸ’¤</div>';
     return;
   }
   container.innerHTML = '';
@@ -329,21 +329,21 @@ function render() {
     card.innerHTML = `
       <div class="partita-top">
         <span class="campionato-badge">${esc(p.campionato)}</span>
-        <span class="partita-data">?? ${esc(dateStr)}${p.ora ? ' • ' + esc(p.ora) : ''}</span>
+        <span class="partita-data">ğŸ“… ${esc(dateStr)}${p.ora ? ' ï¿½ ' + esc(p.ora) : ''}</span>
       </div>
       <div class="partita-avversario">vs ${esc(p.avversario)}</div>
       <div class="partita-info">
-        <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? '?? Casa' : '?? Trasferta'}</span>
+        <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? 'ğŸ  Casa' : 'âœˆï¸ Trasferta'}</span>
         ${p.risultato ? `<span class="partita-risultato">? ${esc(p.risultato)}</span>` : ''}
       </div>
-      ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">???</button>` : ''}
+      ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">ğŸ—‘ï¸</button>` : ''}
     `;
     container.appendChild(card);
   });
   if (isManager()) {
     document.querySelectorAll('.partita-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (confirm('Eliminare questa partita?')) { calRef.child(btn.dataset.id).remove(); showToast('??? Partita eliminata'); }
+        if (confirm('Eliminare questa partita?')) { calRef.child(btn.dataset.id).remove(); showToast('âœ… Partita eliminata'); }
       });
     });
   }
@@ -367,8 +367,8 @@ document.getElementById('add-btn').addEventListener('click', () => {
   const avversario = document.getElementById('f-avversario').value.trim();
   const luogo      = document.getElementById('f-luogo').value;
   const risultato  = document.getElementById('f-risultato').value.trim();
-  if (!data) { showToast('?? Inserisci la data!'); return; }
-  if (!avversario) { showToast('?? Inserisci l\'avversario!'); return; }
+  if (!data) { showToast('âš ï¸ Inserisci la data!'); return; }
+  if (!avversario) { showToast('âš ï¸ Inserisci l\'avversario!'); return; }
   calRef.push({ data, ora, campionato, avversario, luogo, risultato }).then(() => {
     document.getElementById('f-data').value = '';
     document.getElementById('f-ora').value = '';
@@ -381,14 +381,14 @@ document.getElementById('add-btn').addEventListener('click', () => {
 // PIN
 const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
-function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+function updatePinBtn() { pinBtn.textContent = isManager() ? 'ğŸ”' : 'ğŸ”’'; }
 updatePinBtn();
 if (isManager()) document.getElementById('manager-panel').classList.add('visible');
 
 pinBtn.addEventListener('click', () => {
   if (isManager()) {
     setManager(false); document.getElementById('manager-panel').classList.remove('visible');
-    updatePinBtn(); render(); showToast('?? Logout gestore effettuato');
+    updatePinBtn(); render(); showToast('ğŸ” Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
@@ -405,7 +405,7 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalità gestore attiva');
+    render(); showToast('? Modalitï¿½ gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>
