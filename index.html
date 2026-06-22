@@ -16,7 +16,7 @@
 
     /* -- HEADER -- */
     .header {
-      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      background: linear-gradient(160deg, #0f2f4f 0%, #1a3a5c 30%, #006994 65%, #00b4d8 100%);
       color: white;
       padding: 52px 20px 36px;
       text-align: center;
@@ -70,7 +70,7 @@
 
     .wave-divider {
       display: block; line-height: 0; overflow: hidden;
-      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      background: linear-gradient(160deg, #0f2f4f 0%, #1a3a5c 30%, #006994 65%, #00b4d8 100%);
     }
     .wave-divider svg { display: block; width: 100%; }
 
@@ -159,7 +159,9 @@
       display: flex; align-items: center; gap: 14px;
       padding: 18px 18px 16px;
       text-decoration: none;
-      border-bottom: 1.5px solid #e3f2fd;
+      border: 2.5px solid #90caf9;
+      border-bottom: none;
+      border-radius: 16px 16px 0 0;
       transition: background 0.18s;
     }
     .news-main:hover { background: #f0f8ff; }
@@ -175,20 +177,24 @@
       display: flex; flex-direction: column; align-items: center;
       padding: 14px 8px 12px; gap: 5px;
       text-decoration: none;
-      border-right: 1.5px solid #e3f2fd;
+      border-top: 2.5px solid #90caf9;
+      border-right: 2.5px solid #90caf9;
+      border-bottom: 2.5px solid #90caf9;
       transition: background 0.18s, opacity 0.18s;
     }
-    .news-sub-btn:last-child { border-right: none; }
+    .news-sub-btn:first-child { border-left: 2.5px solid #90caf9; border-bottom-left-radius: 16px; }
+    .news-sub-btn:last-child { border-bottom-right-radius: 16px; }
+    .news-sub-btn:last-child { border-right: 2.5px solid #90caf9; }
     .news-sub-btn:hover { opacity: 0.85; }
     .news-sub-icon { font-size: 1.6rem; line-height: 1; }
     .news-sub-label { font-size: 0.72rem; font-weight: 800; }
 
     /* bordi distinti per ogni gruppo */
-    .news-sub-btn.sub-acquagol { border-top: 3px solid #006994; }
+    .news-sub-btn.sub-acquagol { border-top: 2.5px solid #90caf9; }
     .news-sub-btn.sub-acquagol .news-sub-label { color: #006994; }
-    .news-sub-btn.sub-u13      { border-top: 3px solid #e65100; }
+    .news-sub-btn.sub-u13      { border-top: 2.5px solid #90caf9; }
     .news-sub-btn.sub-u13      .news-sub-label { color: #e65100; }
-    .news-sub-btn.sub-senior   { border-top: 3px solid #1a3a5c; }
+    .news-sub-btn.sub-senior   { border-top: 2.5px solid #90caf9; }
     .news-sub-btn.sub-senior   .news-sub-label { color: #1a3a5c; }
 
     /* -- FOOTER -- */
