@@ -96,6 +96,14 @@
     .orario-time.cancelled { text-decoration: line-through; color: #b0bec5; }
     .orario-nota { font-size: 0.72rem; color: #e65100; margin-top: 2px; font-style: italic; }
     .no-train { font-size: 0.80rem; color: #b0bec5; font-style: italic; }
+    .day-row.modified {
+      /* Negative margin absorbs the 3px left border without shifting content */
+      background: #fff8e1;
+      border-left: 3px solid #ffb300;
+      margin-left: -3px;
+      padding-left: 7px;
+      border-radius: 4px;
+    }
     .modified-tag {
       display: inline-block; font-size: 0.60rem; font-weight: 700; letter-spacing: 0.3px;
       color: #e65100; background: #fff3e0; border-radius: 6px;
@@ -412,18 +420,22 @@ function renderSchedule() {
       const diff = (dow - 1 + 7) % 7;
       date.setDate(wkStart.getDate() + diff);
 
+      const hasActiveDefault = defInfo && defInfo.attivo;
+      const hasOverriddenTime = ovInfo && ovInfo.orario && hasActiveDefault && ovInfo.orario !== defInfo.orario;
+      const timeChanged = !isManager() && hasOverriddenTime;
+      const isModified = !isManager() && (isCancelled || timeChanged);
+
       let content;
       if (!info) {
         content = `<div class="no-train" style="color:#c8d8e4;">– Non programmato</div>`;
       } else if (info.attivo) {
-        const timeChanged = !isManager() && ovInfo && ovInfo.orario && defInfo && defInfo.attivo && ovInfo.orario !== defInfo.orario;
         const modTag = timeChanged ? `<span class="modified-tag">⚠️ orario modificato</span>` : '';
         content = `<div class="orario-time">${esc(info.orario)}${modTag}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
       } else {
         content = `<div class="no-train">❌ Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`;
       }
 
-      daysHtml += `<div class="day-row">
+      daysHtml += `<div class="day-row${isModified ? ' modified' : ''}">
         <div class="day-name">
           <div>${GIORNI_IT[giorno]}</div>
           <div class="day-date">${formatDate(date)}</div>
@@ -545,7 +557,11 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     for (const d of Object.keys(updates[g])) {
       const entry = updates[g][d];
       if (!entry.attivo && !entry.orario && !entry.nota) {
-        const defEntry = getEffectiveDefaults(g)[d] || {};
+        // For "default" mode compare against the hardcoded baseline only, so that
+        // an already-cancelled Firebase default day is not accidentally restored.
+        const defEntry = weekMode === 'default'
+          ? ((DEFAULT_ORARI[g] && DEFAULT_ORARI[g][d]) || {})
+          : (getEffectiveDefaults(g)[d] || {});
         if (!defEntry.attivo) delete updates[g][d];
         // else: keep { attivo: false } to explicitly override the active default
       }
