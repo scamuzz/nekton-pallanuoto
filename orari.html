@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="nekton.jpeg" type="image/jpeg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>⏰ Orari Allenamenti · Nekton</title>
   <style>
@@ -392,7 +393,7 @@ function renderSchedule() {
     let daysHtml = '';
     GIORNI_ORDER.forEach(giorno => {
       const info = merged[giorno];
-      if (!info && !isManager()) return; // Normal view: skip days without schedule
+      if ((!info || !info.attivo) && !isManager()) return; // Normal view: show only active training days
       const dow = GIORNI_DOW[giorno];
       const date = new Date(wkStart);
       const diff = (dow - 1 + 7) % 7;
