@@ -513,8 +513,8 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     if (!updates[g]) updates[g] = {};
     if (!updates[g][d]) updates[g][d] = {};
     if (t === 'orario-start' || t === 'orario-end') {
-      if (!updates[g][d]._orario) updates[g][d]._orario = {};
-      updates[g][d]._orario[t === 'orario-start' ? 'start' : 'end'] = el.value.trim();
+      if (!updates[g][d]._timeInputs) updates[g][d]._timeInputs = {};
+      updates[g][d]._timeInputs[t === 'orario-start' ? 'start' : 'end'] = el.value.trim();
     } else {
       updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
     }
@@ -523,11 +523,11 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
   // Combine orario-start / orario-end into orario
   for (const g of Object.keys(updates)) {
     for (const d of Object.keys(updates[g])) {
-      if (updates[g][d]._orario) {
-        const s = updates[g][d]._orario.start || '';
-        const e = updates[g][d]._orario.end   || '';
-        updates[g][d].orario = s && e ? `${s}–${e}` : (s || e);
-        delete updates[g][d]._orario;
+      if (updates[g][d]._timeInputs) {
+        const s = updates[g][d]._timeInputs.start || '';
+        const e = updates[g][d]._timeInputs.end   || '';
+        updates[g][d].orario = s && e ? `${s}–${e}` : '';
+        delete updates[g][d]._timeInputs;
       }
     }
   }
