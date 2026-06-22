@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>💰 Pagamenti � Nekton</title>
+  <title>💰 Pagamenti · Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -182,7 +182,7 @@
   <div class="subtitle">Quote e versamenti da effettuare</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso�</span>
+    <span id="sync-label">Connessione in corso…</span>
   </div>
 </div>
 
@@ -199,11 +199,11 @@
     <h3>? Aggiungi Scadenza</h3>
     <div class="form-group">
       <label>Descrizione</label>
-      <input type="text" class="form-input" id="f-desc" placeholder="es. Quota annuale iscrizione�" maxlength="80"/>
+      <input type="text" class="form-input" id="f-desc" placeholder="es. Quota annuale iscrizione…" maxlength="80"/>
     </div>
     <div class="form-row">
       <div class="form-group" style="flex:1;min-width:120px;">
-        <label>Importo (�)</label>
+        <label>Importo (€)</label>
         <input type="number" class="form-input" id="f-importo" placeholder="es. 150" min="0" step="0.01"/>
       </div>
       <div class="form-group" style="flex:1;min-width:120px;">
@@ -236,14 +236,14 @@
 
 </div>
 
-<div class="page-footer">💰 Pagamenti � Nekton Pallanuoto</div>
+<div class="page-footer">💰 Pagamenti · Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire i pagamenti</p>
-    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -281,7 +281,7 @@ let activeFilter = 'tutti';
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
   if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline � riconnessione�'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline – riconnessione…'; }
 });
 
 pagRef.on('value', snap => { allData = snap.val() || {}; render(); });
@@ -319,7 +319,7 @@ function render() {
     card.innerHTML = `
       <div class="pag-top">
         <div class="pag-descrizione">${esc(p.descrizione)}</div>
-        <div class="pag-importo">� ${parseFloat(p.importo||0).toFixed(2)}</div>
+        <div class="pag-importo">€ ${parseFloat(p.importo||0).toFixed(2)}</div>
       </div>
       <div class="pag-meta">
         <span class="pag-data">📅 Scadenza: ${esc(dateStr)}</span>
@@ -392,7 +392,7 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalit� gestore attiva');
+    render(); showToast('? Modalità gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>

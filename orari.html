@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>⏰ Orari Allenamenti � Nekton</title>
+  <title>⏰ Orari Allenamenti · Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -184,7 +184,7 @@
   <span class="icons">⏰</span>
   <h1>Orari Allenamenti</h1>
   <div class="subtitle">Settimana corrente</div>
-  <div class="week-info" id="week-label">Caricamento�</div>
+  <div class="week-info" id="week-label">Caricamento…</div>
 </div>
 
 <div class="wave-divider">
@@ -197,7 +197,7 @@
 
   <!-- PANNELLO GESTORE -->
   <div class="manager-panel" id="manager-panel">
-    <h3>⚙️ Pannello Gestore � Modifica Orari</h3>
+    <h3>⚙️ Pannello Gestore – Modifica Orari</h3>
     <div class="week-selector">
       <label>Settimana:</label>
       <select id="edit-week-select">
@@ -222,15 +222,15 @@
 
 </div>
 
-<div class="page-footer">⏰ Nekton Pallanuoto &nbsp;�&nbsp; Orari Allenamenti</div>
+<div class="page-footer">⏰ Nekton Pallanuoto &nbsp;·&nbsp; Orari Allenamenti</div>
 <div class="toast" id="toast"></div>
 
 <!-- MODALE PIN -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h3 id="modal-title">🔑 Accesso Gestore</h3>
-    <p id="modal-desc">Inserisci il PIN per accedere alla modalit� gestore</p>
-    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
+    <p id="modal-desc">Inserisci il PIN per accedere alla modalità gestore</p>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -260,25 +260,25 @@ function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0');
 // -- Default schedules
 const DEFAULT_ORARI = {
   acquagol: {
-    mercoledi: { attivo: true, orario: '17:00�18:00', nota: '' },
-    sabato:    { attivo: true, orario: '16:00�17:00', nota: '' }
+    mercoledi: { attivo: true, orario: '17:00–18:00', nota: '' },
+    sabato:    { attivo: true, orario: '16:00–17:00', nota: '' }
   },
   under13: {
-    martedi:   { attivo: true, orario: '18:00�19:15', nota: '' },
-    mercoledi: { attivo: true, orario: '18:00�19:15', nota: '' },
-    venerdi:   { attivo: true, orario: '18:00�19:00', nota: '' },
-    sabato:    { attivo: true, orario: '17:00�18:00', nota: '' }
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
   },
   senior: {
-    martedi:   { attivo: true, orario: '20:00�21:15', nota: '' },
-    mercoledi: { attivo: true, orario: '19:00�20:15', nota: '' },
-    venerdi:   { attivo: true, orario: '20:00�21:15', nota: '' },
-    sabato:    { attivo: true, orario: '19:00�20:00', nota: '' }
+    martedi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    mercoledi: { attivo: true, orario: '19:00–20:15', nota: '' },
+    venerdi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    sabato:    { attivo: true, orario: '19:00–20:00', nota: '' }
   }
 };
 
-const GIORNI_IT = { lunedi: 'Luned�', martedi: 'Marted�', mercoledi: 'Mercoled�',
-  giovedi: 'Gioved�', venerdi: 'Venerd�', sabato: 'Sabato', domenica: 'Domenica' };
+const GIORNI_IT = { lunedi: 'Lunedì', martedi: 'Martedì', mercoledi: 'Mercoledì',
+  giovedi: 'Giovedì', venerdi: 'Venerdì', sabato: 'Sabato', domenica: 'Domenica' };
 const GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica'];
 const GIORNI_DOW = { lunedi:1, martedi:2, mercoledi:3, giovedi:4, venerdi:5, sabato:6, domenica:0 };
 
@@ -326,7 +326,7 @@ let activeFilter = 'all';
 
 document.getElementById('week-label').textContent =
   (() => { const s = weekStart(currentWeekKey); const e = new Date(s); e.setDate(s.getDate()+6);
-    return `${formatDate(s)} � ${formatDate(e)}`; })();
+    return `${formatDate(s)} – ${formatDate(e)}`; })();
 
 // Listen Firebase
 function listenWeek(wk) {
@@ -356,7 +356,7 @@ function renderSchedule() {
 
   const gruppi = [
     { key: 'acquagol', label: 'Acquagol', emoji: '🌊', badge: 'badge-acquagol', anni: 'Nati 2016+' },
-    { key: 'under13',  label: 'Under 13', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2014�2015' },
+    { key: 'under13',  label: 'Under 13', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2014–2015' },
     { key: 'senior',   label: 'Senior',   emoji: '🤽', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
   ];
 
@@ -383,7 +383,7 @@ function renderSchedule() {
         <div class="orario-info">
           ${info.attivo
             ? `<div class="orario-time">${esc(info.orario)}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`
-            : `<div class="no-train">? Allenamento annullato${info.nota ? ' � ' + esc(info.nota) : ''}</div>`
+            : `<div class="no-train">? Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`
           }
         </div>
       </div>`;
@@ -440,8 +440,8 @@ function buildEditForm() {
         <label style="font-size:0.7rem;gap:4px;display:flex;align-items:center;min-width:auto;">
           <input type="checkbox" class="edit-check" data-g="${g.key}" data-d="${giorno}" data-t="attivo" ${info.attivo ? 'checked' : ''}> Attivo
         </label>
-        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario" value="${esc(info.orario)}" placeholder="es. 17:00�18:00" style="max-width:130px;"/>
-        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore�" style="flex:2;"/>
+        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario" value="${esc(info.orario)}" placeholder="es. 17:00–18:00" style="max-width:130px;"/>
+        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore…" style="flex:2;"/>
       </div>`;
     });
     const sec = document.createElement('div');
@@ -512,7 +512,7 @@ function checkPin() {
     document.getElementById('manager-panel').classList.add('visible');
     updatePinBtn();
     buildEditForm();
-    showToast('? Modalit� gestore attiva');
+    showToast('? Modalità gestore attiva');
   } else {
     document.getElementById('modal-error').textContent = '? PIN non corretto';
   }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>📰 News � Nekton</title>
+  <title>📰 News · Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -142,7 +142,7 @@
   <div class="subtitle">Comunicazioni per tutta la squadra</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso�</span>
+    <span id="sync-label">Connessione in corso…</span>
   </div>
 </div>
 
@@ -158,11 +158,11 @@
     <h3>✏️ Pubblica una comunicazione</h3>
     <div class="form-group">
       <label>Titolo</label>
-      <input type="text" class="form-input" id="news-title" placeholder="Titolo della comunicazione�" maxlength="100"/>
+      <input type="text" class="form-input" id="news-title" placeholder="Titolo della comunicazione…" maxlength="100"/>
     </div>
     <div class="form-group">
       <label>Testo</label>
-      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio per tutta la squadra�"></textarea>
+      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio per tutta la squadra…"></textarea>
     </div>
     <button class="pub-btn" id="pub-btn">📤 Pubblica comunicazione</button>
   </div>
@@ -172,14 +172,14 @@
 
 </div>
 
-<div class="page-footer">📰 News � Nekton Pallanuoto</div>
+<div class="page-footer">📰 News · Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per pubblicare comunicazioni</p>
-    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -214,7 +214,7 @@ function showToast(msg) {
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
   if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline � riconnessione�'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline – riconnessione…'; }
 });
 
 newsRef.orderByChild('data').on('value', snap => renderNews(snap.val() || {}));
@@ -284,7 +284,7 @@ function checkPin() {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
     newsRef.orderByChild('data').once('value', snap => renderNews(snap.val() || {}));
-    showToast('? Modalit� gestore attiva');
+    showToast('? Modalità gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>
