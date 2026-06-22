@@ -59,7 +59,12 @@
     }
 
     .header .logo { display: block; margin-bottom: 14px; line-height: 1; position: relative; }
-    .header .logo img { width: 90px; height: 90px; object-fit: contain; border-radius: 50%; border: 3px solid rgba(255,255,255,0.4); }
+    .logo-ring {
+      display: inline-block; border-radius: 50%; padding: 3px;
+      background: linear-gradient(135deg, #012AFE 0%, #00b4d8 100%);
+      box-shadow: 0 0 18px rgba(1,42,254,0.55), 0 0 40px rgba(1,42,254,0.25);
+    }
+    .header .logo img { width: 90px; height: 90px; object-fit: contain; border-radius: 50%; display: block; }
     .header h1 {
       font-size: 2rem; font-weight: 900; letter-spacing: 1px;
       text-shadow: 0 3px 12px rgba(0,0,0,0.25); position: relative;
@@ -209,7 +214,7 @@
     <div class="particle"></div><div class="particle"></div><div class="particle"></div>
     <div class="particle"></div><div class="particle"></div><div class="particle"></div>
   </div>
-  <span class="logo"><img src="nekton.jpeg" alt="Nekton Pallanuoto"/></span>
+  <span class="logo"><span class="logo-ring"><img src="nekton.jpeg" alt="Nekton Pallanuoto"/></span></span>
   <h1>Nekton Pallanuoto</h1>
   <div class="subtitle">Portale della squadra</div>
 </div>
@@ -238,28 +243,24 @@
 
   <!-- NEWS -->
   <div class="section-label">📰 News</div>
-  <div class="news-block" style="margin-bottom:24px;">
-    <a class="news-main" href="news.html">
-      <span class="news-main-icon">📰</span>
-      <div class="news-main-text">
-        <div class="news-main-title">Comunicazioni per tutti</div>
-        <div class="news-main-desc">Avvisi e notizie per tutta la squadra</div>
-      </div>
+  <a class="menu-card" href="news.html" style="margin-bottom:12px;">
+    <span class="card-icon">📰</span>
+    <div class="card-title">Comunicazioni per tutti</div>
+    <div class="card-desc">Avvisi e notizie per tutta la squadra</div>
+  </a>
+  <div class="menu-grid-3" style="margin-bottom:24px;">
+    <a class="menu-card card-small" href="acquagol.html">
+      <span class="card-icon-sm">🌊</span>
+      <div class="card-title-sm">Acquagol</div>
     </a>
-    <div class="news-sub">
-      <a class="news-sub-btn sub-acquagol" href="acquagol.html">
-        <span class="news-sub-icon">🌊</span>
-        <span class="news-sub-label">Acquagol</span>
-      </a>
-      <a class="news-sub-btn sub-u13" href="u13.html">
-        <span class="news-sub-icon">🏊</span>
-        <span class="news-sub-label">U13</span>
-      </a>
-      <a class="news-sub-btn sub-senior" href="senior.html">
-        <span class="news-sub-icon">🤽</span>
-        <span class="news-sub-label">Senior</span>
-      </a>
-    </div>
+    <a class="menu-card card-small" href="u13.html">
+      <span class="card-icon-sm">🏊</span>
+      <div class="card-title-sm">U13</div>
+    </a>
+    <a class="menu-card card-small" href="senior.html">
+      <span class="card-icon-sm">🤽</span>
+      <div class="card-title-sm">Senior</div>
+    </a>
   </div>
 
   <!-- CALENDARIO -->
