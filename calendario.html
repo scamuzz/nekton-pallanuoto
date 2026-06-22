@@ -103,6 +103,9 @@
       font-size: 0.9rem; transition: color 0.2s;
     }
     .partita-del-btn:hover { color: #e53935; }
+    .partita-trasferta-info {
+      font-size: 0.72rem; color: #e65100; margin-top: 5px; font-weight: 600;
+    }
 
     .no-items {
       text-align: center; font-size: 0.88rem; color: #90a4ae; font-style: italic;
@@ -200,7 +203,7 @@
 
   <!-- PANNELLO GESTORE -->
   <div class="manager-panel" id="manager-panel">
-    <h3>? Aggiungi Partita</h3>
+    <h3>➕ Aggiungi Partita</h3>
     <div class="form-row">
       <div class="form-group" style="flex:1;min-width:120px;">
         <label>Data</label>
@@ -239,7 +242,17 @@
         <input type="text" class="form-input" id="f-risultato" placeholder="es. 5-3" maxlength="10"/>
       </div>
     </div>
-    <button class="pub-btn" id="add-btn">? Aggiungi partita</button>
+    <div id="trasferta-fields" style="display:none;">
+      <div class="form-group">
+        <label>Città (trasferta)</label>
+        <input type="text" class="form-input" id="f-citta" placeholder="es. Roma" maxlength="60"/>
+      </div>
+      <div class="form-group">
+        <label>Indirizzo piscina</label>
+        <input type="text" class="form-input" id="f-indirizzo" placeholder="es. Via Roma 1" maxlength="100"/>
+      </div>
+    </div>
+    <button class="pub-btn" id="add-btn">➕ Aggiungi partita</button>
   </div>
 
   <!-- FILTRI -->
@@ -334,8 +347,9 @@ function render() {
       <div class="partita-avversario">vs ${esc(p.avversario)}</div>
       <div class="partita-info">
         <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta'}</span>
-        ${p.risultato ? `<span class="partita-risultato">? ${esc(p.risultato)}</span>` : ''}
+        ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
       </div>
+      ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}
       ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>` : ''}
     `;
     container.appendChild(card);
@@ -367,15 +381,29 @@ document.getElementById('add-btn').addEventListener('click', () => {
   const avversario = document.getElementById('f-avversario').value.trim();
   const luogo      = document.getElementById('f-luogo').value;
   const risultato  = document.getElementById('f-risultato').value.trim();
+  const citta      = document.getElementById('f-citta').value.trim();
+  const indirizzo  = document.getElementById('f-indirizzo').value.trim();
   if (!data) { showToast('⚠️ Inserisci la data!'); return; }
   if (!avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
-  calRef.push({ data, ora, campionato, avversario, luogo, risultato }).then(() => {
+  const entry = { data, ora, campionato, avversario, luogo, risultato };
+  if (luogo === 'trasferta') {
+    if (citta) entry.citta = citta;
+    if (indirizzo) entry.indirizzo = indirizzo;
+  }
+  calRef.push(entry).then(() => {
     document.getElementById('f-data').value = '';
     document.getElementById('f-ora').value = '';
     document.getElementById('f-avversario').value = '';
     document.getElementById('f-risultato').value = '';
-    showToast('? Partita aggiunta!');
-  }).catch(() => showToast('? Errore nel salvataggio'));
+    document.getElementById('f-citta').value = '';
+    document.getElementById('f-indirizzo').value = '';
+    showToast('✅ Partita aggiunta!');
+  }).catch(() => showToast('❌ Errore nel salvataggio'));
+});
+
+// Mostra/nascondi campi trasferta
+document.getElementById('f-luogo').addEventListener('change', function() {
+  document.getElementById('trasferta-fields').style.display = this.value === 'trasferta' ? 'block' : 'none';
 });
 
 // PIN
@@ -405,8 +433,8 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalità gestore attiva');
-  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+    render(); showToast('🔓 Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
 }
 </script>
 </body>

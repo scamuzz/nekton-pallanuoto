@@ -199,11 +199,11 @@
   <div class="manager-panel" id="manager-panel">
     <h3>⚙️ Pannello Gestore – Modifica Orari</h3>
     <div class="week-selector">
-      <label>Settimana:</label>
+      <label>Applica a:</label>
       <select id="edit-week-select">
-        <option value="current">Corrente</option>
-        <option value="next">Prossima</option>
-        <option value="default">Predefinito (base)</option>
+        <option value="default" selected>Tutte le settimane (predefinito)</option>
+        <option value="current">Solo settimana corrente</option>
+        <option value="next">Solo settimana prossima</option>
       </select>
     </div>
     <div id="edit-form"><!-- generato da JS --></div>
@@ -284,6 +284,7 @@ let defaultData = {};
 const GIORNI_IT = { lunedi: 'Lunedì', martedi: 'Martedì', mercoledi: 'Mercoledì',
   giovedi: 'Giovedì', venerdi: 'Venerdì', sabato: 'Sabato', domenica: 'Domenica' };
 const GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica'];
+const ADMIN_GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato'];
 const GIORNI_DOW = { lunedi:1, martedi:2, mercoledi:3, giovedi:4, venerdi:5, sabato:6, domenica:0 };
 
 function getISOWeek(d) {
@@ -464,7 +465,7 @@ function buildEditForm() {
       ? getEffectiveDefaults(g.key)
       : mergeWithDefaults(wkData, g.key);
     let rowsHtml = '';
-    GIORNI_ORDER.forEach(giorno => {
+    ADMIN_GIORNI_ORDER.forEach(giorno => {
       const info = merged[giorno] || { attivo: false, orario: '', nota: '' };
       const dow = GIORNI_DOW[giorno];
       const date = new Date(wkStart);
@@ -497,6 +498,15 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     if (!updates[g][d]) updates[g][d] = {};
     updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
   });
+
+  // Remove days that are inactive AND have no orario (not intentionally set)
+  for (const g of Object.keys(updates)) {
+    for (const d of Object.keys(updates[g])) {
+      const entry = updates[g][d];
+      if (!entry.attivo && !entry.orario) delete updates[g][d];
+    }
+    if (Object.keys(updates[g]).length === 0) delete updates[g];
+  }
 
   let ref;
   if (weekMode === 'default') {
