@@ -96,6 +96,11 @@
     .orario-time.cancelled { text-decoration: line-through; color: #b0bec5; }
     .orario-nota { font-size: 0.72rem; color: #e65100; margin-top: 2px; font-style: italic; }
     .no-train { font-size: 0.80rem; color: #b0bec5; font-style: italic; }
+    .modified-tag {
+      display: inline-block; font-size: 0.60rem; font-weight: 700; letter-spacing: 0.3px;
+      color: #e65100; background: #fff3e0; border-radius: 6px;
+      padding: 1px 7px; margin-left: 6px; vertical-align: middle;
+    }
 
     /* PANNELLO GESTORE */
     .manager-panel {
@@ -395,11 +400,11 @@ function renderSchedule() {
     let daysHtml = '';
     GIORNI_ORDER.forEach(giorno => {
       const info = merged[giorno];
+      const defInfo = defaults[giorno];
+      const ovInfo  = weekOverrides[giorno];
+      const isCancelled = defInfo && defInfo.attivo && ovInfo && ovInfo.attivo === false;
       if (!isManager()) {
         // In normal view: show active days AND days explicitly cancelled vs default
-        const defInfo = defaults[giorno];
-        const ovInfo  = weekOverrides[giorno];
-        const isCancelled = defInfo && defInfo.attivo && ovInfo && ovInfo.attivo === false;
         if (!info || (!info.attivo && !isCancelled)) return;
       }
       const dow = GIORNI_DOW[giorno];
@@ -411,7 +416,9 @@ function renderSchedule() {
       if (!info) {
         content = `<div class="no-train" style="color:#c8d8e4;">– Non programmato</div>`;
       } else if (info.attivo) {
-        content = `<div class="orario-time">${esc(info.orario)}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
+        const timeChanged = !isManager() && ovInfo && ovInfo.orario && defInfo && defInfo.attivo && ovInfo.orario !== defInfo.orario;
+        const modTag = timeChanged ? `<span class="modified-tag">⚠️ orario modificato</span>` : '';
+        content = `<div class="orario-time">${esc(info.orario)}${modTag}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
       } else {
         content = `<div class="no-train">❌ Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`;
       }
@@ -532,11 +539,16 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     }
   }
 
-  // Remove days that are inactive AND have no orario (not intentionally set)
+  // Remove days that were never scheduled and have no data.
+  // Keep attivo:false if the day is active in defaults (explicit cancellation/removal).
   for (const g of Object.keys(updates)) {
     for (const d of Object.keys(updates[g])) {
       const entry = updates[g][d];
-      if (!entry.attivo && !entry.orario) delete updates[g][d];
+      if (!entry.attivo && !entry.orario && !entry.nota) {
+        const defEntry = getEffectiveDefaults(g)[d] || {};
+        if (!defEntry.attivo) delete updates[g][d];
+        // else: keep { attivo: false } to explicitly override the active default
+      }
     }
     if (Object.keys(updates[g]).length === 0) delete updates[g];
   }
