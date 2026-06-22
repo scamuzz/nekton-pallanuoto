@@ -175,12 +175,20 @@
       padding: 14px 8px 12px; gap: 5px;
       text-decoration: none;
       border-right: 1.5px solid #e3f2fd;
-      transition: background 0.18s;
+      transition: background 0.18s, opacity 0.18s;
     }
     .news-sub-btn:last-child { border-right: none; }
-    .news-sub-btn:hover { background: #f0f8ff; }
+    .news-sub-btn:hover { opacity: 0.85; }
     .news-sub-icon { font-size: 1.6rem; line-height: 1; }
-    .news-sub-label { font-size: 0.72rem; font-weight: 800; color: #006994; }
+    .news-sub-label { font-size: 0.72rem; font-weight: 800; }
+
+    /* colori distinti per ogni gruppo */
+    .news-sub-btn.sub-acquagol { background: linear-gradient(135deg, #e0f7fa, #b2ebf2); }
+    .news-sub-btn.sub-acquagol .news-sub-label { color: #006994; }
+    .news-sub-btn.sub-u13      { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+    .news-sub-btn.sub-u13      .news-sub-label { color: #e65100; }
+    .news-sub-btn.sub-senior   { background: linear-gradient(135deg, #e8eaf6, #c5cae9); }
+    .news-sub-btn.sub-senior   .news-sub-label { color: #1a3a5c; }
 
     /* -- FOOTER -- */
     .page-footer {
@@ -234,15 +242,15 @@
       </div>
     </a>
     <div class="news-sub">
-      <a class="news-sub-btn" href="acquagol.html">
+      <a class="news-sub-btn sub-acquagol" href="acquagol.html">
         <span class="news-sub-icon">🌊</span>
         <span class="news-sub-label">Acquagol</span>
       </a>
-      <a class="news-sub-btn" href="u13.html">
+      <a class="news-sub-btn sub-u13" href="u13.html">
         <span class="news-sub-icon">🏊</span>
         <span class="news-sub-label">U13</span>
       </a>
-      <a class="news-sub-btn" href="senior.html">
+      <a class="news-sub-btn sub-senior" href="senior.html">
         <span class="news-sub-icon">🤽</span>
         <span class="news-sub-label">Senior</span>
       </a>

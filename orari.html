@@ -480,7 +480,7 @@ const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
 
 function updatePinBtn() {
-  pinBtn.textContent = isManager() ? '⏰' : '⏰';
+  pinBtn.textContent = isManager() ? '🔓' : '🔒';
 }
 updatePinBtn();
 
@@ -506,7 +506,7 @@ document.getElementById('pin-input').addEventListener('keydown', e => { if (e.ke
 
 function checkPin() {
   const val = document.getElementById('pin-input').value;
-  if (val === 'nekton2025') {
+  if (val === 'nekton2026') {
     setManager(true);
     overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible');
