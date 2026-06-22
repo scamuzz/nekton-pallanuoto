@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>?? Sondaggi — Nekton</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
+    body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; }
+
+    .header {
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      color: white; padding: 36px 20px 24px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255,255,255,0.10), transparent);
+    }
+    .back-link {
+      position: absolute; top: 14px; left: 14px;
+      background: rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 7px 15px; font-size: 0.76rem; font-weight: 700;
+      color: white; text-decoration: none; z-index: 2; backdrop-filter: blur(4px);
+    }
+    .back-link:hover { background: rgba(255,255,255,0.40); }
+    .pin-btn {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,0.25); border: none; border-radius: 50%;
+      width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; z-index: 2;
+      backdrop-filter: blur(4px); color: white; transition: background 0.2s;
+    }
+    .pin-btn:hover { background: rgba(255,255,255,0.40); }
+    .header .icons { font-size: 3rem; display: block; margin-bottom: 10px; position: relative; }
+    .header h1 { font-size: 1.6rem; font-weight: 800; position: relative; }
+    .header .subtitle { font-size: 0.82rem; opacity: 0.9; margin-top: 6px; position: relative; }
+    .sync-status { display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 0.7rem; margin-top: 10px; opacity: 0.95; position: relative; }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%;
+      background: white; animation: blink 1.5s infinite; flex-shrink: 0; }
+    .sync-dot.connected { background: #69f0ae; animation: none; }
+    .sync-dot.error { background: #ff5252; animation: none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .wave-divider { display: block; line-height: 0; overflow: hidden;
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%); }
+    .wave-divider svg { display: block; width: 100%; }
+    .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
+
+    /* NOME UTENTE */
+    .card {
+      background: white; border-radius: 18px; padding: 16px 18px;
+      margin-bottom: 18px; box-shadow: 0 4px 18px rgba(0,105,148,0.08);
+      border: 2px solid #ddeeff;
+    }
+    .card h3 { font-size: 0.76rem; color: #006994; text-transform: uppercase;
+      letter-spacing: 0.9px; font-weight: 800; margin-bottom: 10px; }
+    .input-text {
+      width: 100%; border: 2px solid #ddeeff; border-radius: 10px;
+      padding: 11px 14px; font-size: 0.92rem; outline: none; color: #333;
+      font-family: inherit; background: #f8fcff; transition: border-color 0.2s;
+    }
+    .input-text:focus { border-color: #00b4d8; background: #fff; }
+
+    /* FILTRO GRUPPO */
+    .filter-row {
+      display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
+      padding-bottom: 4px; scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: white; border: 2px solid #b3d9f7; border-radius: 20px;
+      padding: 7px 14px; font-size: 0.74rem; font-weight: 700; color: #006994;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+
+    /* SONDAGGI */
+    .section-title {
+      font-size: 0.78rem; font-weight: 800; color: #006994;
+      text-transform: uppercase; letter-spacing: 1px; margin: 8px 0 14px 2px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 2px;
+      background: linear-gradient(90deg, #b3d9f7 0%, transparent 100%); }
+
+    .sondaggio-card {
+      background: white; border-radius: 20px; padding: 18px; margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(0,105,148,0.07);
+      border: 2px solid #ddeeff; border-left: 6px solid #006994;
+      position: relative;
+    }
+    .sondaggio-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .sondaggio-titolo { font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 4px; line-height: 1.3; }
+    .sondaggio-meta { font-size: 0.68rem; color: #90a4ae; }
+    .badge-row { display: flex; gap: 6px; flex-direction: column; align-items: flex-end; }
+    .badge-tipo {
+      font-size: 0.58rem; background: #e3f2fd; color: #006994; padding: 3px 8px;
+      border-radius: 8px; font-weight: 700; border: 1px solid #b3d9f7; white-space: nowrap;
+    }
+    .badge-gruppo-s {
+      font-size: 0.58rem; padding: 3px 8px; border-radius: 8px; font-weight: 700; white-space: nowrap;
+    }
+    .del-sondaggio-btn {
+      background: none; border: none; color: #b3d9f7; cursor: pointer; font-size: 0.95rem; padding: 2px;
+      transition: color 0.2s;
+    }
+    .del-sondaggio-btn:hover { color: #e53935; }
+
+    .voto-opzione { margin-bottom: 10px; cursor: pointer; }
+    .progress-bar-bg {
+      width: 100%; height: 38px; background: #f0f8ff; border: 1.5px solid #ddeeff;
+      border-radius: 10px; overflow: hidden; position: relative; display: flex; align-items: center;
+      transition: all 0.2s;
+    }
+    .progress-bar-bg.voto-selezionato { border-color: #00b4d8; background: #e3f2fd; }
+    .progress-bar-fill {
+      height: 100%; background: linear-gradient(90deg, #e3f2fd, #b3d9f7);
+      width: 0%; transition: width 0.4s ease-out; position: absolute; left: 0; top: 0;
+    }
+    .progress-bar-bg.voto-selezionato .progress-bar-fill { background: linear-gradient(90deg, #b3d9f7, #81d4fa); }
+    .voto-meta {
+      position: relative; z-index: 2; padding: 0 12px; font-size: 0.84rem;
+      font-weight: 600; color: #1a3a5c; display: flex; justify-content: space-between; width: 100%;
+    }
+    .voti-nomi { font-size: 0.66rem; color: #006994; margin-top: 3px; padding: 0 12px;
+      display: flex; flex-wrap: wrap; gap: 4px; }
+    .voto-chip { background: #e3f2fd; padding: 1px 6px; border-radius: 6px; color: #0077b6;
+      font-weight: 600; border: 1px solid #b3d9f7; }
+
+    /* CREA SONDAGGIO (solo gestore) */
+    .manager-panel {
+      display: none; background: #fff8e1; border-radius: 18px;
+      padding: 18px; margin-bottom: 18px; border: 2px solid #ffe082;
+    }
+    .manager-panel.visible { display: block; }
+    .manager-panel h3 { font-size: 0.76rem; color: #f57f17; text-transform: uppercase;
+      letter-spacing: 0.9px; font-weight: 800; margin-bottom: 12px; }
+    .form-group { margin-bottom: 8px; }
+    .form-group label { font-size: 0.75rem; font-weight: 700; color: #555; display: block; margin-bottom: 4px; }
+    .form-input-m {
+      width: 100%; border: 1.5px solid #ffe082; border-radius: 10px;
+      padding: 9px 12px; font-size: 0.86rem; font-family: inherit; color: #333; outline: none; background: white;
+    }
+    .form-input-m:focus { border-color: #ffb300; }
+    select.form-input-m { cursor: pointer; }
+    .opzioni-setup { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+    .opzione-input-row { display: flex; gap: 6px; }
+    .remove-opt-btn {
+      background: #fff8e1; color: #e65100; border: 1px solid #ffe082;
+      border-radius: 10px; padding: 0 12px; cursor: pointer; font-weight: bold; font-family: inherit;
+    }
+    .add-opt-btn {
+      background: white; border: 2px dashed #ffe082; border-radius: 10px;
+      padding: 8px; font-size: 0.76rem; font-weight: 700; color: #f57f17;
+      cursor: pointer; font-family: inherit; margin-bottom: 8px;
+    }
+    .toggle-container {
+      display: flex; align-items: center; gap: 8px;
+      margin: 8px 0; font-size: 0.82rem; color: #555; font-weight: 600;
+    }
+    .toggle-container input { width: 16px; height: 16px; cursor: pointer; }
+    .crea-btn {
+      width: 100%; background: linear-gradient(135deg, #ffb300, #ff8f00); color: #3e2723;
+      border: none; border-radius: 10px; padding: 11px; font-size: 0.86rem;
+      font-weight: 700; cursor: pointer; margin-top: 4px; font-family: inherit;
+    }
+    .crea-btn:hover { opacity: 0.9; }
+
+    .no-items {
+      text-align: center; font-size: 0.88rem; color: #90a4ae; font-style: italic;
+      padding: 30px 10px; background: white; border-radius: 16px;
+      border: 2px dashed #ddeeff; margin-bottom: 16px;
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+    }
+    .modal h3 { font-size: 1rem; font-weight: 800; color: #006994; margin-bottom: 8px; }
+    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
+    .modal input {
+      width: 100%; border: 2px solid #b3d9f7; border-radius: 10px;
+      padding: 11px 14px; font-size: 1rem; text-align: center;
+      letter-spacing: 2px; outline: none; font-family: inherit;
+    }
+    .modal input:focus { border-color: #006994; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-btn { flex: 1; padding: 11px; border: none; border-radius: 10px;
+      font-size: 0.86rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
+    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
+    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #006994; color: white; padding: 10px 22px; border-radius: 24px;
+      font-size: 0.83rem; font-weight: 600; transition: transform 0.3s ease; z-index: 999;
+      box-shadow: 0 6px 24px rgba(0,105,148,0.3); white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">&#8592; Home</a>
+  <button class="pin-btn" id="pin-btn">??</button>
+  <span class="icons">??</span>
+  <h1>Sondaggi</h1>
+  <div class="subtitle">Esprimi la tua opinione</div>
+  <div class="sync-status">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-label">Connessione in corso…</span>
+  </div>
+</div>
+
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <!-- NOME -->
+  <div class="card">
+    <h3>?? Il tuo nome</h3>
+    <input class="input-text" type="text" id="user-name" placeholder="Es. Marco, Giulia…" maxlength="30" autocomplete="off" spellcheck="false"/>
+  </div>
+
+  <!-- PANNELLO GESTORE -->
+  <div class="manager-panel" id="manager-panel">
+    <h3>?? Crea nuovo sondaggio</h3>
+    <div class="form-group">
+      <label>Domanda / Titolo</label>
+      <input type="text" class="form-input-m" id="poll-title" placeholder="Qual è la tua domanda?" maxlength="120"/>
+    </div>
+    <div class="form-group">
+      <label>Gruppo destinatario</label>
+      <select class="form-input-m" id="poll-gruppo">
+        <option value="tutti">?? Tutti</option>
+        <option value="acquagol">?? Acquagol</option>
+        <option value="under13">?? Under 13</option>
+        <option value="senior">?? Senior</option>
+      </select>
+    </div>
+    <div class="opzioni-setup" id="opzioni-setup-list">
+      <div class="opzione-input-row">
+        <input class="form-input-m opt-field" type="text" placeholder="Opzione 1" maxlength="60"/>
+      </div>
+      <div class="opzione-input-row">
+        <input class="form-input-m opt-field" type="text" placeholder="Opzione 2" maxlength="60"/>
+      </div>
+    </div>
+    <button class="add-opt-btn" id="add-opt-btn">? Aggiungi opzione</button>
+    <div class="toggle-container">
+      <input type="checkbox" id="poll-multi"/>
+      <label for="poll-multi">Consenti scelta multipla</label>
+    </div>
+    <button class="crea-btn" id="crea-btn">?? Pubblica sondaggio</button>
+  </div>
+
+  <!-- FILTRO -->
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="tutti">Tutti</button>
+    <button class="filter-btn" data-filter="acquagol">?? Acquagol</button>
+    <button class="filter-btn" data-filter="under13">?? Under 13</button>
+    <button class="filter-btn" data-filter="senior">?? Senior</button>
+  </div>
+
+  <div class="section-title">??? Sondaggi attivi</div>
+  <div id="polls-container"></div>
+
+</div>
+
+<div class="page-footer">?? Sondaggi — Nekton Pallanuoto</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>?? Accesso Gestore</h3>
+    <p>Inserisci il PIN per creare sondaggi</p>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
+      <button class="modal-btn primary" id="modal-confirm">Accedi</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
+  authDomain: "lista-spesa-b9eb1.firebaseapp.com",
+  databaseURL: "https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lista-spesa-b9eb1",
+  storageBucket: "lista-spesa-b9eb1.firebasestorage.app",
+  messagingSenderId: "468690890938",
+  appId: "1:468690890938:web:048be7f27779d8862d9283"
+});
+const db = firebase.database();
+const sondaggiRef = db.ref('nekton/sondaggi');
+
+function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
+function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+let pollsData = {};
+let activeFilter = 'tutti';
+const nameInput = document.getElementById('user-name');
+nameInput.value = localStorage.getItem('nektonName') || '';
+
+function cleanStr(s) { return s.trim().replace(/\s+/g,' '); }
+function myName() { return cleanStr(nameInput.value); }
+function myNameKey() { return myName().toLowerCase().replace(/[^a-z0-9]/g,'_'); }
+
+nameInput.addEventListener('blur', () => { nameInput.value = cleanStr(nameInput.value); localStorage.setItem('nektonName', nameInput.value); render(); });
+nameInput.addEventListener('input', () => { localStorage.setItem('nektonName', cleanStr(nameInput.value)); });
+
+db.ref('.info/connected').on('value', snap => {
+  const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline — riconnessione…'; }
+});
+
+sondaggiRef.on('value', snap => { pollsData = snap.val() || {}; render(); });
+
+const GRUPPO_LABELS = { tutti:'?? Tutti', acquagol:'?? Acquagol', under13:'?? Under 13', senior:'?? Senior' };
+const BORDER_COLORS = ['#006994','#00b4d8','#0077b6','#0096c7','#023e8a'];
+
+function render() {
+  const container = document.getElementById('polls-container');
+  let ids = Object.keys(pollsData).filter(id => {
+    const g = pollsData[id].info?.gruppo || 'tutti';
+    return activeFilter === 'tutti' || g === 'tutti' || g === activeFilter;
+  });
+  if (ids.length === 0) {
+    container.innerHTML = '<div class="no-items">Nessun sondaggio attivo. ??</div>';
+    return;
+  }
+  container.innerHTML = '';
+  ids.reverse().forEach((pollId, idx) => {
+    const poll = pollsData[pollId];
+    const info = poll.info || {};
+    const opzioniNode = poll.opzioni || {};
+    const opzioniEntries = Object.entries(opzioniNode);
+    let totVoti = 0;
+    opzioniEntries.forEach(([,opt]) => { if (opt.voti) totVoti += Object.keys(opt.voti).length; });
+
+    const card = document.createElement('div');
+    card.className = 'sondaggio-card';
+    card.style.borderLeftColor = BORDER_COLORS[idx % BORDER_COLORS.length];
+
+    let opzioniHtml = '';
+    opzioniEntries.forEach(([optId, opt]) => {
+      const votantiMap = opt.voti || {};
+      const numVoti = Object.keys(votantiMap).length;
+      const hoVotato = myNameKey() && !!votantiMap[myNameKey()];
+      const pct = totVoti > 0 ? Math.round((numVoti / totVoti) * 100) : 0;
+      const nomi = Object.entries(votantiMap).map(([,n]) => `<span class="voto-chip">${esc(n)}</span>`).join(' ');
+      opzioniHtml += `<div class="voto-opzione" data-poll="${esc(pollId)}" data-option="${esc(optId)}">
+        <div class="progress-bar-bg${hoVotato?' voto-selezionato':''}">
+          <div class="progress-bar-fill" style="width:${pct}%;"></div>
+          <div class="voto-meta">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">${esc(opt.testo)}</span>
+            <span style="flex-shrink:0">${numVoti} ?? (${pct}%)</span>
+          </div>
+        </div>
+        <div class="voti-nomi">${nomi}</div>
+      </div>`;
+    });
+
+    const delBtn = isManager()
+      ? `<button class="del-sondaggio-btn" data-poll="${esc(pollId)}" title="Elimina sondaggio">???</button>`
+      : '';
+    const gruppoLabel = GRUPPO_LABELS[info.gruppo] || info.gruppo || '?? Tutti';
+
+    card.innerHTML = `
+      <div class="sondaggio-header">
+        <div>
+          <div class="sondaggio-titolo">${esc(info.titolo)}</div>
+          <div class="sondaggio-meta">Per: ${esc(gruppoLabel)}</div>
+        </div>
+        <div class="badge-row">
+          <span class="badge-tipo">${info.multipla ? '??? Multipla' : '?? Singola'}</span>
+          ${delBtn}
+        </div>
+      </div>
+      <div>${opzioniHtml}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  document.querySelectorAll('.voto-opzione').forEach(el => {
+    el.addEventListener('click', () => handleVoto(el.dataset.poll, el.dataset.option));
+  });
+  document.querySelectorAll('.del-sondaggio-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('Eliminare questo sondaggio?')) {
+        sondaggiRef.child(btn.dataset.poll).remove();
+        showToast('??? Sondaggio eliminato');
+      }
+    });
+  });
+}
+
+function handleVoto(pollId, optId) {
+  if (!myName()) { nameInput.focus(); showToast('?? Inserisci prima il tuo nome!'); return; }
+  const userKey = myNameKey();
+  const poll = pollsData[pollId];
+  const info = poll.info || {};
+  const opzioni = poll.opzioni || {};
+  const giaVotato = opzioni[optId]?.voti && !!opzioni[optId].voti[userKey];
+  if (giaVotato) {
+    sondaggiRef.child(pollId).child('opzioni').child(optId).child('voti').child(userKey).remove();
+    showToast('? Voto rimosso');
+  } else {
+    if (!info.multipla) {
+      Object.keys(opzioni).forEach(oKey => {
+        if (opzioni[oKey].voti && opzioni[oKey].voti[userKey]) {
+          sondaggiRef.child(pollId).child('opzioni').child(oKey).child('voti').child(userKey).remove();
+        }
+      });
+    }
+    sondaggiRef.child(pollId).child('opzioni').child(optId).child('voti').child(userKey).set(myName());
+    showToast('? Voto registrato!');
+  }
+}
+
+// Filtri
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+// Aggiungi opzione
+const optSetupList = document.getElementById('opzioni-setup-list');
+document.getElementById('add-opt-btn').addEventListener('click', () => {
+  const count = optSetupList.children.length + 1;
+  if (count > 6) { showToast('?? Massimo 6 opzioni!'); return; }
+  const row = document.createElement('div');
+  row.className = 'opzione-input-row';
+  row.innerHTML = `<input class="form-input-m opt-field" type="text" placeholder="Opzione ${count}" maxlength="60"/>
+    <button class="remove-opt-btn" type="button">?</button>`;
+  row.querySelector('.remove-opt-btn').addEventListener('click', () => row.remove());
+  optSetupList.appendChild(row);
+});
+
+// Crea sondaggio
+document.getElementById('crea-btn').addEventListener('click', () => {
+  const titolo = document.getElementById('poll-title').value.trim();
+  const gruppo = document.getElementById('poll-gruppo').value;
+  const multipla = document.getElementById('poll-multi').checked;
+  if (!titolo) { showToast('?? Inserisci la domanda!'); return; }
+  const opts = [...document.querySelectorAll('.opt-field')].map(f => f.value.trim()).filter(Boolean);
+  if (opts.length < 2) { showToast('?? Inserisci almeno 2 opzioni!'); return; }
+
+  const newRef = sondaggiRef.push();
+  newRef.child('info').set({ titolo, gruppo, multipla, dataCreazione: new Date().toISOString().slice(0,10) });
+  opts.forEach((testo, i) => newRef.child('opzioni').child('opt_' + i).set({ testo }));
+
+  document.getElementById('poll-title').value = '';
+  document.getElementById('poll-multi').checked = false;
+  optSetupList.innerHTML = `
+    <div class="opzione-input-row"><input class="form-input-m opt-field" type="text" placeholder="Opzione 1" maxlength="60"/></div>
+    <div class="opzione-input-row"><input class="form-input-m opt-field" type="text" placeholder="Opzione 2" maxlength="60"/></div>
+  `;
+  showToast('?? Sondaggio pubblicato!');
+});
+
+// PIN
+const pinBtn = document.getElementById('pin-btn');
+const overlay = document.getElementById('modal-overlay');
+function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+updatePinBtn();
+if (isManager()) document.getElementById('manager-panel').classList.add('visible');
+
+pinBtn.addEventListener('click', () => {
+  if (isManager()) {
+    setManager(false); document.getElementById('manager-panel').classList.remove('visible');
+    updatePinBtn(); render(); showToast('?? Logout gestore effettuato');
+  } else {
+    document.getElementById('modal-error').textContent = '';
+    document.getElementById('pin-input').value = '';
+    overlay.classList.add('open');
+    setTimeout(() => document.getElementById('pin-input').focus(), 100);
+  }
+});
+document.getElementById('modal-cancel').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+document.getElementById('modal-confirm').addEventListener('click', checkPin);
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
+
+function checkPin() {
+  if (document.getElementById('pin-input').value === 'nekton2025') {
+    setManager(true); overlay.classList.remove('open');
+    document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
+    render(); showToast('? Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+}
+</script>
+</body>
+</html>

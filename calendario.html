@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>?? Calendario Partite — Nekton</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
+    body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; }
+
+    .header {
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      color: white; padding: 36px 20px 24px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255,255,255,0.10), transparent);
+    }
+    .back-link {
+      position: absolute; top: 14px; left: 14px;
+      background: rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 7px 15px; font-size: 0.76rem; font-weight: 700;
+      color: white; text-decoration: none; z-index: 2; backdrop-filter: blur(4px);
+    }
+    .back-link:hover { background: rgba(255,255,255,0.40); }
+    .pin-btn {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,0.25); border: none; border-radius: 50%;
+      width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; z-index: 2;
+      backdrop-filter: blur(4px); color: white; transition: background 0.2s;
+    }
+    .pin-btn:hover { background: rgba(255,255,255,0.40); }
+    .header .icons { font-size: 3rem; display: block; margin-bottom: 10px; position: relative; }
+    .header h1 { font-size: 1.6rem; font-weight: 800; position: relative; }
+    .header .subtitle { font-size: 0.82rem; opacity: 0.9; margin-top: 6px; position: relative; }
+    .sync-status { display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 0.7rem; margin-top: 10px; opacity: 0.95; position: relative; }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%;
+      background: white; animation: blink 1.5s infinite; flex-shrink: 0; }
+    .sync-dot.connected { background: #69f0ae; animation: none; }
+    .sync-dot.error { background: #ff5252; animation: none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .wave-divider { display: block; line-height: 0; overflow: hidden;
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%); }
+    .wave-divider svg { display: block; width: 100%; }
+    .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
+
+    /* FILTRI */
+    .filter-row {
+      display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
+      padding-bottom: 4px; scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: white; border: 2px solid #b3d9f7; border-radius: 20px;
+      padding: 7px 14px; font-size: 0.74rem; font-weight: 700; color: #006994;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+
+    /* PARTITA CARDS */
+    .partita-card {
+      background: white; border-radius: 16px; padding: 16px 16px 14px;
+      margin-bottom: 12px; box-shadow: 0 3px 14px rgba(0,105,148,0.07);
+      border: 2px solid #ddeeff; border-left: 5px solid #006994;
+      position: relative; transition: opacity 0.2s;
+    }
+    .partita-card.passata { opacity: 0.65; border-left-color: #b0bec5; background: #f9fafb; }
+    .partita-card.prossima { border-left-color: #00b4d8; }
+
+    .partita-top {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+    }
+    .campionato-badge {
+      font-size: 0.62rem; font-weight: 800; padding: 3px 10px; border-radius: 10px;
+      background: #e3f2fd; color: #006994; border: 1.5px solid #b3d9f7;
+    }
+    .partita-data { font-size: 0.72rem; font-weight: 700; color: #90a4ae; }
+    .partita-avversario {
+      font-size: 0.98rem; font-weight: 800; color: #1a3a5c; margin-bottom: 5px;
+    }
+    .partita-info {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .partita-luogo {
+      font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 8px;
+    }
+    .partita-luogo.casa { background: #e0f7fa; color: #006994; }
+    .partita-luogo.trasferta { background: #fff3e0; color: #e65100; }
+    .partita-ora { font-size: 0.76rem; color: #607d8b; font-weight: 600; }
+    .partita-risultato {
+      font-size: 0.82rem; font-weight: 800; color: #006994;
+      background: #e3f2fd; padding: 2px 10px; border-radius: 8px;
+    }
+    .partita-del-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: none; border: none; color: #b3d9f7; cursor: pointer;
+      font-size: 0.9rem; transition: color 0.2s;
+    }
+    .partita-del-btn:hover { color: #e53935; }
+
+    .no-items {
+      text-align: center; font-size: 0.88rem; color: #90a4ae; font-style: italic;
+      padding: 30px 10px; background: white; border-radius: 16px;
+      border: 2px dashed #ddeeff; margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 0.78rem; font-weight: 800; color: #006994;
+      text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 14px 2px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 2px;
+      background: linear-gradient(90deg, #b3d9f7 0%, transparent 100%); }
+
+    /* PANNELLO GESTORE */
+    .manager-panel {
+      display: none; background: #fff8e1; border-radius: 18px;
+      padding: 18px; margin-bottom: 18px; border: 2px solid #ffe082;
+    }
+    .manager-panel.visible { display: block; }
+    .manager-panel h3 { font-size: 0.76rem; color: #f57f17; text-transform: uppercase;
+      letter-spacing: 0.9px; font-weight: 800; margin-bottom: 12px; }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .form-group { margin-bottom: 8px; }
+    .form-group label { font-size: 0.75rem; font-weight: 700; color: #555; display: block; margin-bottom: 4px; }
+    .form-input {
+      width: 100%; border: 1.5px solid #ffe082; border-radius: 10px;
+      padding: 9px 12px; font-size: 0.86rem; font-family: inherit; color: #333; outline: none; background: white;
+    }
+    .form-input:focus { border-color: #ffb300; }
+    select.form-input { cursor: pointer; }
+    .pub-btn {
+      width: 100%; background: linear-gradient(135deg, #006994, #00b4d8); color: white;
+      border: none; border-radius: 10px; padding: 11px; font-size: 0.86rem;
+      font-weight: 700; cursor: pointer; margin-top: 4px; font-family: inherit;
+    }
+    .pub-btn:hover { opacity: 0.9; }
+
+    /* PIN MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+    }
+    .modal h3 { font-size: 1rem; font-weight: 800; color: #006994; margin-bottom: 8px; }
+    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
+    .modal input {
+      width: 100%; border: 2px solid #b3d9f7; border-radius: 10px;
+      padding: 11px 14px; font-size: 1rem; text-align: center;
+      letter-spacing: 2px; outline: none; font-family: inherit;
+    }
+    .modal input:focus { border-color: #006994; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-btn { flex: 1; padding: 11px; border: none; border-radius: 10px;
+      font-size: 0.86rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
+    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
+    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #006994; color: white; padding: 10px 22px; border-radius: 24px;
+      font-size: 0.83rem; font-weight: 600; transition: transform 0.3s ease; z-index: 999;
+      box-shadow: 0 6px 24px rgba(0,105,148,0.3); white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">&#8592; Home</a>
+  <button class="pin-btn" id="pin-btn">??</button>
+  <span class="icons">??</span>
+  <h1>Calendario Partite</h1>
+  <div class="subtitle">Tutti i campionati Nekton</div>
+  <div class="sync-status">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-label">Connessione in corso…</span>
+  </div>
+</div>
+
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <!-- PANNELLO GESTORE -->
+  <div class="manager-panel" id="manager-panel">
+    <h3>? Aggiungi Partita</h3>
+    <div class="form-row">
+      <div class="form-group" style="flex:1;min-width:120px;">
+        <label>Data</label>
+        <input type="date" class="form-input" id="f-data"/>
+      </div>
+      <div class="form-group" style="flex:1;min-width:100px;">
+        <label>Ora</label>
+        <input type="time" class="form-input" id="f-ora"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Campionato</label>
+      <select class="form-input" id="f-campionato">
+        <option value="Habawaba">Habawaba</option>
+        <option value="U12">U12</option>
+        <option value="U14">U14</option>
+        <option value="U16">U16</option>
+        <option value="U18">U18</option>
+        <option value="Promozione">Prima Squadra Promozione</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Avversario</label>
+      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria…" maxlength="60"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:1;">
+        <label>Casa / Trasferta</label>
+        <select class="form-input" id="f-luogo">
+          <option value="casa">?? Casa</option>
+          <option value="trasferta">?? Trasferta</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>Risultato (opz.)</label>
+        <input type="text" class="form-input" id="f-risultato" placeholder="es. 5-3" maxlength="10"/>
+      </div>
+    </div>
+    <button class="pub-btn" id="add-btn">? Aggiungi partita</button>
+  </div>
+
+  <!-- FILTRI -->
+  <div class="filter-row" id="filter-row">
+    <button class="filter-btn active" data-filter="tutti">Tutti</button>
+    <button class="filter-btn" data-filter="Habawaba">Habawaba</button>
+    <button class="filter-btn" data-filter="U12">U12</button>
+    <button class="filter-btn" data-filter="U14">U14</button>
+    <button class="filter-btn" data-filter="U16">U16</button>
+    <button class="filter-btn" data-filter="U18">U18</button>
+    <button class="filter-btn" data-filter="Promozione">Promozione</button>
+  </div>
+
+  <div class="section-title">?? Partite</div>
+  <div id="calendario-container"></div>
+
+</div>
+
+<div class="page-footer">?? Calendario — Nekton Pallanuoto</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>?? Accesso Gestore</h3>
+    <p>Inserisci il PIN per gestire il calendario</p>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
+      <button class="modal-btn primary" id="modal-confirm">Accedi</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
+  authDomain: "lista-spesa-b9eb1.firebaseapp.com",
+  databaseURL: "https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lista-spesa-b9eb1",
+  storageBucket: "lista-spesa-b9eb1.firebasestorage.app",
+  messagingSenderId: "468690890938",
+  appId: "1:468690890938:web:048be7f27779d8862d9283"
+});
+const db = firebase.database();
+const calRef = db.ref('nekton/calendario');
+
+function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
+function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+let allData = {};
+let activeFilter = 'tutti';
+
+db.ref('.info/connected').on('value', snap => {
+  const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
+  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '?? Sincronizzato in tempo reale'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '?? Offline — riconnessione…'; }
+});
+
+calRef.on('value', snap => { allData = snap.val() || {}; render(); });
+
+function render() {
+  const today = new Date().toISOString().slice(0,10);
+  const container = document.getElementById('calendario-container');
+  let entries = Object.entries(allData)
+    .filter(([, v]) => activeFilter === 'tutti' || v.campionato === activeFilter)
+    .sort((a,b) => (a[1].data||'').localeCompare(b[1].data||''));
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="no-items">Nessuna partita in programma. ??</div>';
+    return;
+  }
+  container.innerHTML = '';
+  entries.forEach(([id, p]) => {
+    const isPast = p.data && p.data < today;
+    const d = new Date(p.data + 'T12:00:00');
+    const dateStr = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+    const card = document.createElement('div');
+    card.className = `partita-card${isPast ? ' passata' : ''}`;
+    card.innerHTML = `
+      <div class="partita-top">
+        <span class="campionato-badge">${esc(p.campionato)}</span>
+        <span class="partita-data">?? ${esc(dateStr)}${p.ora ? ' • ' + esc(p.ora) : ''}</span>
+      </div>
+      <div class="partita-avversario">vs ${esc(p.avversario)}</div>
+      <div class="partita-info">
+        <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? '?? Casa' : '?? Trasferta'}</span>
+        ${p.risultato ? `<span class="partita-risultato">? ${esc(p.risultato)}</span>` : ''}
+      </div>
+      ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">???</button>` : ''}
+    `;
+    container.appendChild(card);
+  });
+  if (isManager()) {
+    document.querySelectorAll('.partita-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('Eliminare questa partita?')) { calRef.child(btn.dataset.id).remove(); showToast('??? Partita eliminata'); }
+      });
+    });
+  }
+}
+
+// Filtri
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+// Aggiungi partita
+document.getElementById('add-btn').addEventListener('click', () => {
+  const data       = document.getElementById('f-data').value;
+  const ora        = document.getElementById('f-ora').value;
+  const campionato = document.getElementById('f-campionato').value;
+  const avversario = document.getElementById('f-avversario').value.trim();
+  const luogo      = document.getElementById('f-luogo').value;
+  const risultato  = document.getElementById('f-risultato').value.trim();
+  if (!data) { showToast('?? Inserisci la data!'); return; }
+  if (!avversario) { showToast('?? Inserisci l\'avversario!'); return; }
+  calRef.push({ data, ora, campionato, avversario, luogo, risultato }).then(() => {
+    document.getElementById('f-data').value = '';
+    document.getElementById('f-ora').value = '';
+    document.getElementById('f-avversario').value = '';
+    document.getElementById('f-risultato').value = '';
+    showToast('? Partita aggiunta!');
+  }).catch(() => showToast('? Errore nel salvataggio'));
+});
+
+// PIN
+const pinBtn = document.getElementById('pin-btn');
+const overlay = document.getElementById('modal-overlay');
+function updatePinBtn() { pinBtn.textContent = isManager() ? '??' : '??'; }
+updatePinBtn();
+if (isManager()) document.getElementById('manager-panel').classList.add('visible');
+
+pinBtn.addEventListener('click', () => {
+  if (isManager()) {
+    setManager(false); document.getElementById('manager-panel').classList.remove('visible');
+    updatePinBtn(); render(); showToast('?? Logout gestore effettuato');
+  } else {
+    document.getElementById('modal-error').textContent = '';
+    document.getElementById('pin-input').value = '';
+    overlay.classList.add('open');
+    setTimeout(() => document.getElementById('pin-input').focus(), 100);
+  }
+});
+document.getElementById('modal-cancel').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+document.getElementById('modal-confirm').addEventListener('click', checkPin);
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
+
+function checkPin() {
+  if (document.getElementById('pin-input').value === 'nekton2025') {
+    setManager(true); overlay.classList.remove('open');
+    document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
+    render(); showToast('? Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+}
+</script>
+</body>
+</html>

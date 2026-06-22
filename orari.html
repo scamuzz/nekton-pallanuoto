@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>?? Orari Allenamenti — Nekton</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
+    body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; }
+
+    .header {
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%);
+      color: white; padding: 36px 20px 24px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255,255,255,0.10), transparent);
+    }
+    .back-link {
+      position: absolute; top: 14px; left: 14px;
+      background: rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 7px 15px; font-size: 0.76rem; font-weight: 700;
+      color: white; text-decoration: none; z-index: 2;
+      backdrop-filter: blur(4px); transition: background 0.2s;
+    }
+    .back-link:hover { background: rgba(255,255,255,0.40); }
+    .pin-btn {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,0.25); border: none; border-radius: 50%;
+      width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; z-index: 2;
+      backdrop-filter: blur(4px); transition: background 0.2s; color: white;
+    }
+    .pin-btn:hover { background: rgba(255,255,255,0.40); }
+    .header .icons { font-size: 3rem; display: block; margin-bottom: 10px; line-height: 1; position: relative; }
+    .header h1 { font-size: 1.6rem; font-weight: 800; position: relative; }
+    .header .subtitle { font-size: 0.82rem; opacity: 0.9; margin-top: 6px; position: relative; }
+    .week-info { font-size: 0.76rem; opacity: 0.8; margin-top: 4px; position: relative; }
+
+    .wave-divider { display: block; line-height: 0; overflow: hidden;
+      background: linear-gradient(160deg, #1a3a5c 0%, #006994 50%, #00b4d8 100%); }
+    .wave-divider svg { display: block; width: 100%; }
+
+    .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
+
+    /* FILTRO */
+    .filter-row {
+      display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
+      padding-bottom: 4px; scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: white; border: 2px solid #b3d9f7; border-radius: 20px;
+      padding: 7px 14px; font-size: 0.76rem; font-weight: 700; color: #006994;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+
+    /* CARDS GRUPPI */
+    .gruppo-card {
+      background: white; border-radius: 18px; padding: 18px;
+      margin-bottom: 16px; box-shadow: 0 4px 18px rgba(0,105,148,0.08);
+      border: 2px solid #ddeeff;
+    }
+    .gruppo-card.hidden { display: none; }
+    .gruppo-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 14px;
+    }
+    .gruppo-badge {
+      font-size: 0.62rem; padding: 3px 10px; border-radius: 10px;
+      font-weight: 700; letter-spacing: 0.4px;
+    }
+    .badge-acquagol { background: #e0f7fa; color: #006994; }
+    .badge-under13  { background: #fff3e0; color: #e65100; }
+    .badge-senior   { background: #e8eaf6; color: #1a3a5c; }
+
+    .day-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid #f0f8ff;
+    }
+    .day-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .day-name {
+      min-width: 90px; font-size: 0.78rem; font-weight: 700; color: #006994;
+      padding-top: 2px;
+    }
+    .day-date { font-size: 0.66rem; color: #90a4ae; font-weight: 400; }
+    .orario-info { flex: 1; }
+    .orario-time {
+      font-size: 0.88rem; font-weight: 700; color: #1a3a5c;
+    }
+    .orario-time.cancelled { text-decoration: line-through; color: #b0bec5; }
+    .orario-nota { font-size: 0.72rem; color: #e65100; margin-top: 2px; font-style: italic; }
+    .no-train { font-size: 0.80rem; color: #b0bec5; font-style: italic; }
+
+    /* PANNELLO GESTORE */
+    .manager-panel {
+      display: none; background: #fff8e1; border-radius: 18px;
+      padding: 18px; margin-bottom: 18px;
+      border: 2px solid #ffe082; box-shadow: 0 4px 18px rgba(255,193,7,0.10);
+    }
+    .manager-panel.visible { display: block; }
+    .manager-panel h3 {
+      font-size: 0.76rem; color: #f57f17; text-transform: uppercase;
+      letter-spacing: 0.9px; font-weight: 800; margin-bottom: 12px;
+    }
+    .edit-group-section { margin-bottom: 14px; }
+    .edit-group-section h4 {
+      font-size: 0.82rem; font-weight: 700; color: #1a3a5c; margin-bottom: 8px;
+    }
+    .edit-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .edit-row label { font-size: 0.76rem; color: #555; min-width: 80px; font-weight: 600; }
+    .edit-input {
+      border: 1.5px solid #ffe082; border-radius: 8px; padding: 6px 10px;
+      font-size: 0.82rem; font-family: inherit; color: #333; flex: 1; min-width: 120px;
+    }
+    .edit-input:focus { outline: none; border-color: #ffb300; }
+    .edit-check { width: 16px; height: 16px; cursor: pointer; }
+    .save-btn {
+      background: linear-gradient(135deg, #ffb300, #ff8f00); color: #3e2723;
+      border: none; border-radius: 10px; padding: 10px 18px; font-size: 0.82rem;
+      font-weight: 700; cursor: pointer; margin-top: 8px; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .save-btn:hover { opacity: 0.9; }
+    .week-selector {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .week-selector label { font-size: 0.78rem; font-weight: 700; color: #555; }
+    .week-selector select {
+      border: 1.5px solid #ffe082; border-radius: 8px; padding: 6px 10px;
+      font-family: inherit; font-size: 0.82rem; background: white;
+    }
+
+    /* MODALE PIN */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .modal h3 { font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 8px; }
+    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
+    .modal input {
+      width: 100%; border: 2px solid #b3d9f7; border-radius: 10px;
+      padding: 11px 14px; font-size: 1rem; text-align: center;
+      letter-spacing: 2px; outline: none; font-family: inherit;
+    }
+    .modal input:focus { border-color: #006994; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-btn {
+      flex: 1; padding: 11px; border: none; border-radius: 10px;
+      font-size: 0.86rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
+    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
+    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #1a3a5c; color: white; padding: 10px 22px; border-radius: 24px;
+      font-size: 0.83rem; font-weight: 600; transition: transform 0.3s ease; z-index: 999;
+      box-shadow: 0 6px 24px rgba(26,58,92,0.3); white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">&#8592; Home</a>
+  <button class="pin-btn" id="pin-btn" title="Accesso gestore">??</button>
+  <span class="icons">??</span>
+  <h1>Orari Allenamenti</h1>
+  <div class="subtitle">Settimana corrente</div>
+  <div class="week-info" id="week-label">Caricamento…</div>
+</div>
+
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <!-- PANNELLO GESTORE -->
+  <div class="manager-panel" id="manager-panel">
+    <h3>?? Pannello Gestore — Modifica Orari</h3>
+    <div class="week-selector">
+      <label>Settimana:</label>
+      <select id="edit-week-select">
+        <option value="current">Corrente</option>
+        <option value="next">Prossima</option>
+      </select>
+    </div>
+    <div id="edit-form"><!-- generato da JS --></div>
+    <button class="save-btn" id="save-orari-btn">?? Salva modifiche</button>
+  </div>
+
+  <!-- FILTRO -->
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="all">Tutti</button>
+    <button class="filter-btn" data-filter="acquagol">?? Acquagol</button>
+    <button class="filter-btn" data-filter="under13">?? Under 13</button>
+    <button class="filter-btn" data-filter="senior">?? Senior</button>
+  </div>
+
+  <!-- CARDS ORARI -->
+  <div id="schedule-container"><!-- generato da JS --></div>
+
+</div>
+
+<div class="page-footer">?? Nekton Pallanuoto &nbsp;•&nbsp; Orari Allenamenti</div>
+<div class="toast" id="toast"></div>
+
+<!-- MODALE PIN -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-title">?? Accesso Gestore</h3>
+    <p id="modal-desc">Inserisci il PIN per accedere alla modalità gestore</p>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
+      <button class="modal-btn primary" id="modal-confirm">Accedi</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
+  authDomain: "lista-spesa-b9eb1.firebaseapp.com",
+  databaseURL: "https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lista-spesa-b9eb1",
+  storageBucket: "lista-spesa-b9eb1.firebasestorage.app",
+  messagingSenderId: "468690890938",
+  appId: "1:468690890938:web:048be7f27779d8862d9283"
+});
+const db = firebase.database();
+
+// -- Auth
+function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
+function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
+
+// -- Default schedules
+const DEFAULT_ORARI = {
+  acquagol: {
+    mercoledi: { attivo: true, orario: '17:00–18:00', nota: '' },
+    sabato:    { attivo: true, orario: '16:00–17:00', nota: '' }
+  },
+  under13: {
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
+  },
+  senior: {
+    martedi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    mercoledi: { attivo: true, orario: '19:00–20:15', nota: '' },
+    venerdi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    sabato:    { attivo: true, orario: '19:00–20:00', nota: '' }
+  }
+};
+
+const GIORNI_IT = { lunedi: 'Lunedì', martedi: 'Martedì', mercoledi: 'Mercoledì',
+  giovedi: 'Giovedì', venerdi: 'Venerdì', sabato: 'Sabato', domenica: 'Domenica' };
+const GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica'];
+const GIORNI_DOW = { lunedi:1, martedi:2, mercoledi:3, giovedi:4, venerdi:5, sabato:6, domenica:0 };
+
+function getISOWeek(d) {
+  const date = new Date(d);
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
+  const w1 = new Date(date.getFullYear(), 0, 4);
+  const wk = 1 + Math.round(((date - w1) / 86400000 - 3 + ((w1.getDay() + 6) % 7)) / 7);
+  return `${date.getFullYear()}-W${String(wk).padStart(2,'0')}`;
+}
+
+function weekStart(weekKey) {
+  const [yr, wk] = weekKey.split('-W').map(Number);
+  const simple = new Date(yr, 0, 1 + (wk - 1) * 7);
+  const dow = simple.getDay();
+  const mon = new Date(simple);
+  mon.setDate(simple.getDate() - ((dow + 6) % 7));
+  return mon;
+}
+
+function getCurrentWeekKey() {
+  const now = new Date();
+  if (now.getDay() === 0) { // Sunday ? show next week
+    const nxt = new Date(now); nxt.setDate(now.getDate() + 1);
+    return getISOWeek(nxt);
+  }
+  return getISOWeek(now);
+}
+
+function getNextWeekKey(current) {
+  const start = weekStart(current);
+  start.setDate(start.getDate() + 7);
+  return getISOWeek(start);
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit' });
+}
+
+let currentWeekKey = getCurrentWeekKey();
+let nextWeekKey = getNextWeekKey(currentWeekKey);
+let weekData = {};
+let activeFilter = 'all';
+
+document.getElementById('week-label').textContent =
+  (() => { const s = weekStart(currentWeekKey); const e = new Date(s); e.setDate(s.getDate()+6);
+    return `${formatDate(s)} – ${formatDate(e)}`; })();
+
+// Listen Firebase
+function listenWeek(wk) {
+  db.ref(`nekton/orari/${wk}`).on('value', snap => {
+    weekData[wk] = snap.val() || {};
+    renderSchedule();
+  });
+}
+listenWeek(currentWeekKey);
+listenWeek(nextWeekKey);
+
+function mergeWithDefaults(weekObj, gruppo) {
+  const def = DEFAULT_ORARI[gruppo] || {};
+  const ov  = (weekObj[gruppo]) || {};
+  const result = {};
+  for (const g of Object.keys(def)) {
+    result[g] = Object.assign({}, def[g], ov[g] || {});
+  }
+  return result;
+}
+
+function renderSchedule() {
+  const wkData = weekData[currentWeekKey] || {};
+  const wkStart = weekStart(currentWeekKey);
+  const container = document.getElementById('schedule-container');
+  container.innerHTML = '';
+
+  const gruppi = [
+    { key: 'acquagol', label: 'Acquagol', emoji: '??', badge: 'badge-acquagol', anni: 'Nati 2016+' },
+    { key: 'under13',  label: 'Under 13', emoji: '??', badge: 'badge-under13',  anni: 'Nati 2014–2015' },
+    { key: 'senior',   label: 'Senior',   emoji: '??', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
+  ];
+
+  gruppi.forEach(g => {
+    const merged = mergeWithDefaults(wkData, g.key);
+    const card = document.createElement('div');
+    card.className = `gruppo-card${activeFilter !== 'all' && activeFilter !== g.key ? ' hidden' : ''}`;
+    card.dataset.gruppo = g.key;
+
+    let daysHtml = '';
+    GIORNI_ORDER.forEach(giorno => {
+      if (!merged[giorno]) return;
+      const info = merged[giorno];
+      const dow = GIORNI_DOW[giorno];
+      const date = new Date(wkStart);
+      const diff = (dow - 1 + 7) % 7;
+      date.setDate(wkStart.getDate() + diff);
+
+      daysHtml += `<div class="day-row">
+        <div class="day-name">
+          <div>${GIORNI_IT[giorno]}</div>
+          <div class="day-date">${formatDate(date)}</div>
+        </div>
+        <div class="orario-info">
+          ${info.attivo
+            ? `<div class="orario-time">${esc(info.orario)}</div>${info.nota ? `<div class="orario-nota">?? ${esc(info.nota)}</div>` : ''}`
+            : `<div class="no-train">? Allenamento annullato${info.nota ? ' — ' + esc(info.nota) : ''}</div>`
+          }
+        </div>
+      </div>`;
+    });
+
+    card.innerHTML = `
+      <div class="gruppo-title">
+        ${g.emoji} ${g.label}
+        <span class="gruppo-badge ${g.badge}">${g.anni}</span>
+      </div>
+      ${daysHtml}
+    `;
+    container.appendChild(card);
+  });
+}
+
+// -- FILTER
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    document.querySelectorAll('.gruppo-card').forEach(c => {
+      c.classList.toggle('hidden', activeFilter !== 'all' && c.dataset.gruppo !== activeFilter);
+    });
+  });
+});
+
+// -- MANAGER EDIT FORM
+function buildEditForm() {
+  const isNext = document.getElementById('edit-week-select').value === 'next';
+  const wk = isNext ? nextWeekKey : currentWeekKey;
+  const wkData = weekData[wk] || {};
+  const wkStart = weekStart(wk);
+  const form = document.getElementById('edit-form');
+  form.innerHTML = '';
+
+  const gruppi = [
+    { key: 'acquagol', label: '?? Acquagol' },
+    { key: 'under13',  label: '?? Under 13' },
+    { key: 'senior',   label: '?? Senior' }
+  ];
+  gruppi.forEach(g => {
+    const merged = mergeWithDefaults(wkData, g.key);
+    let rowsHtml = '';
+    GIORNI_ORDER.forEach(giorno => {
+      if (!DEFAULT_ORARI[g.key] || !DEFAULT_ORARI[g.key][giorno]) return;
+      const info = merged[giorno];
+      const dow = GIORNI_DOW[giorno];
+      const date = new Date(wkStart);
+      date.setDate(wkStart.getDate() + (dow - 1 + 7) % 7);
+      rowsHtml += `<div class="edit-row">
+        <label>${GIORNI_IT[giorno]} <span style="font-size:0.65rem;color:#90a4ae">${formatDate(date)}</span></label>
+        <label style="font-size:0.7rem;gap:4px;display:flex;align-items:center;min-width:auto;">
+          <input type="checkbox" class="edit-check" data-g="${g.key}" data-d="${giorno}" data-t="attivo" ${info.attivo ? 'checked' : ''}> Attivo
+        </label>
+        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario" value="${esc(info.orario)}" placeholder="es. 17:00–18:00" style="max-width:130px;"/>
+        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore…" style="flex:2;"/>
+      </div>`;
+    });
+    const sec = document.createElement('div');
+    sec.className = 'edit-group-section';
+    sec.innerHTML = `<h4>${g.label}</h4>${rowsHtml}`;
+    form.appendChild(sec);
+  });
+}
+
+document.getElementById('edit-week-select').addEventListener('change', buildEditForm);
+
+document.getElementById('save-orari-btn').addEventListener('click', () => {
+  const isNext = document.getElementById('edit-week-select').value === 'next';
+  const wk = isNext ? nextWeekKey : currentWeekKey;
+  const updates = {};
+  document.querySelectorAll('.edit-input, .edit-check').forEach(el => {
+    const { g, d, t } = el.dataset;
+    if (!updates[g]) updates[g] = {};
+    if (!updates[g][d]) updates[g][d] = {};
+    updates[g][d][t] = t === 'attivo' ? el.checked : el.value.trim();
+  });
+  // Also copy defaults for unchanged fields
+  ['acquagol','under13','senior'].forEach(g => {
+    if (!updates[g]) return;
+    Object.keys(DEFAULT_ORARI[g] || {}).forEach(day => {
+      if (!updates[g][day]) updates[g][day] = Object.assign({}, DEFAULT_ORARI[g][day]);
+    });
+  });
+  db.ref(`nekton/orari/${wk}`).set(updates).then(() => {
+    showToast('? Orari salvati!');
+  }).catch(() => showToast('? Errore nel salvataggio'));
+});
+
+// -- PIN MODAL
+const pinBtn = document.getElementById('pin-btn');
+const overlay = document.getElementById('modal-overlay');
+
+function updatePinBtn() {
+  pinBtn.textContent = isManager() ? '??' : '??';
+}
+updatePinBtn();
+
+pinBtn.addEventListener('click', () => {
+  if (isManager()) {
+    setManager(false);
+    document.getElementById('manager-panel').classList.remove('visible');
+    updatePinBtn();
+    showToast('?? Logout gestore effettuato');
+  } else {
+    document.getElementById('modal-error').textContent = '';
+    document.getElementById('pin-input').value = '';
+    overlay.classList.add('open');
+    setTimeout(() => document.getElementById('pin-input').focus(), 100);
+  }
+});
+
+document.getElementById('modal-cancel').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+document.getElementById('modal-confirm').addEventListener('click', checkPin);
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
+
+function checkPin() {
+  const val = document.getElementById('pin-input').value;
+  if (val === 'nekton2025') {
+    setManager(true);
+    overlay.classList.remove('open');
+    document.getElementById('manager-panel').classList.add('visible');
+    updatePinBtn();
+    buildEditForm();
+    showToast('? Modalità gestore attiva');
+  } else {
+    document.getElementById('modal-error').textContent = '? PIN non corretto';
+  }
+}
+
+if (isManager()) {
+  document.getElementById('manager-panel').classList.add('visible');
+  buildEditForm();
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>
