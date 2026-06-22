@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>📅 Calendario Partite � Nekton</title>
+  <title>📅 Calendario Partite · Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -186,7 +186,7 @@
   <div class="subtitle">Tutti i campionati Nekton</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso�</span>
+    <span id="sync-label">Connessione in corso…</span>
   </div>
 </div>
 
@@ -224,7 +224,7 @@
     </div>
     <div class="form-group">
       <label>Avversario</label>
-      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria�" maxlength="60"/>
+      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria…" maxlength="60"/>
     </div>
     <div class="form-row">
       <div class="form-group" style="flex:1;">
@@ -258,14 +258,14 @@
 
 </div>
 
-<div class="page-footer">📅 Calendario � Nekton Pallanuoto</div>
+<div class="page-footer">📅 Calendario · Nekton Pallanuoto</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire il calendario</p>
-    <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -303,7 +303,7 @@ let activeFilter = 'tutti';
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
   if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline � riconnessione�'; }
+  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline – riconnessione…'; }
 });
 
 calRef.on('value', snap => { allData = snap.val() || {}; render(); });
@@ -329,7 +329,7 @@ function render() {
     card.innerHTML = `
       <div class="partita-top">
         <span class="campionato-badge">${esc(p.campionato)}</span>
-        <span class="partita-data">📅 ${esc(dateStr)}${p.ora ? ' � ' + esc(p.ora) : ''}</span>
+        <span class="partita-data">📅 ${esc(dateStr)}${p.ora ? ' – ' + esc(p.ora) : ''}</span>
       </div>
       <div class="partita-avversario">vs ${esc(p.avversario)}</div>
       <div class="partita-info">
@@ -405,7 +405,7 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2025') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalit� gestore attiva');
+    render(); showToast('? Modalità gestore attiva');
   } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
 }
 </script>
