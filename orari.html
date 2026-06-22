@@ -535,6 +535,7 @@ function renderSchedule() {
       const card = document.createElement('div');
       card.className = `gruppo-card${activeFilter !== 'all' && activeFilter !== g.key ? ' hidden' : ''}`;
       card.dataset.gruppo = g.key;
+      card.dataset.week = 'next';
       card.innerHTML = `
         <div class="gruppo-title">
           ${g.emoji} ${g.label}
@@ -569,8 +570,8 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     // Mostra/nascondi il separatore "Prossima settimana" in base al filtro
     const divider = document.getElementById('next-week-divider');
     if (divider) {
-      const anyNextVisible = Array.from(divider.parentElement.querySelectorAll('.gruppo-card'))
-        .some(c => c.compareDocumentPosition(divider) & Node.DOCUMENT_POSITION_PRECEDING && !c.classList.contains('hidden'));
+      const anyNextVisible = Array.from(document.querySelectorAll('.gruppo-card[data-week="next"]'))
+        .some(c => !c.classList.contains('hidden'));
       divider.style.display = anyNextVisible ? '' : 'none';
     }
   });
