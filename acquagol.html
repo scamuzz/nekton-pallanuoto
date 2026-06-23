@@ -121,10 +121,13 @@
     .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
     .modal input {
       width: 100%; border: 2px solid #b2ebf2; border-radius: 10px;
-      padding: 11px 14px; font-size: 1rem; text-align: center;
+      padding: 11px 40px 11px 14px; font-size: 1rem; text-align: center;
       letter-spacing: 2px; outline: none; font-family: inherit;
     }
     .modal input:focus { border-color: #006994; }
+    .pin-input-wrap { position: relative; }
+    .pin-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 2px; line-height: 1; }
     .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
     .modal-btn { flex: 1; padding: 11px; border: none; border-radius: 10px;
       font-size: 0.86rem; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -206,7 +209,10 @@
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per pubblicare notizie</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <div class="pin-input-wrap">
+      <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+      <button class="pin-toggle" id="pin-toggle" type="button" title="Mostra/Nascondi PIN">👁️</button>
+    </div>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -320,6 +326,8 @@ pinBtn.addEventListener('click', () => {
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').type = 'password';
+    document.getElementById('pin-toggle').textContent = '👁️';
     overlay.classList.add('open');
     setTimeout(() => document.getElementById('pin-input').focus(), 100);
   }
@@ -328,6 +336,12 @@ document.getElementById('modal-cancel').addEventListener('click', () => overlay.
 overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 document.getElementById('modal-confirm').addEventListener('click', checkPin);
 document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
+document.getElementById('pin-toggle').addEventListener('click', () => {
+  const inp = document.getElementById('pin-input');
+  const tog = document.getElementById('pin-toggle');
+  if (inp.type === 'password') { inp.type = 'text'; tog.textContent = '🙈'; }
+  else { inp.type = 'password'; tog.textContent = '👁️'; }
+});
 
 function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2026') {
