@@ -705,7 +705,7 @@ document.getElementById('add-btn').addEventListener('click', () => {
   const indirizzo  = document.getElementById('f-indirizzo').value.trim();
   const descrizione = document.getElementById('f-descrizione').value.trim();
   if (!data) { showToast('⚠️ Inserisci la data!'); return; }
-  if (isFesta && !ora) { showToast('⚠️ Inserisci l\'orario evento!'); return; }
+  if (isFesta && !ora) { showToast("⚠️ Inserisci l'orario evento!"); return; }
   if (!isFesta && !avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
   let entry;
   if (isFesta) {
