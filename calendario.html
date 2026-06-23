@@ -98,12 +98,13 @@
       font-size: 0.82rem; font-weight: 800; color: #006994;
       background: #e3f2fd; padding: 2px 10px; border-radius: 8px;
     }
-    .partita-del-btn {
-      position: absolute; top: 12px; right: 12px;
+    .partita-admin-btns { display: flex; align-items: center; gap: 4px; }
+    .partita-del-btn, .partita-edit-btn {
       background: none; border: none; color: #b3d9f7; cursor: pointer;
-      font-size: 0.9rem; transition: color 0.2s;
+      font-size: 0.9rem; transition: color 0.2s; padding: 2px 3px; line-height: 1;
     }
     .partita-del-btn:hover { color: #e53935; }
+    .partita-edit-btn:hover { color: #ffb300; }
     .partita-trasferta-info {
       font-size: 0.72rem; color: #e65100; margin-top: 5px; font-weight: 600;
     }
@@ -139,11 +140,18 @@
     .form-input:focus { border-color: #ffb300; }
     select.form-input { cursor: pointer; }
     .pub-btn {
-      width: 100%; background: linear-gradient(135deg, #006994, #00b4d8); color: white;
+      flex: 1; background: linear-gradient(135deg, #006994, #00b4d8); color: white;
       border: none; border-radius: 10px; padding: 11px; font-size: 0.86rem;
       font-weight: 700; cursor: pointer; margin-top: 4px; font-family: inherit;
     }
     .pub-btn:hover { opacity: 0.9; }
+    .cancel-edit-btn {
+      flex: 1; background: #eceff1; color: #607d8b;
+      border: none; border-radius: 10px; padding: 11px; font-size: 0.86rem;
+      font-weight: 700; cursor: pointer; margin-top: 4px; font-family: inherit; display: none;
+    }
+    .cancel-edit-btn:hover { background: #cfd8dc; }
+    .pub-btn-row { display: flex; gap: 8px; }
 
     /* PIN MODAL */
     .modal-overlay {
@@ -302,7 +310,10 @@
         <input type="text" class="form-input" id="f-indirizzo" placeholder="es. Via Roma 1" maxlength="100"/>
       </div>
     </div>
-    <button class="pub-btn" id="add-btn">➕ Aggiungi partita</button>
+    <div class="pub-btn-row">
+      <button class="pub-btn" id="add-btn">➕ Aggiungi partita</button>
+      <button class="cancel-edit-btn" id="cancel-edit-btn">✕ Annulla modifica</button>
+    </div>
   </div>
 
   <!-- FILTRI -->
@@ -375,6 +386,7 @@ let allData = {};
 let allPlayers = {};
 let allConvocati = {};
 let activeFilter = 'tutti';
+let editingId = null;
 
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
@@ -426,7 +438,14 @@ function render() {
     card.innerHTML = `
       <div class="partita-top">
         <span class="campionato-badge">${esc(p.campionato)}</span>
-        <span class="partita-data">📅 ${esc(dateStr)}${p.ora ? ' – ' + esc(p.ora) : ''}</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span class="partita-data">📅 ${esc(dateStr)}${p.ora ? ' – ' + esc(p.ora) : ''}</span>
+          ${isManager() ? `
+            <div class="partita-admin-btns">
+              <button class="partita-edit-btn" data-id="${esc(id)}" title="Modifica">✏️</button>
+              <button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>
+            </div>` : ''}
+        </div>
       </div>
       <div class="partita-avversario">vs ${esc(p.avversario)}</div>
       <div class="partita-info">
@@ -434,7 +453,6 @@ function render() {
         ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
       </div>
       ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}
-      ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>` : ''}
       <button class="conv-toggle-btn" data-id="${esc(id)}">
         🤽 Convocati ${convCount > 0 ? `(${convCount})` : ''}
       </button>
@@ -466,6 +484,27 @@ function render() {
     document.querySelectorAll('.partita-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (confirm('Eliminare questa partita?')) { calRef.child(btn.dataset.id).remove(); showToast('✅ Partita eliminata'); }
+      });
+    });
+    document.querySelectorAll('.partita-edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const p = allData[id];
+        if (!p) return;
+        editingId = id;
+        document.getElementById('f-data').value = p.data || '';
+        document.getElementById('f-ora').value = p.ora || '';
+        document.getElementById('f-campionato').value = p.campionato || 'Habawaba';
+        document.getElementById('f-avversario').value = p.avversario || '';
+        document.getElementById('f-luogo').value = p.luogo || 'casa';
+        document.getElementById('f-risultato').value = p.risultato || '';
+        document.getElementById('f-citta').value = p.citta || '';
+        document.getElementById('f-indirizzo').value = p.indirizzo || '';
+        document.getElementById('trasferta-fields').style.display = p.luogo === 'trasferta' ? 'block' : 'none';
+        document.querySelector('.manager-panel h3').textContent = '✏️ Modifica Partita';
+        document.getElementById('add-btn').textContent = '💾 Salva modifiche';
+        document.getElementById('cancel-edit-btn').style.display = '';
+        document.getElementById('manager-panel').scrollIntoView({ behavior: 'smooth' });
       });
     });
   }
@@ -596,7 +635,21 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-// Aggiungi partita
+function resetForm() {
+  editingId = null;
+  document.getElementById('f-data').value = '';
+  document.getElementById('f-ora').value = '';
+  document.getElementById('f-avversario').value = '';
+  document.getElementById('f-risultato').value = '';
+  document.getElementById('f-citta').value = '';
+  document.getElementById('f-indirizzo').value = '';
+  document.getElementById('trasferta-fields').style.display = 'none';
+  document.querySelector('.manager-panel h3').textContent = '➕ Aggiungi Partita';
+  document.getElementById('add-btn').textContent = '➕ Aggiungi partita';
+  document.getElementById('cancel-edit-btn').style.display = 'none';
+}
+
+// Aggiungi / modifica partita
 document.getElementById('add-btn').addEventListener('click', () => {
   const data       = document.getElementById('f-data').value;
   const ora        = document.getElementById('f-ora').value;
@@ -610,19 +663,24 @@ document.getElementById('add-btn').addEventListener('click', () => {
   if (!avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
   const entry = { data, ora, campionato, avversario, luogo, risultato };
   if (luogo === 'trasferta') {
-    if (citta) entry.citta = citta;
-    if (indirizzo) entry.indirizzo = indirizzo;
+    entry.citta = citta || '';
+    entry.indirizzo = indirizzo || '';
+  } else {
+    entry.citta = '';
+    entry.indirizzo = '';
   }
-  calRef.push(entry).then(() => {
-    document.getElementById('f-data').value = '';
-    document.getElementById('f-ora').value = '';
-    document.getElementById('f-avversario').value = '';
-    document.getElementById('f-risultato').value = '';
-    document.getElementById('f-citta').value = '';
-    document.getElementById('f-indirizzo').value = '';
-    showToast('✅ Partita aggiunta!');
-  }).catch(() => showToast('❌ Errore nel salvataggio'));
+  if (editingId) {
+    calRef.child(editingId).update(entry)
+      .then(() => { resetForm(); showToast('✅ Partita aggiornata!'); })
+      .catch(() => showToast('❌ Errore nel salvataggio'));
+  } else {
+    calRef.push(entry)
+      .then(() => { resetForm(); showToast('✅ Partita aggiunta!'); })
+      .catch(() => showToast('❌ Errore nel salvataggio'));
+  }
 });
+
+document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
 
 // Mostra/nascondi campi trasferta
 document.getElementById('f-luogo').addEventListener('change', function() {
