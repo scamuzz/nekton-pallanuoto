@@ -98,6 +98,7 @@
       font-size: 0.82rem; font-weight: 800; color: #006994;
       background: #e3f2fd; padding: 2px 10px; border-radius: 8px;
     }
+    .partita-date-row { display: flex; align-items: center; gap: 4px; }
     .partita-admin-btns { display: flex; align-items: center; gap: 4px; }
     .partita-del-btn, .partita-edit-btn {
       background: none; border: none; color: #b3d9f7; cursor: pointer;
@@ -438,7 +439,7 @@ function render() {
     card.innerHTML = `
       <div class="partita-top">
         <span class="campionato-badge">${esc(p.campionato)}</span>
-        <div style="display:flex;align-items:center;gap:4px;">
+        <div class="partita-date-row">
           <span class="partita-data">📅 ${esc(dateStr)}${p.ora ? ' – ' + esc(p.ora) : ''}</span>
           ${isManager() ? `
             <div class="partita-admin-btns">
@@ -503,7 +504,7 @@ function render() {
         document.getElementById('trasferta-fields').style.display = p.luogo === 'trasferta' ? 'block' : 'none';
         document.querySelector('.manager-panel h3').textContent = '✏️ Modifica Partita';
         document.getElementById('add-btn').textContent = '💾 Salva modifiche';
-        document.getElementById('cancel-edit-btn').style.display = '';
+        document.getElementById('cancel-edit-btn').style.display = 'block';
         document.getElementById('manager-panel').scrollIntoView({ behavior: 'smooth' });
       });
     });
@@ -665,9 +666,6 @@ document.getElementById('add-btn').addEventListener('click', () => {
   if (luogo === 'trasferta') {
     entry.citta = citta || '';
     entry.indirizzo = indirizzo || '';
-  } else {
-    entry.citta = '';
-    entry.indirizzo = '';
   }
   if (editingId) {
     calRef.child(editingId).update(entry)
