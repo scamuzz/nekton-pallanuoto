@@ -260,6 +260,7 @@
       </select>
     </div>
     <div class="manager-filter-row">
+      <!-- data-mfilter values must match group keys: acquagol, under13, senior -->
       <button class="manager-filter-btn active" data-mfilter="all">Tutti</button>
       <button class="manager-filter-btn" data-mfilter="acquagol">🌊 Acquagol</button>
       <button class="manager-filter-btn" data-mfilter="under13">🏊 U13</button>
@@ -655,10 +656,16 @@ function buildEditForm() {
     sec.className = 'edit-group-section';
     sec.dataset.group = g.key;
     sec.innerHTML = `<h4>${g.label}</h4>${rowsHtml}`;
-    // apply current manager filter
-    const activeMFilter = (document.querySelector('.manager-filter-btn.active') || {}).dataset?.mfilter || 'all';
-    if (activeMFilter !== 'all' && activeMFilter !== g.key) sec.classList.add('hidden');
     form.appendChild(sec);
+  });
+  applyManagerFilter();
+}
+
+function applyManagerFilter() {
+  const filterValue = document.querySelector('.manager-filter-btn.active')?.dataset?.mfilter || 'all';
+  document.querySelectorAll('#edit-form .edit-group-section').forEach(sec => {
+    if (filterValue === 'all' || sec.dataset.group === filterValue) sec.classList.remove('hidden');
+    else sec.classList.add('hidden');
   });
 }
 
@@ -668,11 +675,7 @@ document.querySelectorAll('.manager-filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.manager-filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const f = btn.dataset.mfilter;
-    document.querySelectorAll('#edit-form .edit-group-section').forEach(sec => {
-      if (f === 'all' || sec.dataset.group === f) sec.classList.remove('hidden');
-      else sec.classList.add('hidden');
-    });
+    applyManagerFilter();
   });
 });
 
