@@ -72,6 +72,9 @@
       position: relative; transition: opacity 0.2s;
     }
     .partita-card.passata { opacity: 0.65; border-left-color: #b0bec5; background: #f9fafb; }
+    .partita-card.festa { border-left-color: #f06292; border-color: #fce4ec; }
+    .partita-card.festa .campionato-badge { background: #fce4ec; color: #c2185b; border-color: #f48fb1; }
+    .partita-descrizione { font-size: 0.82rem; color: #607d8b; margin-top: 5px; line-height: 1.55; }
     .partita-card.prossima { border-left-color: #00b4d8; }
 
     .partita-top {
@@ -282,33 +285,46 @@
         <option value="U16">U16</option>
         <option value="U18">U18</option>
         <option value="Promozione">Prima Squadra Promozione</option>
+        <option value="Festa">🎉 Festa / Evento</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>Avversario</label>
-      <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria…" maxlength="60"/>
-    </div>
-    <div class="form-row">
-      <div class="form-group" style="flex:1;">
-        <label>Casa / Trasferta</label>
-        <select class="form-input" id="f-luogo">
-          <option value="casa">🏠 Casa</option>
-          <option value="trasferta">✈️ Trasferta</option>
-        </select>
-      </div>
-      <div class="form-group" style="flex:1;">
-        <label>Risultato (opz.)</label>
-        <input type="text" class="form-input" id="f-risultato" placeholder="es. 5-3" maxlength="10"/>
-      </div>
-    </div>
-    <div id="trasferta-fields" style="display:none;">
+    <div id="partita-fields">
       <div class="form-group">
-        <label>Città (trasferta)</label>
-        <input type="text" class="form-input" id="f-citta" placeholder="es. Roma" maxlength="60"/>
+        <label>Avversario</label>
+        <input type="text" class="form-input" id="f-avversario" placeholder="Nome squadra avversaria…" maxlength="60"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1;">
+          <label>Casa / Trasferta</label>
+          <select class="form-input" id="f-luogo">
+            <option value="casa">🏠 Casa</option>
+            <option value="trasferta">✈️ Trasferta</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Risultato (opz.)</label>
+          <input type="text" class="form-input" id="f-risultato" placeholder="es. 5-3" maxlength="10"/>
+        </div>
+      </div>
+      <div id="trasferta-fields" style="display:none;">
+        <div class="form-group">
+          <label>Città (trasferta)</label>
+          <input type="text" class="form-input" id="f-citta" placeholder="es. Roma" maxlength="60"/>
+        </div>
+        <div class="form-group">
+          <label>Indirizzo piscina</label>
+          <input type="text" class="form-input" id="f-indirizzo" placeholder="es. Via Roma 1" maxlength="100"/>
+        </div>
+      </div>
+    </div>
+    <div id="festa-fields" style="display:none;">
+      <div class="form-group">
+        <label>Nome evento</label>
+        <input type="text" class="form-input" id="f-nome-evento" placeholder="es. Festa fine stagione…" maxlength="60"/>
       </div>
       <div class="form-group">
-        <label>Indirizzo piscina</label>
-        <input type="text" class="form-input" id="f-indirizzo" placeholder="es. Via Roma 1" maxlength="100"/>
+        <label>Descrizione (opz.)</label>
+        <input type="text" class="form-input" id="f-descrizione" placeholder="es. Cena, premiazioni…" maxlength="120"/>
       </div>
     </div>
     <div class="pub-btn-row">
@@ -326,6 +342,7 @@
     <button class="filter-btn" data-filter="U16">U16</button>
     <button class="filter-btn" data-filter="U18">U18</button>
     <button class="filter-btn" data-filter="Promozione">Promozione</button>
+    <button class="filter-btn" data-filter="Festa">🎉 Festa</button>
   </div>
 
   <div class="section-title">🤽 Partite</div>
@@ -430,7 +447,8 @@ function render() {
     const d = new Date(p.data + 'T12:00:00');
     const dateStr = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
     const card = document.createElement('div');
-    card.className = `partita-card${isPast ? ' passata' : ''}`;
+    const isFesta = p.campionato === 'Festa';
+    card.className = `partita-card${isPast ? ' passata' : ''}${isFesta ? ' festa' : ''}`;
 
     // Convocati della partita
     const convPartita = allConvocati[id] || {};
@@ -448,12 +466,16 @@ function render() {
             </div>` : ''}
         </div>
       </div>
-      <div class="partita-avversario">vs ${esc(p.avversario)}</div>
-      <div class="partita-info">
-        <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta'}</span>
-        ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
-      </div>
-      ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}
+      ${isFesta
+        ?         `<div class="partita-avversario">🎉 ${esc(p.nomeEvento || 'Festa')}</div>
+           ${p.descrizione ? `<div class="partita-descrizione">${esc(p.descrizione)}</div>` : ''}`
+        : `<div class="partita-avversario">vs ${esc(p.avversario)}</div>
+           <div class="partita-info">
+             <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">${p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta'}</span>
+             ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
+           </div>
+           ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}`
+      }
       <button class="conv-toggle-btn" data-id="${esc(id)}">
         🤽 Convocati ${convCount > 0 ? `(${convCount})` : ''}
       </button>
@@ -492,6 +514,7 @@ function render() {
         const id = btn.dataset.id;
         const p = allData[id];
         if (!p) return;
+        const isFesta = p.campionato === 'Festa';
         editingId = id;
         document.getElementById('f-data').value = p.data || '';
         document.getElementById('f-ora').value = p.ora || '';
@@ -501,8 +524,11 @@ function render() {
         document.getElementById('f-risultato').value = p.risultato || '';
         document.getElementById('f-citta').value = p.citta || '';
         document.getElementById('f-indirizzo').value = p.indirizzo || '';
+        document.getElementById('f-descrizione').value = p.descrizione || '';
+        document.getElementById('f-nome-evento').value = isFesta ? (p.nomeEvento || '') : '';
         document.getElementById('trasferta-fields').style.display = p.luogo === 'trasferta' ? 'block' : 'none';
-        document.querySelector('.manager-panel h3').textContent = '✏️ Modifica Partita';
+        toggleFestaFields(p.campionato === 'Festa');
+        document.querySelector('.manager-panel h3').textContent = p.campionato === 'Festa' ? '✏️ Modifica Festa' : '✏️ Modifica Partita';
         document.getElementById('add-btn').textContent = '💾 Salva modifiche';
         document.getElementById('cancel-edit-btn').style.display = 'block';
         document.getElementById('manager-panel').scrollIntoView({ behavior: 'smooth' });
@@ -644,10 +670,18 @@ function resetForm() {
   document.getElementById('f-risultato').value = '';
   document.getElementById('f-citta').value = '';
   document.getElementById('f-indirizzo').value = '';
+  document.getElementById('f-descrizione').value = '';
+  document.getElementById('f-nome-evento').value = '';
   document.getElementById('trasferta-fields').style.display = 'none';
+  toggleFestaFields(false);
   document.querySelector('.manager-panel h3').textContent = '➕ Aggiungi Partita';
   document.getElementById('add-btn').textContent = '➕ Aggiungi partita';
   document.getElementById('cancel-edit-btn').style.display = 'none';
+}
+
+function toggleFestaFields(isFesta) {
+  document.getElementById('partita-fields').style.display = isFesta ? 'none' : 'block';
+  document.getElementById('festa-fields').style.display = isFesta ? 'block' : 'none';
 }
 
 // Aggiungi / modifica partita
@@ -655,25 +689,32 @@ document.getElementById('add-btn').addEventListener('click', () => {
   const data       = document.getElementById('f-data').value;
   const ora        = document.getElementById('f-ora').value;
   const campionato = document.getElementById('f-campionato').value;
+  const isFesta    = campionato === 'Festa';
   const avversario = document.getElementById('f-avversario').value.trim();
   const luogo      = document.getElementById('f-luogo').value;
   const risultato  = document.getElementById('f-risultato').value.trim();
   const citta      = document.getElementById('f-citta').value.trim();
   const indirizzo  = document.getElementById('f-indirizzo').value.trim();
+  const descrizione = document.getElementById('f-descrizione').value.trim();
   if (!data) { showToast('⚠️ Inserisci la data!'); return; }
-  if (!avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
-  const entry = { data, ora, campionato, avversario, luogo, risultato };
-  if (luogo === 'trasferta') {
-    entry.citta = citta || '';
-    entry.indirizzo = indirizzo || '';
+  if (!isFesta && !avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
+  let entry;
+  if (isFesta) {
+    entry = { data, ora, campionato, nomeEvento: document.getElementById('f-nome-evento').value.trim() || 'Festa', descrizione };
+  } else {
+    entry = { data, ora, campionato, avversario, luogo, risultato };
+    if (luogo === 'trasferta') {
+      entry.citta = citta || '';
+      entry.indirizzo = indirizzo || '';
+    }
   }
   if (editingId) {
     calRef.child(editingId).update(entry)
-      .then(() => { resetForm(); showToast('✅ Partita aggiornata!'); })
+      .then(() => { resetForm(); showToast('✅ ' + (isFesta ? 'Festa' : 'Partita') + ' aggiornata!'); })
       .catch(() => showToast('❌ Errore nel salvataggio'));
   } else {
     calRef.push(entry)
-      .then(() => { resetForm(); showToast('✅ Partita aggiunta!'); })
+      .then(() => { resetForm(); showToast('✅ ' + (isFesta ? 'Festa' : 'Partita') + ' aggiunta!'); })
       .catch(() => showToast('❌ Errore nel salvataggio'));
   }
 });
@@ -683,6 +724,18 @@ document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
 // Mostra/nascondi campi trasferta
 document.getElementById('f-luogo').addEventListener('change', function() {
   document.getElementById('trasferta-fields').style.display = this.value === 'trasferta' ? 'block' : 'none';
+});
+
+// Mostra/nascondi campi festa vs partita
+document.getElementById('f-campionato').addEventListener('change', function() {
+  const isFesta = this.value === 'Festa';
+  toggleFestaFields(isFesta);
+  document.querySelector('.manager-panel h3').textContent = editingId
+    ? (isFesta ? '✏️ Modifica Festa' : '✏️ Modifica Partita')
+    : (isFesta ? '➕ Aggiungi Festa' : '➕ Aggiungi Partita');
+  document.getElementById('add-btn').textContent = editingId
+    ? '💾 Salva modifiche'
+    : (isFesta ? '➕ Aggiungi festa' : '➕ Aggiungi partita');
 });
 
 // PIN
