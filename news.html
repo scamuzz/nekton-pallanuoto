@@ -134,6 +134,32 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+
+    /* -- FILTER BAR -- */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .filter-btn {
+      flex: 1; min-width: 60px;
+      padding: 9px 6px; border: 2px solid #b3d9f7; border-radius: 12px;
+      background: white; color: #006994; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background 0.18s, border-color 0.18s, color 0.18s;
+      text-align: center; line-height: 1.3;
+    }
+    .filter-btn:hover { background: #e3f2fd; border-color: #29b6f6; }
+    .filter-btn.active { background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: #006994; }
+
+    /* -- GROUP BADGE on cards -- */
+    .group-badge {
+      display: inline-block; font-size: 0.6rem; font-weight: 800; padding: 2px 8px;
+      border-radius: 8px; text-transform: uppercase; letter-spacing: 0.4px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .badge-generale  { background: #e3f2fd; color: #006994; }
+    .badge-acquagol  { background: #e0f7fa; color: #00838f; }
+    .badge-under13   { background: #fff3e0; color: #e65100; }
+    .badge-senior    { background: #e8eaf6; color: #283593; }
   </style>
 </head>
 <body>
@@ -161,14 +187,30 @@
   <div class="manager-panel" id="manager-panel">
     <h3>✏️ Pubblica una comunicazione</h3>
     <div class="form-group">
+      <label>Gruppo</label>
+      <select class="form-input" id="news-group">
+        <option value="generale">📰 Generale (tutti)</option>
+        <option value="acquagol">🌊 Acquagol</option>
+        <option value="under13">🏊 Under 13</option>
+        <option value="senior">🤽 Senior</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label>Titolo</label>
       <input type="text" class="form-input" id="news-title" placeholder="Titolo della comunicazione…" maxlength="100"/>
     </div>
     <div class="form-group">
       <label>Testo</label>
-      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio per tutta la squadra…"></textarea>
+      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio…"></textarea>
     </div>
     <button class="pub-btn" id="pub-btn">📤 Pubblica comunicazione</button>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="tutti">🌐 Tutti</button>
+    <button class="filter-btn" data-filter="acquagol">🌊 Acquagol</button>
+    <button class="filter-btn" data-filter="under13">🏊 U13</button>
+    <button class="filter-btn" data-filter="senior">🤽 Senior</button>
   </div>
 
   <div class="section-title">📢 Comunicazioni e Avvisi</div>
@@ -208,7 +250,16 @@ firebase.initializeApp({
   appId: "1:468690890938:web:048be7f27779d8862d9283"
 });
 const db = firebase.database();
-const newsRef = db.ref('nekton/news/generale');
+
+const GROUPS = {
+  generale: { ref: db.ref('nekton/news/generale'), label: 'Generale',  icon: '📰', badgeClass: 'badge-generale' },
+  acquagol: { ref: db.ref('nekton/news/acquagol'), label: 'Acquagol',  icon: '🌊', badgeClass: 'badge-acquagol' },
+  under13:  { ref: db.ref('nekton/news/under13'),  label: 'U13',       icon: '🏊', badgeClass: 'badge-under13'  },
+  senior:   { ref: db.ref('nekton/news/senior'),   label: 'Senior',    icon: '🤽', badgeClass: 'badge-senior'   },
+};
+
+let allData = { generale: {}, acquagol: {}, under13: {}, senior: {} };
+let activeFilter = 'tutti';
 
 function isManager() { return localStorage.getItem('nektonManager') === '1'; }
 function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
@@ -224,43 +275,92 @@ db.ref('.info/connected').on('value', snap => {
   else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline – riconnessione…'; }
 });
 
-newsRef.orderByChild('data').on('value', snap => renderNews(snap.val() || {}));
+Object.entries(GROUPS).forEach(([key, g]) => {
+  g.ref.orderByChild('data').on('value', snap => {
+    allData[key] = snap.val() || {};
+    renderNews();
+  });
+});
 
-function renderNews(data) {
+function renderNews() {
   const container = document.getElementById('news-container');
-  const entries = Object.entries(data).sort((a,b) => (b[1].data||'').localeCompare(a[1].data||''));
-  if (entries.length === 0) { container.innerHTML = '<div class="no-news">Nessuna comunicazione al momento. 💤</div>'; return; }
+  let entries = [];
+
+  if (activeFilter === 'tutti') {
+    Object.entries(GROUPS).forEach(([key]) => {
+      Object.entries(allData[key]).forEach(([id, item]) => {
+        entries.push({ id, item, group: key });
+      });
+    });
+  } else {
+    Object.entries(allData[activeFilter]).forEach(([id, item]) => {
+      entries.push({ id, item, group: activeFilter });
+    });
+  }
+
+  entries.sort((a, b) => (b.item.data || '').localeCompare(a.item.data || ''));
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="no-news">Nessuna comunicazione al momento. 💤</div>';
+    return;
+  }
+
   container.innerHTML = '';
-  entries.forEach(([id, item]) => {
+  entries.forEach(({ id, item, group }) => {
+    const g = GROUPS[group];
     const d = new Date(item.data);
     const dateStr = isNaN(d) ? item.data : d.toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
+    const badgeHtml = activeFilter === 'tutti'
+      ? `<span class="group-badge ${esc(g.badgeClass)}">${g.icon} ${esc(g.label)}</span>`
+      : '';
     const card = document.createElement('div');
     card.className = 'news-card';
-    card.innerHTML = `<div class="news-meta">📅 ${esc(dateStr)}</div>
+    card.dataset.group = group;
+    card.dataset.id = id;
+    card.innerHTML = `<div class="news-meta">📅 ${esc(dateStr)}${badgeHtml}</div>
       <div class="news-title">${esc(item.titolo)}</div>
       <div class="news-text">${esc(item.testo)}</div>
-      ${isManager() ? `<button class="news-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>` : ''}`;
+      ${isManager() ? `<button class="news-del-btn" title="Elimina">🗑️</button>` : ''}`;
     container.appendChild(card);
   });
+
   if (isManager()) {
     document.querySelectorAll('.news-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (confirm('Eliminare questa comunicazione?')) { newsRef.child(btn.dataset.id).remove(); showToast('✅ Comunicazione eliminata'); }
+        const cardEl = btn.closest('.news-card');
+        const grp = cardEl.dataset.group;
+        const itemId = cardEl.dataset.id;
+        if (confirm('Eliminare questa comunicazione?')) {
+          GROUPS[grp].ref.child(itemId).remove();
+          showToast('✅ Comunicazione eliminata');
+        }
       });
     });
   }
 }
 
+// Filter buttons
+const filterBtns = document.querySelectorAll('.filter-btn');
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeFilter = btn.dataset.filter;
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderNews();
+  });
+});
+
 document.getElementById('pub-btn').addEventListener('click', () => {
+  const group  = document.getElementById('news-group').value;
   const titolo = document.getElementById('news-title').value.trim();
   const testo  = document.getElementById('news-text').value.trim();
   if (!titolo) { showToast('⚠️ Inserisci un titolo!'); return; }
   if (!testo)  { showToast('⚠️ Inserisci il testo!'); return; }
-  newsRef.push({ titolo, testo, data: new Date().toISOString().slice(0,10) }).then(() => {
+  GROUPS[group].ref.push({ titolo, testo, data: new Date().toISOString().slice(0,10) }).then(() => {
     document.getElementById('news-title').value = '';
     document.getElementById('news-text').value = '';
-    showToast('? Comunicazione pubblicata!');
-  }).catch(() => showToast('? Errore nel salvataggio'));
+    showToast('✅ Comunicazione pubblicata!');
+  }).catch(() => showToast('❌ Errore nel salvataggio'));
 });
 
 const pinBtn = document.getElementById('pin-btn');
@@ -272,7 +372,7 @@ if (isManager()) document.getElementById('manager-panel').classList.add('visible
 pinBtn.addEventListener('click', () => {
   if (isManager()) {
     setManager(false); document.getElementById('manager-panel').classList.remove('visible');
-    updatePinBtn(); newsRef.orderByChild('data').once('value', snap => renderNews(snap.val() || {}));
+    updatePinBtn(); renderNews();
     showToast('👋 Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
@@ -298,9 +398,9 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2026') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    newsRef.orderByChild('data').once('value', snap => renderNews(snap.val() || {}));
-    showToast('? Modalità gestore attiva');
-  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+    renderNews();
+    showToast('✅ Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
 }
 </script>
 </body>
