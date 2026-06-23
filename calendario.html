@@ -277,7 +277,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label>Tipo evento</label>
+      <label>Campionato</label>
       <select class="form-input" id="f-campionato">
         <option value="Habawaba">Habawaba</option>
         <option value="U12">U12</option>
@@ -467,7 +467,7 @@ function render() {
         </div>
       </div>
       ${isFesta
-        ? `<div class="partita-avversario">🎉 ${esc(p.avversario || 'Evento')}</div>
+        ?         `<div class="partita-avversario">🎉 ${esc(p.nomeEvento || 'Festa')}</div>
            ${p.descrizione ? `<div class="partita-descrizione">${esc(p.descrizione)}</div>` : ''}`
         : `<div class="partita-avversario">vs ${esc(p.avversario)}</div>
            <div class="partita-info">
@@ -525,7 +525,7 @@ function render() {
         document.getElementById('f-citta').value = p.citta || '';
         document.getElementById('f-indirizzo').value = p.indirizzo || '';
         document.getElementById('f-descrizione').value = p.descrizione || '';
-        document.getElementById('f-nome-evento').value = isFesta ? (p.avversario || '') : '';
+        document.getElementById('f-nome-evento').value = isFesta ? (p.nomeEvento || '') : '';
         document.getElementById('trasferta-fields').style.display = p.luogo === 'trasferta' ? 'block' : 'none';
         toggleFestaFields(p.campionato === 'Festa');
         document.querySelector('.manager-panel h3').textContent = p.campionato === 'Festa' ? '✏️ Modifica Festa' : '✏️ Modifica Partita';
@@ -700,7 +700,7 @@ document.getElementById('add-btn').addEventListener('click', () => {
   if (!isFesta && !avversario) { showToast('⚠️ Inserisci l\'avversario!'); return; }
   let entry;
   if (isFesta) {
-    entry = { data, ora, campionato, avversario: document.getElementById('f-nome-evento').value.trim() || 'Festa', descrizione };
+    entry = { data, ora, campionato, nomeEvento: document.getElementById('f-nome-evento').value.trim() || 'Festa', descrizione };
   } else {
     entry = { data, ora, campionato, avversario, luogo, risultato };
     if (luogo === 'trasferta') {
