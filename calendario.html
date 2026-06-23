@@ -443,7 +443,7 @@ function render() {
       const partitaId = btn.dataset.id;
       const sec = document.getElementById('conv-' + partitaId);
       const isOpen = sec.classList.toggle('open');
-      if (isOpen && sec.dataset.rendered !== '1') {
+      if (isOpen && sec.dataset.rendered !== 'true') {
         const convPartita = allConvocati[partitaId] || {};
         const playerMap = buildPlayerMap();
         const convNomi = Object.keys(convPartita).map(pid => {
@@ -451,7 +451,7 @@ function render() {
           return pl ? { id: pid, nome: pl.nome, gruppo: pl.gruppo } : null;
         }).filter(Boolean);
         renderConvSection(partitaId, sec, convNomi, convPartita, playerMap);
-        sec.dataset.rendered = '1';
+        sec.dataset.rendered = 'true';
       }
     });
   });

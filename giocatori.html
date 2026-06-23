@@ -271,7 +271,7 @@ function render() {
       <h4>➕ Aggiungi giocatore</h4>
       <div class="add-row">
         <input type="text" class="add-input" id="add-input-${group.key}" placeholder="Nome e cognome…" maxlength="60"/>
-        <button class="add-btn-small" data-group="${esc(group.key)}">Aggiungi</button>
+        <button class="add-btn-small" data-group="${group.key}">Aggiungi</button>
       </div>`;
     container.appendChild(addPanel);
 
@@ -287,9 +287,9 @@ function render() {
         item.innerHTML = `
           <div style="display:flex;align-items:center;">
             <span class="player-name">${esc(p.nome)}</span>
-            <span class="player-group-badge ${esc(group.key)}">${esc(group.shortLabel)}</span>
+            <span class="player-group-badge ${group.key}">${esc(group.shortLabel)}</span>
           </div>
-          ${admin ? `<button class="player-del-btn" data-group="${esc(group.key)}" data-id="${esc(id)}" title="Rimuovi">🗑️</button>` : ''}`;
+          ${admin ? `<button class="player-del-btn" data-group="${group.key}" data-id="${esc(id)}" title="Rimuovi">🗑️</button>` : ''}`;
         list.appendChild(item);
       });
     }
