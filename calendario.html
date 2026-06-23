@@ -178,6 +178,52 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+
+    /* CONVOCATI */
+    .conv-toggle-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #e3f2fd; border: 1.5px solid #b3d9f7; border-radius: 10px;
+      padding: 5px 11px; font-size: 0.74rem; font-weight: 700; color: #006994;
+      cursor: pointer; font-family: inherit; margin-top: 10px; transition: background 0.2s;
+    }
+    .conv-toggle-btn:hover { background: #bbdefb; }
+    .conv-section { display: none; margin-top: 10px; }
+    .conv-section.open { display: block; }
+    .conv-filter-row {
+      display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;
+    }
+    .conv-filter-row::-webkit-scrollbar { display: none; }
+    .conv-filter-btn {
+      background: white; border: 1.5px solid #b3d9f7; border-radius: 14px;
+      padding: 4px 10px; font-size: 0.70rem; font-weight: 700; color: #006994;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit;
+    }
+    .conv-filter-btn.active, .conv-filter-btn:hover {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+    .conv-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .conv-chip {
+      display: flex; align-items: center; gap: 5px;
+      background: #e0f2f1; border: 1.5px solid #80cbc4; border-radius: 10px;
+      padding: 4px 10px; font-size: 0.76rem; font-weight: 700; color: #006994;
+    }
+    .conv-chip.selected { background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent; }
+    .conv-chip-remove {
+      background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer;
+      font-size: 0.8rem; padding: 0; line-height: 1;
+    }
+    .conv-chip-remove:hover { color: white; }
+    .conv-player-btn {
+      background: white; border: 1.5px solid #b3d9f7; border-radius: 10px;
+      padding: 4px 10px; font-size: 0.74rem; font-weight: 700; color: #006994;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .conv-player-btn:hover { background: #e3f2fd; }
+    .conv-player-btn.convocato { background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent; }
+    .conv-empty { font-size: 0.78rem; color: #90a4ae; font-style: italic; }
+    .conv-label { font-size: 0.70rem; font-weight: 800; color: #90a4ae;
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .conv-divider { border: none; border-top: 1.5px solid #e3f2fd; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -279,7 +325,7 @@
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire il calendario</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="current-password"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -302,6 +348,14 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 const calRef = db.ref('nekton/calendario');
+const giocatoriRef = db.ref('nekton/giocatori');
+const convocatiRef = db.ref('nekton/convocati');
+
+const GROUPS = [
+  { key: 'acquagol', label: '🌊 Acquagol', shortLabel: 'Acquagol' },
+  { key: 'u13',      label: '🏊 U13',      shortLabel: 'U13' },
+  { key: 'senior',   label: '🤽 Senior',   shortLabel: 'Senior' }
+];
 
 function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
 function setManager(v) { sessionStorage.setItem('nektonManager', v ? '1' : '0'); }
@@ -312,6 +366,8 @@ function showToast(msg) {
 }
 
 let allData = {};
+let allPlayers = {};
+let allConvocati = {};
 let activeFilter = 'tutti';
 
 db.ref('.info/connected').on('value', snap => {
@@ -321,6 +377,19 @@ db.ref('.info/connected').on('value', snap => {
 });
 
 calRef.on('value', snap => { allData = snap.val() || {}; render(); });
+giocatoriRef.on('value', snap => { allPlayers = snap.val() || {}; render(); });
+convocatiRef.on('value', snap => { allConvocati = snap.val() || {}; render(); });
+
+function buildPlayerMap() {
+  const map = {};
+  GROUPS.forEach(grp => {
+    const grpData = allPlayers[grp.key] || {};
+    Object.entries(grpData).forEach(([pid, player]) => {
+      map[pid] = { ...player, gruppo: grp.key };
+    });
+  });
+  return map;
+}
 
 function render() {
   const today = new Date().toISOString().slice(0,10);
@@ -333,6 +402,9 @@ function render() {
     container.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';
     return;
   }
+
+  const playerMap = buildPlayerMap();
+
   container.innerHTML = '';
   entries.forEach(([id, p]) => {
     const isPast = p.data && p.data < today;
@@ -340,6 +412,11 @@ function render() {
     const dateStr = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
     const card = document.createElement('div');
     card.className = `partita-card${isPast ? ' passata' : ''}`;
+
+    // Convocati della partita
+    const convPartita = allConvocati[id] || {};
+    const convCount = Object.keys(convPartita).length;
+
     card.innerHTML = `
       <div class="partita-top">
         <span class="campionato-badge">${esc(p.campionato)}</span>
@@ -352,13 +429,152 @@ function render() {
       </div>
       ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}
       ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>` : ''}
+      <button class="conv-toggle-btn" data-id="${esc(id)}">
+        👥 Convocati ${convCount > 0 ? `(${convCount})` : ''}
+      </button>
+      <div class="conv-section" id="conv-${esc(id)}"></div>
     `;
     container.appendChild(card);
   });
+
+  // Toggle convocati – lazy render on open
+  container.querySelectorAll('.conv-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const partitaId = btn.dataset.id;
+      const sec = document.getElementById('conv-' + partitaId);
+      const isOpen = sec.classList.toggle('open');
+      if (isOpen && sec.dataset.rendered !== 'true') {
+        const convPartita = allConvocati[partitaId] || {};
+        const playerMap = buildPlayerMap();
+        const convNomi = Object.keys(convPartita).map(pid => {
+          const pl = playerMap[pid];
+          return pl ? { id: pid, nome: pl.nome, gruppo: pl.gruppo } : null;
+        }).filter(Boolean);
+        renderConvSection(partitaId, sec, convNomi, convPartita, playerMap);
+        sec.dataset.rendered = 'true';
+      }
+    });
+  });
+
   if (isManager()) {
     document.querySelectorAll('.partita-del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (confirm('Eliminare questa partita?')) { calRef.child(btn.dataset.id).remove(); showToast('✅ Partita eliminata'); }
+      });
+    });
+  }
+}
+
+function renderConvSection(partitaId, section, convNomi, convPartita, playerMap) {
+  const admin = isManager();
+  section.innerHTML = '';
+
+  // Lista convocati attuali
+  if (convNomi.length > 0) {
+    const label = document.createElement('div');
+    label.className = 'conv-label';
+    label.textContent = 'Convocati';
+    section.appendChild(label);
+
+    const list = document.createElement('div');
+    list.className = 'conv-list';
+    convNomi.forEach(({ id, nome }) => {
+      const chip = document.createElement('div');
+      chip.className = 'conv-chip selected';
+      chip.innerHTML = `${esc(nome)}${admin ? `<button class="conv-chip-remove" data-pid="${esc(id)}" data-partita="${esc(partitaId)}" title="Rimuovi">✕</button>` : ''}`;
+      list.appendChild(chip);
+    });
+    section.appendChild(list);
+  } else {
+    const empty = document.createElement('div');
+    empty.className = 'conv-empty';
+    empty.textContent = 'Nessun convocato selezionato.';
+    section.appendChild(empty);
+  }
+
+  // Selezione giocatori (solo admin)
+  if (admin) {
+    const hr = document.createElement('hr');
+    hr.className = 'conv-divider';
+    section.appendChild(hr);
+
+    const selLabel = document.createElement('div');
+    selLabel.className = 'conv-label';
+    selLabel.textContent = 'Seleziona giocatori';
+    section.appendChild(selLabel);
+
+    // Filtri gruppo per selezione
+    const filterRow = document.createElement('div');
+    filterRow.className = 'conv-filter-row';
+    const allGroups = [{ key: 'tutti', label: 'Tutti' }, ...GROUPS];
+    let activeGroupFilter = 'tutti';
+
+    allGroups.forEach(g => {
+      const fb = document.createElement('button');
+      fb.className = 'conv-filter-btn' + (g.key === 'tutti' ? ' active' : '');
+      fb.textContent = g.label;
+      fb.dataset.gkey = g.key;
+      filterRow.appendChild(fb);
+    });
+    section.appendChild(filterRow);
+
+    const playerArea = document.createElement('div');
+    playerArea.className = 'conv-list';
+    section.appendChild(playerArea);
+
+    function renderPlayerSelection() {
+      playerArea.innerHTML = '';
+      const visibleGroups = activeGroupFilter === 'tutti' ? GROUPS : GROUPS.filter(g => g.key === activeGroupFilter);
+      const visibleKeys = new Set(visibleGroups.map(g => g.key));
+      let any = false;
+      Object.entries(playerMap)
+        .filter(([, pl]) => visibleKeys.has(pl.gruppo))
+        .sort((a, b) => (a[1].nome||'').localeCompare(b[1].nome||''))
+        .forEach(([pid, player]) => {
+          any = true;
+          const isConv = !!convPartita[pid];
+          const pb = document.createElement('button');
+          pb.className = 'conv-player-btn' + (isConv ? ' convocato' : '');
+          pb.textContent = player.nome;
+          pb.dataset.pid = pid;
+          pb.dataset.partita = partitaId;
+          playerArea.appendChild(pb);
+        });
+      if (!any) {
+        playerArea.innerHTML = '<div class="conv-empty">Nessun giocatore disponibile.</div>';
+      }
+    }
+    renderPlayerSelection();
+
+    filterRow.querySelectorAll('.conv-filter-btn').forEach(fb => {
+      fb.addEventListener('click', () => {
+        filterRow.querySelectorAll('.conv-filter-btn').forEach(b => b.classList.remove('active'));
+        fb.classList.add('active');
+        activeGroupFilter = fb.dataset.gkey;
+        renderPlayerSelection();
+      });
+    });
+
+    // Toggle convocato
+    playerArea.addEventListener('click', e => {
+      const pb = e.target.closest('.conv-player-btn');
+      if (!pb) return;
+      const pid = pb.dataset.pid;
+      const pRef = convocatiRef.child(pb.dataset.partita).child(pid);
+      if (pb.classList.contains('convocato')) {
+        pRef.remove().catch(() => showToast('❌ Errore'));
+      } else {
+        pRef.set(true).catch(() => showToast('❌ Errore'));
+      }
+    });
+  }
+
+  // Rimozione convocato (solo admin – x sui chip)
+  if (admin) {
+    section.querySelectorAll('.conv-chip-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        convocatiRef.child(btn.dataset.partita).child(btn.dataset.pid).remove()
+          .catch(() => showToast('❌ Errore'));
       });
     });
   }
