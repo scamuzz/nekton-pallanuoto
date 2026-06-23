@@ -198,7 +198,7 @@
   <div class="modal">
     <h3>🔑 Accesso Amministratore</h3>
     <p>Inserisci il PIN per gestire i giocatori</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="current-password"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -223,9 +223,9 @@ const db = firebase.database();
 const giocatoriRef = db.ref('nekton/giocatori');
 
 const GROUPS = [
-  { key: 'acquagol', label: '🌊 Acquagol' },
-  { key: 'u13',      label: '🏊 U13' },
-  { key: 'senior',   label: '🤽 Senior' }
+  { key: 'acquagol', label: '🌊 Acquagol', shortLabel: 'Acquagol' },
+  { key: 'u13',      label: '🏊 U13',      shortLabel: 'U13' },
+  { key: 'senior',   label: '🤽 Senior',   shortLabel: 'Senior' }
 ];
 
 function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
@@ -287,7 +287,7 @@ function render() {
         item.innerHTML = `
           <div style="display:flex;align-items:center;">
             <span class="player-name">${esc(p.nome)}</span>
-            <span class="player-group-badge ${esc(group.key)}">${esc(group.label.replace(/^.+ /,''))}</span>
+            <span class="player-group-badge ${esc(group.key)}">${esc(group.shortLabel)}</span>
           </div>
           ${admin ? `<button class="player-del-btn" data-group="${esc(group.key)}" data-id="${esc(id)}" title="Rimuovi">🗑️</button>` : ''}`;
         list.appendChild(item);

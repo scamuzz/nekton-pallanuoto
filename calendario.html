@@ -325,7 +325,7 @@
   <div class="modal">
     <h3>🔑 Accesso Gestore</h3>
     <p>Inserisci il PIN per gestire il calendario</p>
-    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+    <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="current-password"/>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
       <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
@@ -352,9 +352,9 @@ const giocatoriRef = db.ref('nekton/giocatori');
 const convocatiRef = db.ref('nekton/convocati');
 
 const GROUPS = [
-  { key: 'acquagol', label: '🌊 Acquagol' },
-  { key: 'u13',      label: '🏊 U13' },
-  { key: 'senior',   label: '🤽 Senior' }
+  { key: 'acquagol', label: '🌊 Acquagol', shortLabel: 'Acquagol' },
+  { key: 'u13',      label: '🏊 U13',      shortLabel: 'U13' },
+  { key: 'senior',   label: '🤽 Senior',   shortLabel: 'Senior' }
 ];
 
 function isManager() { return sessionStorage.getItem('nektonManager') === '1'; }
@@ -380,6 +380,17 @@ calRef.on('value', snap => { allData = snap.val() || {}; render(); });
 giocatoriRef.on('value', snap => { allPlayers = snap.val() || {}; render(); });
 convocatiRef.on('value', snap => { allConvocati = snap.val() || {}; render(); });
 
+function buildPlayerMap() {
+  const map = {};
+  GROUPS.forEach(grp => {
+    const grpData = allPlayers[grp.key] || {};
+    Object.entries(grpData).forEach(([pid, player]) => {
+      map[pid] = { ...player, gruppo: grp.key };
+    });
+  });
+  return map;
+}
+
 function render() {
   const today = new Date().toISOString().slice(0,10);
   const container = document.getElementById('calendario-container');
@@ -391,6 +402,9 @@ function render() {
     container.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';
     return;
   }
+
+  const playerMap = buildPlayerMap();
+
   container.innerHTML = '';
   entries.forEach(([id, p]) => {
     const isPast = p.data && p.data < today;
@@ -401,16 +415,7 @@ function render() {
 
     // Convocati della partita
     const convPartita = allConvocati[id] || {};
-    const convIds = Object.keys(convPartita);
-
-    // Raccoglie nomi convocati per la visualizzazione
-    const convNomi = convIds.map(pid => {
-      for (const grp of GROUPS) {
-        const g = allPlayers[grp.key] || {};
-        if (g[pid]) return { id: pid, nome: g[pid].nome, gruppo: grp.key };
-      }
-      return null;
-    }).filter(Boolean);
+    const convCount = Object.keys(convPartita).length;
 
     card.innerHTML = `
       <div class="partita-top">
@@ -425,21 +430,29 @@ function render() {
       ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}
       ${isManager() ? `<button class="partita-del-btn" data-id="${esc(id)}" title="Elimina">🗑️</button>` : ''}
       <button class="conv-toggle-btn" data-id="${esc(id)}">
-        👥 Convocati ${convNomi.length > 0 ? `(${convNomi.length})` : ''}
+        👥 Convocati ${convCount > 0 ? `(${convCount})` : ''}
       </button>
       <div class="conv-section" id="conv-${esc(id)}"></div>
     `;
     container.appendChild(card);
-
-    // Renderizza la sezione convocati (nascosta inizialmente)
-    renderConvSection(id, card.querySelector(`#conv-${esc(id)}`), convNomi, convPartita);
   });
 
-  // Toggle convocati
+  // Toggle convocati – lazy render on open
   container.querySelectorAll('.conv-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const sec = document.getElementById('conv-' + btn.dataset.id);
-      sec.classList.toggle('open');
+      const partitaId = btn.dataset.id;
+      const sec = document.getElementById('conv-' + partitaId);
+      const isOpen = sec.classList.toggle('open');
+      if (isOpen && sec.dataset.rendered !== '1') {
+        const convPartita = allConvocati[partitaId] || {};
+        const playerMap = buildPlayerMap();
+        const convNomi = Object.keys(convPartita).map(pid => {
+          const pl = playerMap[pid];
+          return pl ? { id: pid, nome: pl.nome, gruppo: pl.gruppo } : null;
+        }).filter(Boolean);
+        renderConvSection(partitaId, sec, convNomi, convPartita, playerMap);
+        sec.dataset.rendered = '1';
+      }
     });
   });
 
@@ -452,7 +465,7 @@ function render() {
   }
 }
 
-function renderConvSection(partitaId, section, convNomi, convPartita) {
+function renderConvSection(partitaId, section, convNomi, convPartita, playerMap) {
   const admin = isManager();
   section.innerHTML = '';
 
@@ -512,10 +525,12 @@ function renderConvSection(partitaId, section, convNomi, convPartita) {
     function renderPlayerSelection() {
       playerArea.innerHTML = '';
       const visibleGroups = activeGroupFilter === 'tutti' ? GROUPS : GROUPS.filter(g => g.key === activeGroupFilter);
+      const visibleKeys = new Set(visibleGroups.map(g => g.key));
       let any = false;
-      visibleGroups.forEach(grp => {
-        const grpData = allPlayers[grp.key] || {};
-        Object.entries(grpData).sort((a,b) => (a[1].nome||'').localeCompare(b[1].nome||'')).forEach(([pid, player]) => {
+      Object.entries(playerMap)
+        .filter(([, pl]) => visibleKeys.has(pl.gruppo))
+        .sort((a, b) => (a[1].nome||'').localeCompare(b[1].nome||''))
+        .forEach(([pid, player]) => {
           any = true;
           const isConv = !!convPartita[pid];
           const pb = document.createElement('button');
@@ -525,7 +540,6 @@ function renderConvSection(partitaId, section, convNomi, convPartita) {
           pb.dataset.partita = partitaId;
           playerArea.appendChild(pb);
         });
-      });
       if (!any) {
         playerArea.innerHTML = '<div class="conv-empty">Nessun giocatore disponibile.</div>';
       }
