@@ -354,7 +354,7 @@ document.getElementById('modal-confirm').addEventListener('click', checkPin);
 document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
 
 function checkPin() {
-  if (document.getElementById('pin-input').value === 'nekton2025') {
+  if (document.getElementById('pin-input').value === 'nekton2026') {
     setManager(true); overlay.classList.remove('open'); updatePinBtn();
     render(); showToast('🔓 Modalità gestore attiva');
   } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
