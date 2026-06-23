@@ -143,7 +143,21 @@
       font-size: 0.76rem; color: #f57f17; text-transform: uppercase;
       letter-spacing: 0.9px; font-weight: 800; margin-bottom: 12px;
     }
+    .manager-filter-row {
+      display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto;
+      padding-bottom: 4px; scrollbar-width: none;
+    }
+    .manager-filter-row::-webkit-scrollbar { display: none; }
+    .manager-filter-btn {
+      background: white; border: 2px solid #ffe082; border-radius: 20px;
+      padding: 6px 12px; font-size: 0.74rem; font-weight: 700; color: #f57f17;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit;
+    }
+    .manager-filter-btn.active, .manager-filter-btn:hover {
+      background: linear-gradient(135deg, #ffb300, #ff8f00); color: #3e2723; border-color: transparent;
+    }
     .edit-group-section { margin-bottom: 14px; }
+    .edit-group-section.hidden { display: none; }
     .edit-group-section h4 {
       font-size: 0.82rem; font-weight: 700; color: #1a3a5c; margin-bottom: 8px;
     }
@@ -244,6 +258,12 @@
         <option value="current">Solo settimana corrente</option>
         <option value="next">Solo settimana prossima</option>
       </select>
+    </div>
+    <div class="manager-filter-row">
+      <button class="manager-filter-btn active" data-mfilter="all">Tutti</button>
+      <button class="manager-filter-btn" data-mfilter="acquagol">🌊 Acquagol</button>
+      <button class="manager-filter-btn" data-mfilter="under13">🏊 U13</button>
+      <button class="manager-filter-btn" data-mfilter="senior">🤽 Senior</button>
     </div>
     <div id="edit-form"><!-- generato da JS --></div>
     <button class="save-btn" id="save-orari-btn">💾 Salva modifiche</button>
@@ -633,12 +653,28 @@ function buildEditForm() {
     });
     const sec = document.createElement('div');
     sec.className = 'edit-group-section';
+    sec.dataset.group = g.key;
     sec.innerHTML = `<h4>${g.label}</h4>${rowsHtml}`;
+    // apply current manager filter
+    const activeMFilter = (document.querySelector('.manager-filter-btn.active') || {}).dataset?.mfilter || 'all';
+    if (activeMFilter !== 'all' && activeMFilter !== g.key) sec.classList.add('hidden');
     form.appendChild(sec);
   });
 }
 
 document.getElementById('edit-week-select').addEventListener('change', buildEditForm);
+
+document.querySelectorAll('.manager-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.manager-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.mfilter;
+    document.querySelectorAll('#edit-form .edit-group-section').forEach(sec => {
+      if (f === 'all' || sec.dataset.group === f) sec.classList.remove('hidden');
+      else sec.classList.add('hidden');
+    });
+  });
+});
 
 document.getElementById('save-orari-btn').addEventListener('click', () => {
   const weekMode = document.getElementById('edit-week-select').value;
