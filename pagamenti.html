@@ -200,7 +200,7 @@
 
   <!-- PANNELLO GESTORE -->
   <div class="manager-panel" id="manager-panel">
-    <h3>? Aggiungi Scadenza</h3>
+    <h3>➕ Aggiungi Scadenza</h3>
     <div class="form-group">
       <label>Descrizione</label>
       <input type="text" class="form-input" id="f-desc" placeholder="es. Quota annuale iscrizione…" maxlength="80"/>
@@ -224,7 +224,7 @@
         <option value="senior">🤽 Senior</option>
       </select>
     </div>
-    <button class="pub-btn" id="add-btn">? Aggiungi scadenza</button>
+    <button class="pub-btn" id="add-btn">➕ Aggiungi scadenza</button>
   </div>
 
   <!-- FILTRI -->
@@ -319,7 +319,7 @@ function render() {
 
     let alertHtml = '';
     if (isScaduta) alertHtml = '<div class="pag-alert scaduta">🔴 Scaduta!</div>';
-    else if (isImminente) alertHtml = `<div class="pag-alert imminente">? Scade tra ${diffDays} giorn${diffDays===1?'o':'i'}!</div>`;
+    else if (isImminente) alertHtml = `<div class="pag-alert imminente">⏳ Scade tra ${diffDays} giorn${diffDays===1?'o':'i'}!</div>`;
 
     const card = document.createElement('div');
     card.className = `pag-card${isScaduta ? ' scaduta' : isImminente ? ' imminente' : ''}`;
@@ -368,8 +368,8 @@ document.getElementById('add-btn').addEventListener('click', () => {
     document.getElementById('f-desc').value = '';
     document.getElementById('f-importo').value = '';
     document.getElementById('f-data').value = '';
-    showToast('? Scadenza aggiunta!');
-  }).catch(() => showToast('? Errore nel salvataggio'));
+    showToast('✅ Scadenza aggiunta!');
+  }).catch(() => showToast('❌ Errore nel salvataggio'));
 });
 
 // PIN
@@ -407,8 +407,8 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2026') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalità gestore attiva');
-  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+    render(); showToast('🔓 Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
 }
 </script>
 </body>
