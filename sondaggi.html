@@ -266,7 +266,7 @@
         <input class="form-input-m opt-field" type="text" placeholder="Opzione 2" maxlength="60"/>
       </div>
     </div>
-    <button class="add-opt-btn" id="add-opt-btn">? Aggiungi opzione</button>
+    <button class="add-opt-btn" id="add-opt-btn">➕ Aggiungi opzione</button>
     <div class="toggle-container">
       <input type="checkbox" id="poll-multi"/>
       <label for="poll-multi">Consenti scelta multipla</label>
@@ -438,7 +438,7 @@ function handleVoto(pollId, optId) {
   const giaVotato = opzioni[optId]?.voti && !!opzioni[optId].voti[userKey];
   if (giaVotato) {
     sondaggiRef.child(pollId).child('opzioni').child(optId).child('voti').child(userKey).remove();
-    showToast('? Voto rimosso');
+    showToast('↩️ Voto rimosso');
   } else {
     if (!info.multipla) {
       Object.keys(opzioni).forEach(oKey => {
@@ -448,7 +448,7 @@ function handleVoto(pollId, optId) {
       });
     }
     sondaggiRef.child(pollId).child('opzioni').child(optId).child('voti').child(userKey).set(myName());
-    showToast('? Voto registrato!');
+    showToast('✅ Voto registrato!');
   }
 }
 
@@ -470,7 +470,7 @@ document.getElementById('add-opt-btn').addEventListener('click', () => {
   const row = document.createElement('div');
   row.className = 'opzione-input-row';
   row.innerHTML = `<input class="form-input-m opt-field" type="text" placeholder="Opzione ${count}" maxlength="60"/>
-    <button class="remove-opt-btn" type="button">?</button>`;
+    <button class="remove-opt-btn" type="button">✕</button>`;
   row.querySelector('.remove-opt-btn').addEventListener('click', () => row.remove());
   optSetupList.appendChild(row);
 });
@@ -532,8 +532,8 @@ function checkPin() {
   if (document.getElementById('pin-input').value === 'nekton2026') {
     setManager(true); overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    render(); showToast('? Modalità gestore attiva');
-  } else { document.getElementById('modal-error').textContent = '? PIN non corretto'; }
+    render(); showToast('🔐 Modalità gestore attiva');
+  } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
 }
 </script>
 </body>
