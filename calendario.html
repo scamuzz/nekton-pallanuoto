@@ -281,8 +281,11 @@
       <select class="form-input" id="f-campionato">
         <option value="Habawaba">Habawaba</option>
         <option value="U12">U12</option>
+        <option value="U13">U13</option>
         <option value="U14">U14</option>
+        <option value="U15">U15</option>
         <option value="U16">U16</option>
+        <option value="U17">U17</option>
         <option value="U18">U18</option>
         <option value="Promozione">Prima Squadra Promozione</option>
         <option value="Festa">🎉 Festa / Evento</option>
@@ -342,8 +345,11 @@
     <button class="filter-btn active" data-filter="tutti">Tutti</button>
     <button class="filter-btn" data-filter="Habawaba">Habawaba</button>
     <button class="filter-btn" data-filter="U12">U12</button>
+    <button class="filter-btn" data-filter="U13">U13</button>
     <button class="filter-btn" data-filter="U14">U14</button>
+    <button class="filter-btn" data-filter="U15">U15</button>
     <button class="filter-btn" data-filter="U16">U16</button>
+    <button class="filter-btn" data-filter="U17">U17</button>
     <button class="filter-btn" data-filter="U18">U18</button>
     <button class="filter-btn" data-filter="Promozione">Promozione</button>
     <button class="filter-btn" data-filter="Festa">🎉 Festa</button>
@@ -393,6 +399,7 @@ const convocatiRef = db.ref('nekton/convocati');
 const GROUPS = [
   { key: 'acquagol', label: '🌊 Acquagol', shortLabel: 'Acquagol' },
   { key: 'u13',      label: '🏊 U13',      shortLabel: 'U13' },
+  { key: 'u15', label: '🏊 U15', shortLabel: 'U15' },
   { key: 'senior',   label: '🤽 Senior',   shortLabel: 'Senior' }
 ];
 
