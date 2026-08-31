@@ -479,7 +479,7 @@ function render() {
              ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
            </div>
       //     ${p.luogo === 'trasferta' && (p.citta || p.indirizzo) ? `<div class="partita-trasferta-info">📍 ${[esc(p.citta), esc(p.indirizzo)].filter(Boolean).join(' – ')}</div>` : ''}`
-          ${p.luogo==='trasferta' && p.citta ? `<div class="partita-trasferta-info">📍 ${p.indirizzo ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.citta+', '+p.indirizzo)}" target="_blank" rel="noopener noreferrer">${esc(item.citta)}, ${esc(item.indirizzo)}</a>` : esc(item.citta)}</div>` : ''}
+          ${p.luogo==='trasferta' && p.citta ? `<div class="partita-trasferta-info">📍 ${p.indirizzo ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.citta+', '+p.indirizzo)}" target="_blank" rel="noopener noreferrer">${esc(p.citta)}, ${esc(p.indirizzo)}</a>` : esc(p.citta)}</div>` : ''}
       }
       <button class="conv-toggle-btn" data-id="${esc(id)}">
         🤽 Convocati ${convCount > 0 ? `(${convCount})` : ''}
