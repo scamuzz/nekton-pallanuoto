@@ -107,7 +107,8 @@
       margin-left: 8px;
     }
     .player-group-badge.acquagol { background: #e0f7fa; color: #006994; }
-    .player-group-badge.u13 { background: #fff3e0; color: #e65100; }
+    .player-group-badge.u12u13 { background: #fff3e0; color: #e65100; }
+    .player-group-badge.u14u15u16 { background: #fff3e0; color: #e65100; }
     .player-group-badge.senior { background: #e8eaf6; color: #1a3a5c; }
     .player-del-btn {
       background: none; border: none; color: #b3d9f7; cursor: pointer;
@@ -166,7 +167,7 @@
   <button class="pin-btn" id="pin-btn">🔒</button>
   <span class="icons">🤽🏽🤽‍♀️🤽🏻‍♀️</span>
   <h1>Liste Giocatori</h1>
-  <div class="subtitle">Acquagol · U13 · Senior</div>
+  <div class="subtitle">Acquagol · U12 U13 U14 U15 U16· Senior</div>
   <div class="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
     <span id="sync-label">Connessione in corso…</span>
@@ -185,7 +186,8 @@
   <div class="filter-row">
     <button class="filter-btn active" data-group="tutti">Tutti</button>
     <button class="filter-btn" data-group="acquagol">🌊 Acquagol</button>
-    <button class="filter-btn" data-group="u13">🏊 U13</button>
+    <button class="filter-btn" data-group="u12u13>🏊 U12 U13</button>
+     <button class="filter-btn" data-group="u14u15u16">🏊 U14 U15 U16</button>
     <button class="filter-btn" data-group="senior">🤽 Senior</button>
   </div>
 
@@ -230,7 +232,8 @@ const giocatoriRef = db.ref('nekton/giocatori');
 
 const GROUPS = [
   { key: 'acquagol', label: '🌊 Acquagol', shortLabel: 'Acquagol' },
-  { key: 'u13',      label: '🏊 U13',      shortLabel: 'U13' },
+  { key: 'u12u13',      label: '🏊 U12 U13',      shortLabel: 'U12 U13' },
+  { key: 'u14u15u16',      label: '🏊 U14 U15 U16',      shortLabel: 'U14 U15 U16' },
   { key: 'senior',   label: '🤽 Senior',   shortLabel: 'Senior' }
 ];
 
