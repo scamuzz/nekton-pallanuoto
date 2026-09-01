@@ -64,6 +64,44 @@
     }
     .news-del-btn:hover { color: #e53935; }
 
+    .news-attachments {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .attachment-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: #f3f9ff;
+      border: 1px solid #d9ecff;
+      color: #006994;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      width: fit-content;
+      max-width: 100%;
+      word-break: break-word;
+    }
+    .attachment-link:hover { background: #e8f4ff; }
+    .attachment-preview {
+      width: 100%;
+      border: 1px solid #d9ecff;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f8fcff;
+    }
+    .attachment-preview img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 360px;
+      object-fit: contain;
+      background: #fff;
+    }
+
     .no-news {
       text-align: center; font-size: 0.88rem; color: #90a4ae; font-style: italic;
       padding: 30px 10px; background: white; border-radius: 16px;
@@ -269,6 +307,68 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+function normalizeAttachments(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.filter(Boolean);
+  if (typeof raw === 'object') return Object.values(raw).filter(Boolean);
+  return [];
+}
+function inferAttachmentType(filePath = '') {
+  const f = String(filePath).toLowerCase();
+  if (/\.(png|jpe?g|gif|webp|svg)$/.test(f)) return 'img';
+  if (/\.pdf$/.test(f)) return 'pdf';
+  return 'file';
+}
+function renderAttachments(attachments) {
+  const list = normalizeAttachments(attachments);
+  if (!list.length) return '';
+
+  const rows = list.map(att => {
+    const file = String(att.file || '').trim();
+    if (!file) return '';
+
+    const type = (att.tipo || inferAttachmentType(file)).toLowerCase();
+    const title = esc(att.titolo || file.split('/').pop() || 'Allegato');
+    const safeFile = esc(file);
+
+    if (type === 'img') {
+      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">🖼️ ${title}</a>
+              <div class="attachment-preview"><img src="${safeFile}" alt="${title}" loading="lazy"></div>`;
+    }
+    if (type === 'pdf') {
+      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📄 ${title}</a>`;
+    }
+    return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📎 ${title}</a>`;
+  }).filter(Boolean).join('');
+
+  if (!rows) return '';
+  return `<div class="news-attachments">${rows}</div>`;
+}
+
+/* campi allegati nel pannello gestore */
+(function injectAttachmentFields() {
+  const panel = document.getElementById('manager-panel');
+  const pubBtn = document.getElementById('pub-btn');
+  if (!panel || !pubBtn) return;
+
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="form-group">
+      <label>Allegati (opzionali, uno per riga)</label>
+      <textarea class="form-input" id="news-attachments" placeholder="Esempi:
+allegati/locandina.jpg
+allegati/convocazione.pdf"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Titoli allegati (opzionali, uno per riga, stesso ordine)</label>
+      <textarea class="form-input" id="news-attachments-titles" placeholder="Esempi:
+Locandina Open Day
+Convocazione Torneo"></textarea>
+    </div>
+  `;
+  panel.insertBefore(wrap, pubBtn);
+})();
+
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
   if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
@@ -320,6 +420,7 @@ function renderNews() {
     card.innerHTML = `<div class="news-meta">📅 ${esc(dateStr)}${badgeHtml}</div>
       <div class="news-title">${esc(item.titolo)}</div>
       <div class="news-text">${esc(item.testo)}</div>
+      ${renderAttachments(item.allegati)}
       ${isManager() ? `<button class="news-del-btn" title="Elimina">🗑️</button>` : ''}`;
     container.appendChild(card);
   });
@@ -354,11 +455,35 @@ document.getElementById('pub-btn').addEventListener('click', () => {
   const group  = document.getElementById('news-group').value;
   const titolo = document.getElementById('news-title').value.trim();
   const testo  = document.getElementById('news-text').value.trim();
+  const filesRaw = (document.getElementById('news-attachments')?.value || '').trim();
+  const titlesRaw = (document.getElementById('news-attachments-titles')?.value || '').trim();
+
   if (!titolo) { showToast('⚠️ Inserisci un titolo!'); return; }
   if (!testo)  { showToast('⚠️ Inserisci il testo!'); return; }
-  GROUPS[group].ref.push({ titolo, testo, data: new Date().toISOString().slice(0,10) }).then(() => {
+
+  const files = filesRaw ? filesRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const titles = titlesRaw ? titlesRaw.split('\n').map(s => s.trim()) : [];
+
+  const allegati = files.map((file, i) => ({
+    file,
+    titolo: titles[i] || file.split('/').pop() || `Allegato ${i+1}`,
+    tipo: inferAttachmentType(file)
+  }));
+
+  const payload = {
+    titolo,
+    testo,
+    data: new Date().toISOString().slice(0,10)
+  };
+  if (allegati.length) payload.allegati = allegati;
+
+  GROUPS[group].ref.push(payload).then(() => {
     document.getElementById('news-title').value = '';
     document.getElementById('news-text').value = '';
+    const f = document.getElementById('news-attachments');
+    const t = document.getElementById('news-attachments-titles');
+    if (f) f.value = '';
+    if (t) t.value = '';
     showToast('✅ Comunicazione pubblicata!');
   }).catch(() => showToast('❌ Errore nel salvataggio'));
 });
