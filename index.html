@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="nekton-img.jpg" type="image/jpeg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#0078d4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nekton">
+  <link rel="manifest" href="manifest.json">
   <title>🤽 Nekton Treviglio Waterpolo</title>
   <style>
     :root { --news-border-color: #90caf9; }
@@ -208,6 +214,11 @@
       padding: 8px 0 24px; letter-spacing: 0.3px;
     }
   </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/nekton-pallanuoto/service-worker.js');
+    }
+  </script>
 </head>
 <body>
 
