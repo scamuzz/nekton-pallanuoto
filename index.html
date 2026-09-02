@@ -89,6 +89,50 @@
 
     .container { max-width: 540px; margin: 0 auto; padding: 22px 14px 64px; }
 
+    /* -- INSTALL BANNER -- */
+    .install-banner {
+      background: linear-gradient(135deg, #0078d4 0%, #00a4d9 100%);
+      border-radius: 18px;
+      padding: 18px 16px 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,77,122,0.15);
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; gap: 14px;
+      color: white;
+      animation: slideDown 0.4s ease-out;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .install-banner.hidden { display: none; }
+    .install-icon { font-size: 2.2rem; line-height: 1; flex-shrink: 0; }
+    .install-content { flex: 1; }
+    .install-content h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
+    .install-content p { font-size: 0.78rem; opacity: 0.95; line-height: 1.4; margin-bottom: 8px; }
+    .install-buttons { display: flex; gap: 8px; }
+    .install-btn {
+      padding: 8px 12px;
+      border: none; border-radius: 8px;
+      font-size: 0.75rem; font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .install-btn-primary {
+      background: white; color: #0078d4;
+    }
+    .install-btn-primary:hover { opacity: 0.9; }
+    .install-btn-secondary {
+      background: rgba(255,255,255,0.2); color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .install-btn-secondary:hover { opacity: 0.8; }
+    .close-install { 
+      flex-shrink: 0; font-size: 1.4rem; cursor: pointer; opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .close-install:hover { opacity: 1; }
+
     /* -- WELCOME BANNER -- */
     .welcome-banner {
       background: white; border-radius: 18px; padding: 20px 20px 18px;
@@ -218,6 +262,88 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/nekton-pallanuoto/service-worker.js');
     }
+
+    let deferredPrompt;
+    let isAppInstalled = false;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallBanner();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      isAppInstalled = true;
+      hideInstallBanner();
+    });
+
+    function showInstallBanner() {
+      const banner = document.getElementById('installBanner');
+      if (banner && !banner.classList.contains('hidden')) return;
+      if (banner) banner.classList.remove('hidden');
+    }
+
+    function hideInstallBanner() {
+      const banner = document.getElementById('installBanner');
+      if (banner) banner.classList.add('hidden');
+    }
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            hideInstallBanner();
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    function closeInstallBanner() {
+      hideInstallBanner();
+      localStorage.setItem('nektoniPhonePromptDismissed', 'true');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const banner = document.getElementById('installBanner');
+      const installBtn = document.getElementById('installBtn');
+      const closeBtn = document.getElementById('closeInstallBtn');
+
+      // On iOS, we can't use beforeinstallprompt, so we show it ourselves
+      if (isIOS) {
+        if (!localStorage.getItem('nektoniPhonePromptDismissed')) {
+          banner.classList.remove('hidden');
+          updateBannerForIOS(banner);
+        }
+      }
+
+      if (installBtn) installBtn.addEventListener('click', installApp);
+      if (closeBtn) closeBtn.addEventListener('click', closeInstallBanner);
+    });
+
+    function updateBannerForIOS(banner) {
+      const icon = banner.querySelector('.install-icon');
+      const title = banner.querySelector('.install-content h3');
+      const text = banner.querySelector('.install-content p');
+      const btnContainer = banner.querySelector('.install-buttons');
+
+      icon.textContent = '📱';
+      title.textContent = 'Aggiungi a Schermata';
+      text.textContent = 'Tocca il pulsante Condividi e seleziona "Aggiungi a schermata principale"';
+      btnContainer.innerHTML = '<button class="install-btn install-btn-secondary" onclick="document.getElementById(\'closeInstallBtn\').click()">Capito</button>';
+    }
+
+    // Hide install banner for Android if chrome doesn't support it
+    if (!deferredPrompt && !(/iPad|iPhone|iPod/.test(navigator.userAgent))) {
+      setTimeout(() => {
+        const banner = document.getElementById('installBanner');
+        if (banner && deferredPrompt === null) {
+          banner.classList.add('hidden');
+        }
+      }, 1000);
+    }
   </script>
 </head>
 <body>
@@ -240,12 +366,20 @@
 </div>
 
 <div class="container">
-<!--
-  <div class="welcome-banner">
-    <h2>👋 Benvenuti nel portale Nekton!</h2>
-    <p>Seleziona una sezione per accedere alle informazioni della squadra.</p>
+  <!-- INSTALL BANNER -->
+  <div id="installBanner" class="install-banner hidden">
+    <div class="install-icon">⬇️</div>
+    <div class="install-content">
+      <h3>Installa come App</h3>
+      <p>Accedi più velocemente direttamente dalla tua schermata principale</p>
+      <div class="install-buttons">
+        <button id="installBtn" class="install-btn install-btn-primary">Installa</button>
+        <button id="closeInstallBtn" class="install-btn install-btn-secondary">Adesso no</button>
+      </div>
+    </div>
+    <span class="close-install" onclick="document.getElementById('closeInstallBtn').click()">✕</span>
   </div>
--->
+
   <!-- ORARI -->
   <div class="section-label">📅 Orari</div>
   <a class="menu-card" href="orari.html" style="margin-bottom:24px;">
