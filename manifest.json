@@ -1,0 +1,24 @@
+{
+  "name": "Nekton Pallanuoto",
+  "short_name": "Nekton",
+  "description": "App per la gestione della squadra Nekton Pallanuoto",
+  "start_url": "/nekton-pallanuoto/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0078d4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "nekton-img.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "nekton-img.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
