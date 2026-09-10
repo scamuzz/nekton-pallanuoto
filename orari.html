@@ -78,6 +78,7 @@
     .badge-acquagol { background: #e0f7fa; color: #006994; }
     .badge-under13  { background: #e0f7fa; color: #006994; }
     .badge-under15 { background: #e0f7fa; color: #006994; }
+    .badge-under16  { background: #e0f7fa; color: #006994; }
     .badge-senior   { background: #e8eaf6; color: #1a3a5c; }
 
     .day-row {
@@ -266,7 +267,7 @@
       <button class="manager-filter-btn" data-mfilter="acquagol">🌊 Acquagol</button>
       <button class="manager-filter-btn" data-mfilter="under13">🏊 U12-U13</button>
       <button class="manager-filter-btn" data-mfilter="under15">🏊 U14-U15-U16</button>
-      <button class="manager-filter-btn" data-mfilter="under15">🏊 U16</button>
+      <button class="manager-filter-btn" data-mfilter="under16">🏊 U16</button>
       <button class="manager-filter-btn" data-mfilter="senior">🤽 Senior</button>
     </div>
     <div id="edit-form"><!-- generato da JS --></div>
@@ -279,7 +280,7 @@
     <button class="filter-btn" data-filter="acquagol">🌊 Acquagol</button>
     <button class="filter-btn" data-filter="under13">🏊 U12-U13</button>
     <button class="filter-btn" data-filter="under15">🏊 U14-U15-U16</button>
-    <button class="filter-btn" data-filter="under15">🏊 U16</button>
+    <button class="filter-btn" data-filter="under16">🏊 U16</button>
     <button class="filter-btn" data-filter="senior">🤽 Senior</button>
   </div>
 
@@ -339,6 +340,12 @@ const DEFAULT_ORARI = {
     sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
   },
   under15: {
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
+  },
+   under16: {
     martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
     mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
     venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
@@ -455,9 +462,9 @@ function renderSchedule() {
 
   const gruppi = [
     { key: 'acquagol', label: 'Acquagol', emoji: '🌊', badge: 'badge-acquagol', anni: 'Nati 2016+' },
-    { key: 'under13',  label: 'U12-U13', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2014–2015' },
+    { key: 'under13',  label: 'U12-U13', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2014/15' },
     { key: 'under15',  label: 'U14-U15-U16', emoji: '🏊', badge: 'badge-under15',  anni: 'Nati 2012/13' },
-    { key: 'under16',  label: 'U16', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2011' },
+    { key: 'under16',  label: 'U16', emoji: '🏊', badge: 'badge-under16',  anni: 'Nati 2011' },
     { key: 'senior',   label: 'Senior',   emoji: '🤽', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
   ];
 
@@ -636,6 +643,7 @@ function buildEditForm() {
     { key: 'acquagol', label: '🌊 Acquagol' },
     { key: 'under13',  label: '🏊 Under 13' },
     { key: 'under15',  label: '🏊 Under 15' },
+    { key: 'under15',  label: '🏊 Under 16' },
     { key: 'senior',   label: '🤽 Senior' }
   ];
   gruppi.forEach(g => {
