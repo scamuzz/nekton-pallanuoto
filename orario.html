@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="nekton-img.jpg" type="image/jpeg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>&#x1F4C5; Orari Allenamenti � Nekton</title>
+  <title>&#x1F4C5; Orari Allenamenti · Nekton</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -235,11 +235,11 @@
 
 <div class="header">
   <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn" title="Accesso gestore">??</button>
+  <button class="pin-btn" id="pin-btn" title="Accesso gestore">🔒</button>
   <span class="icons">&#x1F4C5;</span>
   <h1>Orari Allenamenti</h1>
   <div class="subtitle">Settimana corrente</div>
-  <div class="week-info" id="week-label">Caricamento�</div>
+  <div class="week-info" id="week-label">Caricamento…</div>
 </div>
 
 <div class="wave-divider">
@@ -252,7 +252,7 @@
 
   <!-- PANNELLO GESTORE -->
   <div class="manager-panel" id="manager-panel">
-    <h3>?? Pannello Gestore � Modifica Orari</h3>
+    <h3>⚙️ Pannello Gestore – Modifica Orari</h3>
     <div class="week-selector">
       <label>Applica a:</label>
       <select id="edit-week-select">
@@ -264,24 +264,24 @@
     <div class="manager-filter-row">
       <!-- data-mfilter values must match group keys: acquagol, under13, senior -->
       <button class="manager-filter-btn active" data-mfilter="all">Tutti</button>
-      <button class="manager-filter-btn" data-mfilter="acquagol">?? Acquagol</button>
-      <button class="manager-filter-btn" data-mfilter="under13">?? U12-U13</button>
-      <button class="manager-filter-btn" data-mfilter="under15">?? U14-U15-U16</button>
-      <button class="manager-filter-btn" data-mfilter="under16">?? U16</button>
-      <button class="manager-filter-btn" data-mfilter="senior">?? Senior</button>
+      <button class="manager-filter-btn" data-mfilter="acquagol">🌊 Acquagol</button>
+      <button class="manager-filter-btn" data-mfilter="under13">🏊 U12-U13</button>
+      <button class="manager-filter-btn" data-mfilter="under15">🏊 U14-U15-U16</button>
+      <button class="manager-filter-btn" data-mfilter="under16">🏊 U16</button>
+      <button class="manager-filter-btn" data-mfilter="senior">🤽 Senior</button>
     </div>
     <div id="edit-form"><!-- generato da JS --></div>
-    <button class="save-btn" id="save-orari-btn">?? Salva modifiche</button>
+    <button class="save-btn" id="save-orari-btn">💾 Salva modifiche</button>
   </div>
 
   <!-- FILTRO -->
   <div class="filter-row">
     <button class="filter-btn active" data-filter="all">Tutti</button>
-    <button class="filter-btn" data-filter="acquagol">?? Acquagol</button>
-    <button class="filter-btn" data-filter="under13">?? U12-U13</button>
-    <button class="filter-btn" data-filter="under15">?? U14-U15-U16</button>
-    <button class="filter-btn" data-filter="under16">?? U16</button>
-    <button class="filter-btn" data-filter="senior">?? Senior</button>
+    <button class="filter-btn" data-filter="acquagol">🌊 Acquagol</button>
+    <button class="filter-btn" data-filter="under13">🏊 U12-U13</button>
+    <button class="filter-btn" data-filter="under15">🏊 U14-U15-U16</button>
+    <button class="filter-btn" data-filter="under16">🏊 U16</button>
+    <button class="filter-btn" data-filter="senior">🤽 Senior</button>
   </div>
 
   <!-- CARDS ORARI -->
@@ -289,17 +289,17 @@
 
 </div>
 
-<div class="page-footer">&#x1F4C5; Nekton Pallanuoto &nbsp;�&nbsp; Orari Allenamenti</div>
+<div class="page-footer">&#x1F4C5; Nekton Pallanuoto &nbsp;·&nbsp; Orari Allenamenti</div>
 <div class="toast" id="toast"></div>
 
 <!-- MODALE PIN -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3 id="modal-title">?? Accesso Gestore</h3>
-    <p id="modal-desc">Inserisci il PIN per accedere alla modalit� gestore</p>
+    <h3 id="modal-title">🔑 Accesso Gestore</h3>
+    <p id="modal-desc">Inserisci il PIN per accedere alla modalità gestore</p>
     <div class="pin-input-wrap">
-      <input type="password" id="pin-input" placeholder="��������" maxlength="20" autocomplete="off"/>
-      <button class="pin-toggle" id="pin-toggle" type="button" title="Mostra/Nascondi PIN">???</button>
+      <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
+      <button class="pin-toggle" id="pin-toggle" type="button" title="Mostra/Nascondi PIN">👁️</button>
     </div>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-btns">
@@ -330,40 +330,40 @@ function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
 // -- Hardcoded fallback schedules (used only when Firebase default is not set)
 const DEFAULT_ORARI = {
   acquagol: {
-    mercoledi: { attivo: true, orario: '17:00�18:00', nota: '' },
-    sabato:    { attivo: true, orario: '16:00�17:00', nota: '' }
+    mercoledi: { attivo: true, orario: '17:00–18:00', nota: '' },
+    sabato:    { attivo: true, orario: '16:00–17:00', nota: '' }
   },
   under13: {
-    martedi:   { attivo: true, orario: '18:00�19:15', nota: '' },
-    mercoledi: { attivo: true, orario: '18:00�19:15', nota: '' },
-    venerdi:   { attivo: true, orario: '18:00�19:00', nota: '' },
-    sabato:    { attivo: true, orario: '17:00�18:00', nota: '' }
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
   },
   under15: {
-    martedi:   { attivo: true, orario: '18:00�19:15', nota: '' },
-    mercoledi: { attivo: true, orario: '18:00�19:15', nota: '' },
-    venerdi:   { attivo: true, orario: '18:00�19:00', nota: '' },
-    sabato:    { attivo: true, orario: '17:00�18:00', nota: '' }
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
   },
    under16: {
-    martedi:   { attivo: true, orario: '18:00�19:15', nota: '' },
-    mercoledi: { attivo: true, orario: '18:00�19:15', nota: '' },
-    venerdi:   { attivo: true, orario: '18:00�19:00', nota: '' },
-    sabato:    { attivo: true, orario: '17:00�18:00', nota: '' }
+    martedi:   { attivo: true, orario: '18:00–19:15', nota: '' },
+    mercoledi: { attivo: true, orario: '18:00–19:15', nota: '' },
+    venerdi:   { attivo: true, orario: '18:00–19:00', nota: '' },
+    sabato:    { attivo: true, orario: '17:00–18:00', nota: '' }
   },
   senior: {
-    martedi:   { attivo: true, orario: '20:00�21:15', nota: '' },
-    mercoledi: { attivo: true, orario: '19:00�20:15', nota: '' },
-    venerdi:   { attivo: true, orario: '20:00�21:15', nota: '' },
-    sabato:    { attivo: true, orario: '19:00�20:00', nota: '' }
+    martedi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    mercoledi: { attivo: true, orario: '19:00–20:15', nota: '' },
+    venerdi:   { attivo: true, orario: '20:00–21:15', nota: '' },
+    sabato:    { attivo: true, orario: '19:00–20:00', nota: '' }
   }
 };
 
 // Firebase default schedule (overrides DEFAULT_ORARI when present)
 let defaultData = {};
 
-const GIORNI_IT = { lunedi: 'Luned�', martedi: 'Marted�', mercoledi: 'Mercoled�',
-  giovedi: 'Gioved�', venerdi: 'Venerd�', sabato: 'Sabato', domenica: 'Domenica' };
+const GIORNI_IT = { lunedi: 'Lunedì', martedi: 'Martedì', mercoledi: 'Mercoledì',
+  giovedi: 'Giovedì', venerdi: 'Venerdì', sabato: 'Sabato', domenica: 'Domenica' };
 const GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica'];
 const ADMIN_GIORNI_ORDER = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato'];
 const GIORNI_DOW = { lunedi:1, martedi:2, mercoledi:3, giovedi:4, venerdi:5, sabato:6, domenica:0 };
@@ -412,7 +412,7 @@ let activeFilter = 'all';
 
 document.getElementById('week-label').textContent =
   (() => { const s = weekStart(currentWeekKey); const e = new Date(s); e.setDate(s.getDate()+6);
-    return `${formatDate(s)} � ${formatDate(e)}`; })();
+    return `${formatDate(s)} – ${formatDate(e)}`; })();
 
 // Listen Firebase
 function listenWeek(wk) {
@@ -461,11 +461,11 @@ function renderSchedule() {
   container.innerHTML = '';
 
   const gruppi = [
-    { key: 'acquagol', label: 'Acquagol', emoji: '??', badge: 'badge-acquagol', anni: 'Nati 2016+' },
-    { key: 'under13',  label: 'U12-U13', emoji: '??', badge: 'badge-under13',  anni: 'Nati 2014/15' },
-    { key: 'under15',  label: 'U14-U15-U16', emoji: '??', badge: 'badge-under15',  anni: 'Nati 2012/13' },
-    { key: 'under16',  label: 'U16', emoji: '??', badge: 'badge-under16',  anni: 'Nati 2011' },
-    { key: 'senior',   label: 'Senior',   emoji: '??', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
+    { key: 'acquagol', label: 'Acquagol', emoji: '🌊', badge: 'badge-acquagol', anni: 'Nati 2016+' },
+    { key: 'under13',  label: 'U12-U13', emoji: '🏊', badge: 'badge-under13',  anni: 'Nati 2014/15' },
+    { key: 'under15',  label: 'U14-U15-U16', emoji: '🏊', badge: 'badge-under15',  anni: 'Nati 2012/13' },
+    { key: 'under16',  label: 'U16', emoji: '🏊', badge: 'badge-under16',  anni: 'Nati 2011' },
+    { key: 'senior',   label: 'Senior',   emoji: '🤽', badge: 'badge-senior',   anni: 'Nati 2010 e prec.' }
   ];
 
   // --- SETTIMANA CORRENTE ---
@@ -500,14 +500,14 @@ function renderSchedule() {
 
       let content;
       if (!info) {
-        content = `<div class="no-train" style="color:#c8d8e4;">� Non programmato</div>`;
+        content = `<div class="no-train" style="color:#c8d8e4;">– Non programmato</div>`;
       } else if (info.attivo) {
         let modTag = '';
-        if (isExtraDay)   modTag = `<span class="modified-tag tag-extra">? Giornata in pi�</span>`;
-        else if (timeChanged) modTag = `<span class="modified-tag">?? orario modificato</span>`;
-        content = `<div class="orario-time">${esc(info.orario)}${modTag}</div>${info.nota ? `<div class="orario-nota">?? ${esc(info.nota)}</div>` : ''}`;
+        if (isExtraDay)   modTag = `<span class="modified-tag tag-extra">➕ Giornata in più</span>`;
+        else if (timeChanged) modTag = `<span class="modified-tag">⚠️ orario modificato</span>`;
+        content = `<div class="orario-time">${esc(info.orario)}${modTag}</div>${info.nota ? `<div class="orario-nota">ℹ️ ${esc(info.nota)}</div>` : ''}`;
       } else {
-        content = `<div class="no-train">? Allenamento annullato${info.nota ? ' � ' + esc(info.nota) : ''}</div>`;
+        content = `<div class="no-train">❌ Allenamento annullato${info.nota ? ' – ' + esc(info.nota) : ''}</div>`;
       }
 
       daysHtml += `<div class="day-row${isExtraDay ? ' extra-day' : isModified ? ' modified' : ''}">
@@ -558,13 +558,13 @@ function renderSchedule() {
 
       let content, rowClass;
       if (nxIsExtraDay) {
-        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag tag-extra">? Giornata in pi�</span></div>${nxInfo.nota ? `<div class="orario-nota">?? ${esc(nxInfo.nota)}</div>` : ''}`;
+        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag tag-extra">➕ Giornata in più</span></div>${nxInfo.nota ? `<div class="orario-nota">ℹ️ ${esc(nxInfo.nota)}</div>` : ''}`;
         rowClass = ' extra-day';
       } else if (nxIsCancelled) {
-        content  = `<div class="no-train">? Allenamento annullato${nxInfo.nota ? ' � ' + esc(nxInfo.nota) : ''}</div>`;
+        content  = `<div class="no-train">❌ Allenamento annullato${nxInfo.nota ? ' – ' + esc(nxInfo.nota) : ''}</div>`;
         rowClass = ' modified';
       } else {
-        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag">?? orario modificato</span></div>${nxInfo.nota ? `<div class="orario-nota">?? ${esc(nxInfo.nota)}</div>` : ''}`;
+        content  = `<div class="orario-time">${esc(nxInfo.orario)}<span class="modified-tag">⚠️ orario modificato</span></div>${nxInfo.nota ? `<div class="orario-nota">ℹ️ ${esc(nxInfo.nota)}</div>` : ''}`;
         rowClass = ' modified';
       }
 
@@ -599,7 +599,7 @@ function renderSchedule() {
     const divider = document.createElement('div');
     divider.className = 'week-section-label';
     divider.id = 'next-week-divider';
-    divider.textContent = `Settimana prossima � ${formatDate(nxStart)} � ${formatDate(nxEnd)}`;
+    divider.textContent = `Settimana prossima · ${formatDate(nxStart)} – ${formatDate(nxEnd)}`;
     container.appendChild(divider);
     nextCards.forEach(c => container.appendChild(c));
   }
@@ -640,11 +640,11 @@ function buildEditForm() {
   form.innerHTML = '';
 
   const gruppi = [
-    { key: 'acquagol', label: '?? Acquagol' },
-    { key: 'under13',  label: '?? Under 13' },
-    { key: 'under15',  label: '?? Under 15' },
-    { key: 'under15',  label: '?? Under 16' },
-    { key: 'senior',   label: '?? Senior' }
+    { key: 'acquagol', label: '🌊 Acquagol' },
+    { key: 'under13',  label: '🏊 Under 13' },
+    { key: 'under15',  label: '🏊 Under 15' },
+    { key: 'under15',  label: '🏊 Under 16' },
+    { key: 'senior',   label: '🤽 Senior' }
   ];
   gruppi.forEach(g => {
     // For "default" mode show effective defaults, otherwise merge week data on top
@@ -658,7 +658,7 @@ function buildEditForm() {
       const date = new Date(wkStart);
       date.setDate(wkStart.getDate() + (dow - 1 + 7) % 7);
       const dateLabel = weekMode === 'default' ? '' : `<span style="font-size:0.65rem;color:#90a4ae">${formatDate(date)}</span>`;
-      const orParts = (info.orario || '').split('�');
+      const orParts = (info.orario || '').split('–');
       const tStart = (orParts[0] || '').trim();
       const tEnd   = (orParts[1] || '').trim();
       rowsHtml += `<div class="edit-row">
@@ -668,10 +668,10 @@ function buildEditForm() {
         </label>
         <div style="display:flex;align-items:center;gap:4px;">
           <input type="time" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario-start" value="${esc(tStart)}" style="max-width:100px;padding:6px 8px;min-width:0;"/>
-          <span style="color:#888;font-weight:bold;flex-shrink:0;">�</span>
+          <span style="color:#888;font-weight:bold;flex-shrink:0;">–</span>
           <input type="time" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="orario-end" value="${esc(tEnd)}" style="max-width:100px;padding:6px 8px;min-width:0;"/>
         </div>
-        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore�" style="flex:2;"/>
+        <input type="text" class="edit-input" data-g="${g.key}" data-d="${giorno}" data-t="nota" value="${esc(info.nota)}" placeholder="Nota gestore…" style="flex:2;"/>
       </div>`;
     });
     const sec = document.createElement('div');
@@ -722,7 +722,7 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
       if (updates[g][d]._timeInputs) {
         const s = updates[g][d]._timeInputs.start || '';
         const e = updates[g][d]._timeInputs.end   || '';
-        updates[g][d].orario = s && e ? `${s}�${e}` : '';
+        updates[g][d].orario = s && e ? `${s}–${e}` : '';
         delete updates[g][d]._timeInputs;
       }
     }
@@ -754,8 +754,8 @@ document.getElementById('save-orari-btn').addEventListener('click', () => {
     ref = db.ref(`nekton/orari/${wk}`);
   }
   ref.set(updates).then(() => {
-    showToast('? Orari salvati!');
-  }).catch(() => showToast('? Errore nel salvataggio'));
+    showToast('✅ Orari salvati!');
+  }).catch(() => showToast('❌ Errore nel salvataggio'));
 });
 
 // -- PIN MODAL
@@ -763,7 +763,7 @@ const pinBtn = document.getElementById('pin-btn');
 const overlay = document.getElementById('modal-overlay');
 
 function updatePinBtn() {
-  pinBtn.textContent = isManager() ? '??' : '??';
+  pinBtn.textContent = isManager() ? '🔓' : '🔒';
 }
 updatePinBtn();
 
@@ -772,12 +772,12 @@ pinBtn.addEventListener('click', () => {
     setManager(false);
     document.getElementById('manager-panel').classList.remove('visible');
     updatePinBtn();
-    showToast('?? Logout gestore effettuato');
+    showToast('👋 Logout gestore effettuato');
   } else {
     document.getElementById('modal-error').textContent = '';
     document.getElementById('pin-input').value = '';
     document.getElementById('pin-input').type = 'password';
-    document.getElementById('pin-toggle').textContent = '???';
+    document.getElementById('pin-toggle').textContent = '👁️';
     overlay.classList.add('open');
     setTimeout(() => document.getElementById('pin-input').focus(), 100);
   }
@@ -791,8 +791,8 @@ document.getElementById('pin-input').addEventListener('keydown', e => { if (e.ke
 document.getElementById('pin-toggle').addEventListener('click', () => {
   const inp = document.getElementById('pin-input');
   const tog = document.getElementById('pin-toggle');
-  if (inp.type === 'password') { inp.type = 'text'; tog.textContent = '??'; }
-  else { inp.type = 'password'; tog.textContent = '???'; }
+  if (inp.type === 'password') { inp.type = 'text'; tog.textContent = '🙈'; }
+  else { inp.type = 'password'; tog.textContent = '👁️'; }
 });
 
 function checkPin() {
@@ -803,9 +803,9 @@ function checkPin() {
     document.getElementById('manager-panel').classList.add('visible');
     updatePinBtn();
     buildEditForm();
-    showToast('?? Modalit� gestore attiva');
+    showToast('🔓 Modalità gestore attiva');
   } else {
-    document.getElementById('modal-error').textContent = '? PIN non corretto';
+    document.getElementById('modal-error').textContent = '❌ PIN non corretto';
   }
 }
 
