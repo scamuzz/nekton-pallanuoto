@@ -50,11 +50,30 @@
     .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
 
     /* FILTRI GRUPPO */
-    .filter-row {
-      display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
-      padding-bottom: 4px; scrollbar-width: none;
-    }
-    .filter-row::-webkit-scrollbar { display: none; }
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: visible;
+  padding-bottom: 4px;
+}
+
+.filter-btn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  .filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-row::-webkit-scrollbar {
+    display: none;
+  }
+}
     .filter-btn {
       background: white; border: 2px solid #b3d9f7; border-radius: 20px;
       padding: 7px 14px; font-size: 0.74rem; font-weight: 700; color: #006994;
