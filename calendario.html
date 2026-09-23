@@ -5,89 +5,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>📆 Calendario Partite · Nekton</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{width:100%;overflow-x:hidden}
-    body{font-family:'Segoe UI',sans-serif;background:#e8f4fd;min-height:100vh;color:#1a3a5c}
-    .header{
-      background:linear-gradient(160deg,#012AFE 0%,#0055cc 40%,#00b4d8 100%);
-      color:#fff;padding:36px 20px 24px;text-align:center;position:relative
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
+    body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; color: #1a3a5c; }
+
+    .header {
+      background: linear-gradient(160deg, #012AFE 0%, #0055cc 40%, #00b4d8 100%);
+      color: white; padding: 36px 20px 24px; text-align: center; position: relative;
     }
-    .back-link,.pin-btn{position:absolute;top:14px;background:rgba(255,255,255,.25);color:#fff;border:0;cursor:pointer}
-    .back-link{left:14px;border-radius:20px;padding:7px 15px;text-decoration:none;font-size:.76rem;font-weight:700}
-    .pin-btn{right:14px;border-radius:50%;width:40px;height:40px;font-size:1.2rem}
-    .icons{font-size:3rem;display:block;margin-bottom:10px}
-    .header h1{font-size:1.6rem}
-    .subtitle{font-size:.82rem;opacity:.9}
-    .sync-status{display:flex;justify-content:center;align-items:center;gap:6px;font-size:.7rem;margin-top:10px}
-    .sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff}
-    .sync-dot.connected{background:#69f0ae}
-    .sync-dot.error{background:#ff5252}
-    .wave-divider{line-height:0;background:linear-gradient(160deg,#012AFE,#0055cc 40%,#00b4d8)}
-    .wave-divider svg{width:100%;display:block}
-    .container{max-width:540px;margin:auto;padding:16px 12px 64px}
-    .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-    .filter-btn{background:#fff;border:2px solid #b3d9f7;border-radius:20px;padding:7px 14px;color:#006994;font-weight:700;cursor:pointer}
-    .filter-btn.active,.filter-btn:hover{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}
-    .partita-card{background:#fff;border:2px solid #ddeeff;border-left:5px solid #006994;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 3px 14px rgba(0,105,148,.07)}
-    .partita-card.passata{opacity:.65}
-    .partita-card.festa{border-left-color:#f06292;border-color:#fce4ec}
-    .partita-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .campionato-badge{font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:10px;background:#e3f2fd;color:#006994;border:1.5px solid #b3d9f7}
-    .partita-data{font-size:.72rem;color:#90a4ae;font-weight:700}
-    .partita-avversario{font-size:.98rem;font-weight:800;margin-bottom:6px}
-    .partita-info{display:flex;gap:10px;flex-wrap:wrap}
-    .partita-luogo,.partita-risultato{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px}
-    .casa{background:#e0f7fa;color:#006994}
-    .trasferta{background:#fff3e0;color:#e65100}
-    .partita-risultato{background:#e3f2fd;color:#006994}
-    .partita-trasferta-info{font-size:.78rem;margin-top:8px;color:#e65100}
-    .partita-trasferta-info a{color:#e65100;font-weight:700;text-decoration:underline}
-    .partita-note{font-size:.82rem;margin-top:8px;padding:7px 9px;background:#fff8e1;border-left:3px solid #ffb300;white-space:pre-wrap}
-    .partita-admin-btns{display:inline-flex;gap:4px}
-    .partita-edit-btn,.partita-del-btn{background:none;border:0;cursor:pointer}
-    .manager-panel{display:none;background:#fff8e1;border:2px solid #ffe082;border-radius:18px;padding:18px;margin-bottom:18px}
-    .manager-panel.visible{display:block}
-    .form-row{display:flex;gap:8px;flex-wrap:wrap}
-    .form-group{flex:1;margin-bottom:8px}
-    .form-group label{display:block;font-size:.75rem;font-weight:700;margin-bottom:4px}
-    .form-input{width:100%;border:1.5px solid #ffe082;border-radius:10px;padding:9px 12px;font:inherit;background:#fff}
-    textarea.form-input{min-height:58px;resize:vertical}
-    .pub-btn,.cancel-edit-btn{border:0;border-radius:10px;padding:11px;font-weight:700;cursor:pointer}
-    .pub-btn{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}
-    .cancel-edit-btn{display:none;background:#eceff1;color:#607d8b}
-    .pub-btn-row{display:flex;gap:8px}
-    .no-items{background:#fff;padding:30px;text-align:center;border-radius:16px;color:#90a4ae}
-    .section-title{font-size:.78rem;font-weight:800;color:#006994;margin:20px 0 14px}
-    .page-footer{text-align:center;color:#aabbc8;font-size:.7rem;padding:8px 0 24px}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#006994;color:#fff;padding:10px 22px;border-radius:24px;display:none;z-index:999}
-    .toast.show{display:block}
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:100}
-    .modal-overlay.open{display:flex}
-    .modal{background:#fff;padding:24px;border-radius:20px;text-align:center}
-    .modal input{padding:10px}
-    .modal-btns{display:flex;gap:8px;margin-top:12px}
-    .modal-btn{padding:10px;border:0;border-radius:8px}
-    .primary{background:#006994;color:#fff}
-    .conv-toggle-btn{display:block;background:#e3f2fd;border:1.5px solid #b3d9f7;border-radius:10px;padding:5px 11px;font-size:.74rem;font-weight:700;color:#006994;cursor:pointer;margin-top:10px}
-    .conv-section{display:none;margin-top:10px}
-    .conv-section.open{display:block}
-    .conv-filter-row{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;flex-wrap:nowrap}
-    .conv-filter-btn{background:#fff;border:1.5px solid #b3d9f7;border-radius:14px;padding:4px 10px;font-size:.7rem;font-weight:700;color:#006994;cursor:pointer;white-space:nowrap}
-    .conv-filter-btn.active,.conv-filter-btn:hover{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}
-    .conv-list{display:flex;flex-wrap:wrap;gap:6px}
-    .conv-chip{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#006994,#00b4d8);color:#fff;border:1.5px solid #b3d9f7;border-radius:10px;padding:4px 10px;font-size:.76rem;font-weight:700}
-    .conv-chip-remove{background:none;border:0;color:#fff;cursor:pointer}
-    .conv-player-btn{background:#fff;border:1.5px solid #b3d9f7;border-radius:10px;padding:4px 10px;font-size:.74rem;font-weight:700;color:#006994;cursor:pointer}
-    .conv-player-btn.convocato{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}
-    .conv-role-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:rgba(255,255,255,.25);font-size:.6rem;font-weight:800}
-    .conv-empty{font-size:.78rem;color:#90a4ae;font-style:italic}
-    .conv-label{font-size:.7rem;font-weight:800;color:#90a4ae;text-transform:uppercase;letter-spacing:.8px;margin:8px 0 6px}
-    .conv-divider{border:0;border-top:1.5px solid #e3f2fd;margin:10px 0}
+    .back-link, .pin-btn { position: absolute; top: 14px; background: rgba(255,255,255,.25); color: white; border: 0; cursor: pointer; }
+    .back-link { left: 14px; border-radius: 20px; padding: 7px 15px; text-decoration: none; font-size: .76rem; font-weight: 700; }
+    .pin-btn { right: 14px; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; }
+    .icons { font-size: 3rem; display: block; margin-bottom: 10px; }
+    .header h1 { font-size: 1.6rem; }
+    .subtitle { font-size: .82rem; opacity: .9; }
+    .sync-status { display: flex; justify-content: center; align-items: center; gap: 6px; font-size: .7rem; margin-top: 10px; }
+    .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: white; }
+    .sync-dot.connected { background: #69f0ae; }
+    .sync-dot.error { background: #ff5252; }
+
+    .wave-divider { line-height: 0; background: linear-gradient(160deg, #012AFE, #0055cc 40%, #00b4d8); }
+    .wave-divider svg { width: 100%; display: block; }
+    .container { max-width: 540px; margin: auto; padding: 16px 12px 64px; }
+
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .filter-btn {
+      background: white; border: 2px solid #b3d9f7; border-radius: 20px; padding: 7px 14px; color: #006994;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+
+    .partita-card {
+      background: white; border: 2px solid #ddeeff; border-left: 5px solid #006994; border-radius: 16px;
+      padding: 16px; margin-bottom: 12px; box-shadow: 0 3px 14px rgba(0,105,148,.07);
+    }
+    .partita-card.passata { opacity: .65; }
+    .partita-card.festa { border-left-color: #f06292; border-color: #fce4ec; }
+
+    .partita-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .campionato-badge {
+      font-size: .62rem; font-weight: 800; padding: 3px 10px; border-radius: 10px; background: #e3f2fd;
+      color: #006994; border: 1.5px solid #b3d9f7;
+    }
+    .partita-data { font-size: .72rem; color: #90a4ae; font-weight: 700; }
+    .partita-avversario { font-size: .98rem; font-weight: 800; margin-bottom: 6px; }
+    .partita-info { display: flex; gap: 10px; flex-wrap: wrap; }
+    .partita-luogo, .partita-risultato { font-size: .76rem; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
+    .casa { background: #e0f7fa; color: #006994; }
+    .trasferta { background: #fff3e0; color: #e65100; }
+    .partita-risultato { background: #e3f2fd; color: #006994; }
+    .partita-trasferta-info { font-size: .78rem; margin-top: 8px; color: #e65100; }
+    .partita-trasferta-info a { color: #e65100; font-weight: 700; text-decoration: underline; }
+    .partita-note { font-size: .82rem; margin-top: 8px; padding: 7px 9px; background: #fff8e1; border-left: 3px solid #ffb300; white-space: pre-wrap; }
+    .partita-admin-btns { display: inline-flex; gap: 4px; }
+    .partita-edit-btn, .partita-del-btn { background: none; border: 0; cursor: pointer; }
+
+    .manager-panel { display: none; background: #fff8e1; border: 2px solid #ffe082; border-radius: 18px; padding: 18px; margin-bottom: 18px; }
+    .manager-panel.visible { display: block; }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-group { flex: 1; margin-bottom: 8px; }
+    .form-group label { display: block; font-size: .75rem; font-weight: 700; margin-bottom: 4px; }
+    .form-input { width: 100%; border: 1.5px solid #ffe082; border-radius: 10px; padding: 9px 12px; font: inherit; background: white; }
+    textarea.form-input { min-height: 58px; resize: vertical; }
+    .pub-btn, .cancel-edit-btn { border: 0; border-radius: 10px; padding: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .pub-btn { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
+    .cancel-edit-btn { display: none; background: #eceff1; color: #607d8b; }
+    .pub-btn-row { display: flex; gap: 8px; }
+
+    .section-title { font-size: .78rem; font-weight: 800; color: #006994; margin: 20px 0 14px 2px; }
+    .no-items { background: white; padding: 30px; text-align: center; border-radius: 16px; color: #90a4ae; }
+    .page-footer { text-align: center; color: #aabbc8; font-size: .7rem; padding: 8px 0 24px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #006994; color: white;
+      padding: 10px 22px; border-radius: 24px; display: none; z-index: 999;
+    }
+    .toast.show { display: block; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; padding: 24px; border-radius: 20px; text-align: center; }
+    .modal input { padding: 10px; }
+    .modal-btns { display: flex; gap: 8px; margin-top: 12px; }
+    .modal-btn { padding: 10px; border: 0; border-radius: 8px; font-family: inherit; }
+    .primary { background: #006994; color: white; }
+
+    .conv-toggle-btn {
+      display: block; width: 100%; background: #e3f2fd; border: 1.5px solid #b3d9f7; border-radius: 10px;
+      padding: 7px 11px; font-size: .74rem; font-weight: 700; color: #006994; cursor: pointer; margin-top: 10px;
+    }
+    .conv-section { display: none; margin-top: 10px; }
+    .conv-section.open { display: block; }
+
+    .conv-filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; background: #f5fbff; border: 1px solid #dfeef8; border-radius: 12px; padding: 6px 8px; }
+    .conv-filter-btn {
+      background: white; border: 1.5px solid #b3d9f7; border-radius: 12px; padding: 5px 10px; font-size: .7rem;
+      font-weight: 700; color: #006994; cursor: pointer; white-space: nowrap; font-family: inherit;
+    }
+    .conv-filter-btn.active, .conv-filter-btn:hover { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
+
+    .conv-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .conv-chip {
+      display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #006994, #00b4d8); color: white;
+      border: 1.5px solid #b3d9f7; border-radius: 10px; padding: 4px 10px; font-size: .76rem; font-weight: 700;
+    }
+    .conv-chip-remove { background: none; border: 0; color: white; cursor: pointer; font-size: .8rem; }
+    .conv-player-btn {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; background: white;
+      border: 1.5px solid #b3d9f7; border-radius: 10px; padding: 7px 10px; font-size: .74rem; font-weight: 700;
+      color: #006994; cursor: pointer; min-width: 120px; text-align: left;
+    }
+    .conv-player-btn.convocato {
+      background: linear-gradient(135deg, #006994, #00b4d8); color: white; border-color: transparent;
+    }
+    .conv-role-badge {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px;
+      border-radius: 9px; background: rgba(255,255,255,.25); font-size: .6rem; font-weight: 800;
+    }
+    .conv-empty { font-size: .78rem; color: #90a4ae; font-style: italic; }
+    .conv-label { font-size: .7rem; font-weight: 800; color: #90a4ae; text-transform: uppercase; letter-spacing: .8px; margin: 8px 0 6px; }
+    .conv-divider { border: 0; border-top: 1.5px solid #e3f2fd; margin: 10px 0; }
   </style>
 </head>
 <body>
   <div class="header">
-    <a class="back-link" href="index.html">← Home</a>
+    <a class="back-link" href="index.html">&#8592; Home</a>
     <button class="pin-btn" id="pin-btn">🔒</button>
     <span class="icons">📆</span>
     <h1>Calendario Partite</h1>
@@ -107,18 +153,10 @@
   <div class="container">
     <div class="manager-panel" id="manager-panel">
       <h3 id="panel-title">➕ Aggiungi Partita</h3>
-
       <div class="form-row">
-        <div class="form-group">
-          <label>Data</label>
-          <input class="form-input" type="date" id="f-data">
-        </div>
-        <div class="form-group">
-          <label>Ora</label>
-          <input class="form-input" type="time" id="f-ora">
-        </div>
+        <div class="form-group"><label>Data</label><input class="form-input" type="date" id="f-data"></div>
+        <div class="form-group"><label>Ora</label><input class="form-input" type="time" id="f-ora"></div>
       </div>
-
       <div class="form-group">
         <label>Campionato</label>
         <select class="form-input" id="f-campionato">
@@ -136,11 +174,7 @@
       </div>
 
       <div id="partita-fields">
-        <div class="form-group">
-          <label>Avversario</label>
-          <input class="form-input" id="f-avversario" maxlength="60">
-        </div>
-
+        <div class="form-group"><label>Avversario</label><input class="form-input" id="f-avversario" maxlength="60"></div>
         <div class="form-row">
           <div class="form-group">
             <label>Casa / Trasferta</label>
@@ -149,33 +183,17 @@
               <option value="trasferta">✈️ Trasferta</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Risultato (opz.)</label>
-            <input class="form-input" id="f-risultato" maxlength="10">
-          </div>
+          <div class="form-group"><label>Risultato (opz.)</label><input class="form-input" id="f-risultato" maxlength="10"></div>
         </div>
-
         <div id="trasferta-fields" style="display:none">
-          <div class="form-group">
-            <label>Città</label>
-            <input class="form-input" id="f-citta" maxlength="60">
-          </div>
-          <div class="form-group">
-            <label>Indirizzo piscina</label>
-            <input class="form-input" id="f-indirizzo" maxlength="100">
-          </div>
+          <div class="form-group"><label>Città</label><input class="form-input" id="f-citta" maxlength="60"></div>
+          <div class="form-group"><label>Indirizzo piscina</label><input class="form-input" id="f-indirizzo" maxlength="100"></div>
         </div>
       </div>
 
       <div id="festa-fields" style="display:none">
-        <div class="form-group">
-          <label>Nome evento</label>
-          <input class="form-input" id="f-nome-evento" maxlength="60">
-        </div>
-        <div class="form-group">
-          <label>Descrizione</label>
-          <input class="form-input" id="f-descrizione" maxlength="120">
-        </div>
+        <div class="form-group"><label>Nome evento</label><input class="form-input" id="f-nome-evento" maxlength="60"></div>
+        <div class="form-group"><label>Descrizione</label><input class="form-input" id="f-descrizione" maxlength="120"></div>
       </div>
 
       <div class="form-group">
@@ -244,7 +262,6 @@
       { key: "acquagol", label: "🌊 Acquagol" },
       { key: "u12u13", label: "🏊 U12 U13" },
       { key: "u14u15u16", label: "🏊 U14 U15 U16" },
-      { key: "u16", label: "🏊 U16" },
       { key: "senior", label: "🤽 Senior" }
     ];
 
@@ -256,8 +273,16 @@
 
     const $ = (id) => document.getElementById(id);
     const $$ = (sel) => document.querySelectorAll(sel);
-    const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
     const admin = () => sessionStorage.getItem("nektonManager") === "1";
+
+    function getRoleBadges(player) {
+      if (!player) return "";
+      const roles = [];
+      if (player.capitano) roles.push("C");
+      if (player.portiere) roles.push("P");
+      return roles.length ? ` <span class="conv-role-badge">${roles.join("")}</span>` : "";
+    }
 
     function toast(msg) {
       const t = $("toast");
@@ -327,20 +352,13 @@
           month: "short",
           year: "numeric"
         });
-
-        const mapUrl = (p.citta || p.indirizzo)
-          ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(", "))
-          : "";
-
         const convCount = Object.keys(allConvocati[id] || {}).length;
 
         return `
           <div class="partita-card ${p.data < today ? "passata" : ""} ${festa ? "festa" : ""}">
             <div class="partita-top">
               <span class="campionato-badge">${esc(p.campionato)}</span>
-              <div class="partita-data">
-                📅 ${esc(date)}${p.ora ? " – " + esc(p.ora) : ""}
-              </div>
+              <div class="partita-data">📅 ${esc(date)}${p.ora ? " – " + esc(p.ora) : ""}</div>
               <div class="partita-admin-btns">
                 ${admin() ? `
                   <button class="partita-edit-btn" data-id="${id}">✏️</button>
@@ -359,9 +377,9 @@
                     </span>
                     ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ""}
                  </div>
-                 ${mapUrl ? `<div class="partita-trasferta-info">📍 <a href="${mapUrl}" target="_blank" rel="noopener noreferrer">${esc([p.citta, p.indirizzo].filter(Boolean).join(" · "))} ↗</a></div>` : ""}
-              `}
-            
+                 ${p.citta || p.indirizzo ? `<div class="partita-trasferta-info">📍 ${esc([p.citta, p.indirizzo].filter(Boolean).join(" · "))}</div>` : ""}`
+            }
+
             ${p.note ? `<div class="partita-note"><strong>📝 Note:</strong> ${esc(p.note)}</div>` : ""}
 
             <button class="conv-toggle-btn" data-id="${id}">
@@ -375,16 +393,12 @@
       if (admin()) {
         $$(".partita-del-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
-            if (confirm("Eliminare questa partita?")) {
-              calRef.child(btn.dataset.id).remove();
-            }
+            if (confirm("Eliminare questa partita?")) calRef.child(btn.dataset.id).remove();
           });
         });
 
         $$(".partita-edit-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            edit(btn.dataset.id);
-          });
+          btn.addEventListener("click", () => edit(btn.dataset.id));
         });
       }
 
@@ -398,7 +412,6 @@
               .map((pid) => playerMap[pid] ? { ...playerMap[pid], id: pid } : null)
               .filter(Boolean)
               .sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
-
             renderConvSection(btn.dataset.id, sec, convNames, convPartita, playerMap);
             sec.dataset.rendered = "1";
           }
@@ -407,8 +420,6 @@
     }
 
     function renderConvSection(partitaId, section, convNames, convPartita, playerMap) {
-      const adminMode = admin();
-
       section.innerHTML = "";
 
       if (convNames.length) {
@@ -420,26 +431,11 @@
         const list = document.createElement("div");
         list.className = "conv-list";
         convNames.forEach((player) => {
-          const roles = [];
-          if (player.capitano) roles.push("C");
-          if (player.portiere) roles.push("P");
-
           const chip = document.createElement("div");
           chip.className = "conv-chip";
-          chip.innerHTML = `
-            ${esc(player.nome)}
-            ${roles.length ? roles.map(() => `<span class=\"conv-role-badge\">${roles.join("")}</span>`).join("") : ""}
-            ${adminMode ? `<button class=\"conv-chip-remove\" data-id=\"${player.id}\">✕</button>` : ""}
-          `;
-
-          const badge = chip.querySelector(".conv-role-badge");
-          if (badge) {
-            badge.style.display = "inline-flex";
-          }
-
+          chip.innerHTML = `${esc(player.nome)}${getRoleBadges(player)}${admin() ? `<button class="conv-chip-remove" data-id="${player.id}">✕</button>` : ""}`;
           list.appendChild(chip);
         });
-
         section.appendChild(list);
       } else {
         const empty = document.createElement("div");
@@ -448,14 +444,14 @@
         section.appendChild(empty);
       }
 
-      if (adminMode) {
+      if (admin()) {
         const hr = document.createElement("hr");
         hr.className = "conv-divider";
         section.appendChild(hr);
 
         const labelSel = document.createElement("div");
         labelSel.className = "conv-label";
-        labelSel.textContent = "🤽 Seleziona giocatori";
+        labelSel.textContent = "Seleziona giocatori";
         section.appendChild(labelSel);
 
         const filterRow = document.createElement("div");
@@ -465,12 +461,11 @@
 
         groups.forEach((group) => {
           const btn = document.createElement("button");
-          btn.className = "conv-filter-btn " + (group.key === "tutti" ? "active" : "");
+          btn.className = "conv-filter-btn" + (group.key === "tutti" ? " active" : "");
           btn.textContent = group.label;
           btn.dataset.group = group.key;
           filterRow.appendChild(btn);
         });
-
         section.appendChild(filterRow);
 
         const playerArea = document.createElement("div");
@@ -488,8 +483,9 @@
             .forEach(([pid, p]) => {
               const isSelected = !!convPartita[pid];
               const btn = document.createElement("button");
-              btn.className = "conv-player-btn " + (isSelected ? "convocato" : "");
-              btn.textContent = p.nome + (p.capitano ? " (C)" : "") + (p.portiere ? " (P)" : "");
+              btn.className = "conv-player-btn" + (isSelected ? " convocato" : "");
+              btn.type = "button";
+              btn.innerHTML = `<span>${esc(p.nome)}</span>${getRoleBadges(p)}`;
               btn.dataset.id = pid;
               playerArea.appendChild(btn);
             });
@@ -497,34 +493,29 @@
 
         drawPlayerSelection();
 
-        filterRow.addEventListener("click", (e) => {
-          const target = e.target.closest("button");
+        filterRow.addEventListener("click", (event) => {
+          const target = event.target.closest("button");
           if (!target) return;
-          const group = target.dataset.group;
-          activeGroup = group;
+          activeGroup = target.dataset.group;
           filterRow.querySelectorAll("button").forEach((btn) => btn.classList.remove("active"));
-          filterRow.querySelectorAll("button").forEach((btn) => btn.classList.add("active"));
           target.classList.add("active");
           drawPlayerSelection();
         });
 
-        playerArea.addEventListener("click", (e) => {
-          const target = e.target.closest("button");
+        playerArea.addEventListener("click", (event) => {
+          const target = event.target.closest("button");
           if (!target) return;
-
-          const ref = convocatiRef.child(partitaId).child(target.dataset.id);
-          if (target.classList.contains("convocato")) {
-            ref.remove();
-          } else {
-            ref.set(true);
-          }
+          const key = target.dataset.id;
+          const ref = convocatiRef.child(partitaId).child(key);
+          if (convPartita[key]) ref.remove();
+          else ref.set(true);
         });
 
-        section.querySelectorAll(".conv-chip-remove").button = null;
         section.querySelectorAll(".conv-chip-remove").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const ref = convocatiRef.child(partitaId).child(btn.dataset.id);
-            ref.remove();
+          btn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const key = btn.dataset.id;
+            convocatiRef.child(partitaId).child(key).remove();
           });
         });
       }
@@ -537,7 +528,6 @@
         const el = $("f-" + k);
         if (el) el.value = p[k] || "";
       });
-
       $("f-campionato").value = p.campionato || "Habawaba";
       $("f-luogo").value = p.luogo || "casa";
       toggleFields();
@@ -545,12 +535,12 @@
       $("panel-title").textContent = "✏️ Modifica partita";
       $("add-btn").textContent = "💾 Salva modifiche";
       $("cancel-edit-btn").style.display = "block";
+      $("manager-panel").classList.add("visible");
       $("manager-panel").scrollIntoView({ behavior: "smooth" });
     }
 
     function toggleFields() {
       const festa = $("f-campionato").value === "Festa";
-      $("partita-fields").style.display = festa ? "none" : "block";
       $("partita-fields").style.display = festa ? "none" : "block";
       $("festa-fields").style.display = festa ? "block" : "none";
       $("trasferta-fields").style.display = $("f-luogo").value === "trasferta" ? "block" : "none";
@@ -558,10 +548,9 @@
 
     function reset() {
       editingId = null;
-      $$(".manager-panel input, .manager-panel textarea").forEach((el) => el.value = "");
+      $$(".form-input").forEach((el) => el.value = "");
       $("f-campionato").value = "Habawaba";
       $("f-luogo").value = "casa";
-      $("f-risultato").value = "";
       toggleFields();
       $("panel-title").textContent = "➕ Aggiungi Partita";
       $("add-btn").textContent = "➕ Aggiungi partita";
@@ -571,7 +560,6 @@
     function savePartita() {
       const festa = $("f-campionato").value === "Festa";
       const data = $("f-data").value;
-      const ora = $("f-ora").value;
       const avversario = $("f-avversario").value.trim();
       const note = $("f-note").value.trim();
 
@@ -582,7 +570,7 @@
 
       const payload = {
         data,
-        ora,
+        ora: $("f-ora").value,
         campionato: $("f-campionato").value,
         note,
       };
@@ -600,9 +588,8 @@
         }
       }
 
-      const op = editingId ? calRef.child(editingId).update(payload) : calRef.push(payload);
-
-      op.then(() => {
+      const promise = editingId ? calRef.child(editingId).update(payload) : calRef.push(payload);
+      promise.then(() => {
         reset();
         toast("✅ Salvato!");
       }).catch(() => {
@@ -611,9 +598,7 @@
     }
 
     $("add-btn").addEventListener("click", savePartita);
-
     $("cancel-edit-btn").addEventListener("click", reset);
-
     $("f-campionato").addEventListener("change", toggleFields);
     $("f-luogo").addEventListener("change", toggleFields);
 
