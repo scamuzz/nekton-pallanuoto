@@ -196,7 +196,9 @@
     }
     .badge-generale  { background: #e3f2fd; color: #006994; }
     .badge-acquagol  { background: #e0f7fa; color: #00838f; }
-    .badge-under13   { background: #fff3e0; color: #e65100; }
+    .badge-under12-13   { background: #fff3e0; color: #e65100; }
+    .badge-under14-15-16   { background: #fff3e0; color: #e65100; }
+    .badge-under16   { background: #fff3e0; color: #e65100; }
     .badge-senior    { background: #e8eaf6; color: #283593; }
   </style>
 </head>
@@ -229,7 +231,9 @@
       <select class="form-input" id="news-group">
         <option value="generale">📰 Generale (tutti)</option>
         <option value="acquagol">🌊 Acquagol</option>
-        <option value="under13">🏊 Under 13</option>
+        <option value="under12-13">🏊 U12 - U13</option>
+        <option value="under14-15-16">🏊 U14 - U15 - U16</option>
+        <option value="under16">🏊 U16</option>
         <option value="senior">🤽 Senior</option>
       </select>
     </div>
@@ -247,7 +251,9 @@
   <div class="filter-bar">
     <button class="filter-btn active" data-filter="tutti">🌐 Tutti</button>
     <button class="filter-btn" data-filter="acquagol">🌊 Acquagol</button>
-    <button class="filter-btn" data-filter="under13">🏊 U13</button>
+    <button class="filter-btn" data-filter="under12-13">🏊 U12 - U13</button>
+     <button class="filter-btn" data-filter="under14-15-16">🏊 U14 - U15 - U16</button>
+     <button class="filter-btn" data-filter="under16">🏊 U16</button>
     <button class="filter-btn" data-filter="senior">🤽 Senior</button>
   </div>
 
@@ -292,11 +298,13 @@ const db = firebase.database();
 const GROUPS = {
   generale: { ref: db.ref('nekton/news/generale'), label: 'Generale',  icon: '📰', badgeClass: 'badge-generale' },
   acquagol: { ref: db.ref('nekton/news/acquagol'), label: 'Acquagol',  icon: '🌊', badgeClass: 'badge-acquagol' },
-  under13:  { ref: db.ref('nekton/news/under13'),  label: 'U13',       icon: '🏊', badgeClass: 'badge-under13'  },
+  under12-13:  { ref: db.ref('nekton/news/under12-13'),  label: 'U12 - U13',       icon: '🏊', badgeClass: 'badge-under12-13'  },
+   under14-15-16:  { ref: db.ref('nekton/news/under14-15-16'),  label: 'U14 - U15 -U16',       icon: '🏊', badgeClass: 'badge-under14-15-16'  },
+   under16:  { ref: db.ref('nekton/news/under16'),  label: 'U16',       icon: '🏊', badgeClass: 'badge-under16'  },
   senior:   { ref: db.ref('nekton/news/senior'),   label: 'Senior',    icon: '🤽', badgeClass: 'badge-senior'   },
 };
 
-let allData = { generale: {}, acquagol: {}, under13: {}, senior: {} };
+let allData = { generale: {}, acquagol: {}, under12-13: {}, under14-15-16: {}, under16: {}, senior: {} };
 let activeFilter = 'tutti';
 
 function isManager() { return localStorage.getItem('nektonManager') === '1'; }
