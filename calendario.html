@@ -1,208 +1,26 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>📆 Calendario Partite · Nekton</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;overflow-x:hidden}body{font-family:'Segoe UI',sans-serif;background:#e8f4fd;min-height:100vh;color:#1a3a5c}
-    .header{background:linear-gradient(160deg,#012AFE 0%,#0055cc 40%,#00b4d8 100%);color:#fff;padding:36px 20px 24px;text-align:center;position:relative}.back-link,.pin-btn{position:absolute;top:14px;background:rgba(255,255,255,.25);color:#fff;border:0;cursor:pointer}.back-link{left:14px;border-radius:20px;padding:7px 15px;text-decoration:none;font-size:.76rem;font-weight:700}.pin-btn{right:14px;border-radius:50%;width:40px;height:40px;font-size:1.2rem}.icons{font-size:3rem;display:block;margin-bottom:10px}.header h1{font-size:1.6rem}.subtitle{font-size:.82rem;opacity:.9}.sync-status{display:flex;justify-content:center;align-items:center;gap:6px;font-size:.7rem;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff}.sync-dot.connected{background:#69f0ae}.sync-dot.error{background:#ff5252}.wave-divider{line-height:0;background:linear-gradient(160deg,#012AFE,#0055cc 40%,#00b4d8)}.wave-divider svg{width:100%;display:block}.container{max-width:540px;margin:auto;padding:16px 12px 64px}.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.filter-btn{background:#fff;border:2px solid #b3d9f7;border-radius:20px;padding:7px 14px;color:#006994;font-weight:700;cursor:pointer}.filter-btn.active,.filter-btn:hover{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.partita-card{background:#fff;border:2px solid #ddeeff;border-left:5px solid #006994;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 3px 14px rgba(0,105,148,.07)}.partita-card.passata{opacity:.65}.partita-card.festa{border-left-color:#f06292;border-color:#fce4ec}.partita-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.campionato-badge{font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:10px;background:#e3f2fd;color:#006994;border:1.5px solid #b3d9f7}.partita-data{font-size:.72rem;color:#90a4ae;font-weight:700}.partita-avversario{font-size:.98rem;font-weight:800;margin-bottom:6px}.partita-info{display:flex;gap:10px;flex-wrap:wrap}.partita-luogo,.partita-risultato{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px}.casa{background:#e0f7fa;color:#006994}.trasferta{background:#fff3e0;color:#e65100}.partita-risultato{background:#e3f2fd;color:#006994}.partita-trasferta-info{font-size:.78rem;margin-top:8px;color:#e65100}.partita-trasferta-info a{color:#e65100;font-weight:700;text-decoration:underline}.partita-note{font-size:.82rem;margin-top:8px;padding:7px 9px;background:#fff8e1;border-left:3px solid #ffb300;white-space:pre-wrap}.partita-admin-btns{display:inline-flex;gap:4px}.partita-edit-btn,.partita-del-btn{background:none;border:0;cursor:pointer}.manager-panel{display:none;background:#fff8e1;border:2px solid #ffe082;border-radius:18px;padding:18px;margin-bottom:18px}.manager-panel.visible{display:block}.form-row{display:flex;gap:8px;flex-wrap:wrap}.form-group{flex:1;margin-bottom:8px}.form-group label{display:block;font-size:.75rem;font-weight:700;margin-bottom:4px}.form-input{width:100%;border:1.5px solid #ffe082;border-radius:10px;padding:9px 12px;font:inherit;background:#fff}textarea.form-input{min-height:58px;resize:vertical}.pub-btn,.cancel-edit-btn{border:0;border-radius:10px;padding:11px;font-weight:700;cursor:pointer}.pub-btn{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.cancel-edit-btn{display:none;background:#eceff1;color:#607d8b}.pub-btn-row{display:flex;gap:8px}.no-items{background:#fff;padding:30px;text-align:center;border-radius:16px;color:#90a4ae}.section-title{font-size:.78rem;font-weight:800;color:#006994;margin:20px 0 14px}.page-footer{text-align:center;color:#aabbc8;font-size:.7rem}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#006994;color:#fff;padding:10px 22px;border-radius:24px;display:none;z-index:999}.toast.show{display:block}.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:100}.modal-overlay.open{display:flex}.modal{background:#fff;padding:24px;border-radius:20px;text-align:center}.modal input{padding:10px}.modal-btns{display:flex;gap:8px;margin-top:12px}.modal-btn{padding:10px;border:0;border-radius:8px}.primary{background:#006994;color:#fff}.conv-toggle-btn{display:flex;align-items:center;gap:6px;background:#e3f2fd;border:1.5px solid #b3d9f7;border-radius:10px;padding:5px 11px;font-size:.74rem;font-weight:700;color:#006994;cursor:pointer;margin-top:10px}.conv-section{display:none;margin-top:10px}.conv-section.open{display:block}.conv-filter-row{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}.conv-filter-btn{background:#fff;border:1.5px solid #b3d9f7;border-radius:14px;padding:4px 10px;font-size:.7rem;font-weight:700;color:#006994;cursor:pointer}.conv-filter-btn.active,.conv-filter-btn:hover{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.conv-list{display:flex;flex-wrap:wrap;gap:6px}.conv-chip{display:flex;align-items:center;gap:5px;background:#e0f2f1;border:1.5px solid #80cbc4;border-radius:10px;padding:4px 10px;font-size:.76rem;font-weight:700;color:#006994}.conv-chip.selected{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.conv-chip-remove{background:none;border:0;color:rgba(255,255,255,.8);cursor:pointer}.conv-player-btn{background:#fff;border:1.5px solid #b3d9f7;border-radius:10px;padding:4px 10px;font-size:.74rem;font-weight:700;color:#006994;cursor:pointer}.conv-player-btn.convocato{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.conv-role-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:rgba(255,255,255,.2);font-size:.6rem;font-weight:800;margin-left:5px}.conv-empty{font-size:.78rem;color:#90a4ae;font-style:italic}.conv-label{font-size:.7rem;font-weight:800;color:#90a4ae;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}.conv-divider{border:0;border-top:1.5px solid #e3f2fd;margin:10px 0}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>📆 Calendario Partite · Nekton</title>
+<style>
+*{box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#e8f4fd;color:#1a3a5c;margin:0}.header{background:linear-gradient(160deg,#012afe,#0055cc 40%,#00b4d8);color:#fff;padding:36px 20px 24px;text-align:center;position:relative}.back-link,.pin-btn{position:absolute;top:14px;background:#ffffff40;color:#fff;border:0;cursor:pointer}.back-link{left:14px;border-radius:20px;padding:7px 15px;text-decoration:none}.pin-btn{right:14px;border-radius:50%;width:40px;height:40px;font-size:1.2rem}.icons{font-size:3rem}.subtitle{font-size:.82rem;opacity:.9}.sync-status{font-size:.7rem;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff}.sync-dot.connected{background:#69f0ae}.sync-dot.error{background:#ff5252}.wave-divider{line-height:0;background:#0055cc}.wave-divider svg{width:100%}.container{max-width:540px;margin:auto;padding:16px 12px 64px}.filter-row,.form-row,.partita-info,.pub-btn-row,.conv-filter-row,.conv-list{display:flex;gap:8px;flex-wrap:wrap}.filter-row{margin-bottom:18px}.filter-btn,.conv-filter-btn{background:#fff;border:2px solid #b3d9f7;border-radius:20px;padding:7px 14px;color:#006994;font-weight:700;cursor:pointer}.filter-btn.active,.filter-btn:hover,.conv-filter-btn.active,.conv-filter-btn:hover{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.partita-card{background:#fff;border:2px solid #ddeeff;border-left:5px solid #006994;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 3px 14px #00699412}.partita-card.passata{opacity:.65}.partita-card.festa{border-left-color:#f06292}.partita-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.campionato-badge{font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:10px;background:#e3f2fd;color:#006994}.partita-data{font-size:.72rem;color:#90a4ae;font-weight:700}.partita-avversario{font-size:.98rem;font-weight:800;margin-bottom:6px}.partita-luogo,.partita-risultato{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px}.casa{background:#e0f7fa;color:#006994}.trasferta{background:#fff3e0;color:#e65100}.partita-risultato{background:#e3f2fd;color:#006994}.partita-trasferta-info{font-size:.78rem;margin-top:8px;color:#e65100}.partita-trasferta-info a{color:#e65100;font-weight:700;text-decoration:underline}.partita-note{font-size:.82rem;margin-top:8px;padding:7px 9px;background:#fff8e1;border-left:3px solid #ffb300;white-space:pre-wrap}.partita-admin-btns{display:inline-flex;gap:4px}.partita-edit-btn,.partita-del-btn{background:none;border:0;cursor:pointer}.manager-panel{display:none;background:#fff8e1;border:2px solid #ffe082;border-radius:18px;padding:18px;margin-bottom:18px}.manager-panel.visible{display:block}.form-group{flex:1;margin-bottom:8px}.form-group label{display:block;font-size:.75rem;font-weight:700;margin-bottom:4px}.form-input{width:100%;border:1.5px solid #ffe082;border-radius:10px;padding:9px 12px;font:inherit;background:#fff}textarea.form-input{min-height:58px;resize:vertical}.pub-btn,.cancel-edit-btn{border:0;border-radius:10px;padding:11px;font-weight:700;cursor:pointer}.pub-btn{background:#006994;color:#fff}.cancel-edit-btn{display:none;background:#eceff1;color:#607d8b}.no-items{background:#fff;padding:30px;text-align:center;border-radius:16px;color:#90a4ae}.section-title{font-size:.78rem;font-weight:800;color:#006994;margin:20px 0 14px}.page-footer{text-align:center;color:#aabbc8;font-size:.7rem}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#006994;color:#fff;padding:10px 22px;border-radius:24px;display:none;z-index:999}.toast.show{display:block}.modal-overlay{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;z-index:100}.modal-overlay.open{display:flex}.modal{background:#fff;padding:24px;border-radius:20px;text-align:center}.modal input{padding:10px}.modal-btns{display:flex;gap:8px;margin-top:12px}.modal-btn{padding:10px;border:0;border-radius:8px}.primary{background:#006994;color:#fff}.conv-toggle-btn{display:block;background:#e3f2fd;border:1.5px solid #b3d9f7;border-radius:10px;padding:5px 11px;font-size:.74rem;font-weight:700;color:#006994;cursor:pointer;margin-top:10px}.conv-section{display:none;margin-top:10px}.conv-section.open{display:block}.conv-filter-row{margin-bottom:10px;overflow-x:auto;flex-wrap:nowrap}.conv-filter-btn{padding:4px 10px;font-size:.7rem;white-space:nowrap}.conv-chip,.conv-player-btn{border:1.5px solid #b3d9f7;border-radius:10px;padding:4px 10px;font-size:.74rem;font-weight:700;color:#006994}.conv-chip{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.conv-player-btn{background:#fff;cursor:pointer}.conv-player-btn.convocato{background:linear-gradient(135deg,#006994,#00b4d8);color:#fff}.conv-chip-remove{background:none;border:0;color:#fff;cursor:pointer}.conv-role-badge{font-size:.6rem;font-weight:800;background:#ffffff55;border-radius:9px;padding:2px 5px;margin-left:3px}.conv-empty{font-size:.78rem;color:#90a4ae;font-style:italic}.conv-label{font-size:.7rem;font-weight:800;color:#90a4ae;text-transform:uppercase;margin:8px 0 6px}.conv-divider{border:0;border-top:1px solid #e3f2fd;margin:10px 0}
+</style>
 </head>
 <body>
-  <div class="header">
-    <a class="back-link" href="index.html">&#8592; Home</a>
-    <button class="pin-btn" id="pin-btn">🔒</button>
-    <span class="icons">📆</span>
-    <h1>Calendario Partite</h1>
-    <div class="subtitle">Tutti i campionati Nekton</div>
-    <div class="sync-status"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Connessione in corso…</span></div>
-  </div>
-
-  <div class="wave-divider">
-    <svg viewBox="0 0 1440 72" preserveAspectRatio="none"><path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/></svg>
-  </div>
-
-  <div class="container">
-    <div class="manager-panel" id="manager-panel">
-      <h3 id="panel-title">➕ Aggiungi Partita</h3>
-      <div class="form-row">
-        <div class="form-group"><label>Data</label><input class="form-input" type="date" id="f-data"></div>
-        <div class="form-group"><label>Ora</label><input class="form-input" type="time" id="f-ora"></div>
-      </div>
-      <div class="form-group"><label>Campionato</label><select class="form-input" id="f-campionato"><option>Habawaba</option><option>U12</option><option>U13</option><option>U14</option><option>U15</option><option>U16</option><option>U17</option><option>U18</option><option value="Promozione">Prima Squadra Promozione</option><option value="Festa">Festa</option></select></div>
-      <div id="partita-fields">
-        <div class="form-group"><label>Avversario</label><input class="form-input" id="f-avversario" maxlength="60"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Casa / Trasferta</label><select class="form-input" id="f-luogo"><option value="casa">🏠 Casa</option><option value="trasferta">✈️ Trasferta</option></select></div>
-          <div class="form-group"><label>Risultato (opz.)</label><input class="form-input" id="f-risultato" maxlength="10"></div>
-        </div>
-        <div id="trasferta-fields" style="display:none">
-          <div class="form-group"><label>Città</label><input class="form-input" id="f-citta" maxlength="60"></div>
-          <div class="form-group"><label>Indirizzo piscina</label><input class="form-input" id="f-indirizzo" maxlength="100"></div>
-        </div>
-      </div>
-      <div id="festa-fields" style="display:none">
-        <div class="form-group"><label>Nome evento</label><input class="form-input" id="f-nome-evento" maxlength="60"></div>
-        <div class="form-group"><label>Descrizione (opz.)</label><input class="form-input" id="f-descrizione" maxlength="120"></div>
-      </div>
-      <div class="form-group"><label>Note (opz.)</label><textarea class="form-input" id="f-note" maxlength="500"></textarea></div>
-      <div class="pub-btn-row"><button class="pub-btn" id="add-btn">➕ Aggiungi partita</button><button class="cancel-edit-btn" id="cancel-edit-btn">✕ Annulla modifica</button></div>
-    </div>
-
-    <div class="filter-row">
-      <button class="filter-btn active" data-filter="tutti">Tutti</button>
-      <button class="filter-btn" data-filter="Habawaba">Habawaba</button>
-      <button class="filter-btn" data-filter="U12">U12</button>
-      <button class="filter-btn" data-filter="U13">U13</button>
-      <button class="filter-btn" data-filter="U14">U14</button>
-      <button class="filter-btn" data-filter="U15">U15</button>
-      <button class="filter-btn" data-filter="U16">U16</button>
-      <button class="filter-btn" data-filter="U17">U17</button>
-      <button class="filter-btn" data-filter="U18">U18</button>
-      <button class="filter-btn" data-filter="Promozione">Promozione</button>
-    </div>
-
-    <div class="section-title">🤽 Partite</div>
-    <div id="calendario-container"></div>
-  </div>
-
-  <div class="page-footer">📆 Calendario · Nekton Pallanuoto</div>
-  <div class="toast" id="toast"></div>
-
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-      <h3>🔑 Accesso Gestore</h3>
-      <p>Inserisci il PIN per gestire il calendario</p>
-      <input type="password" id="pin-input" maxlength="20">
-      <div id="modal-error"></div>
-      <div class="modal-btns">
-        <button class="modal-btn" id="modal-cancel">Annulla</button>
-        <button class="modal-btn primary" id="modal-confirm">Accedi</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script>
-    firebase.initializeApp({apiKey:'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',authDomain:'lista-spesa-b9eb1.firebaseapp.com',databaseURL:'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasestorage.app',projectId:'lista-spesa-b9eb1',storageBucket:'lista-spesa-b9eb1.firebasestorage.app',messagingSenderId:'468690890938',appId:'1:468690890938:web:048be7f27779d8862d9283'});
-    const db=firebase.database(),calRef=db.ref('nekton/calendario'),giocatoriRef=db.ref('nekton/giocatori'),convocatiRef=db.ref('nekton/convocati');
-    const GROUPS=[{key:'acquagol',label:'🌊 Acquagol'},{key:'u13',label:'🏊 U13'},{key:'u15',label:'🏊 U15'},{key:'senior',label:'🤽 Senior'}];
-    let allData={},allPlayers={},allConvocati={},activeFilter='tutti',editingId=null;
-    const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s),esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),isManager=()=>sessionStorage.getItem('nektonManager')==='1';
-    function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
-    db.ref('.info/connected').on('value',s=>{$('sync-dot').className='sync-dot '+(s.val()?'connected':'error');$('sync-label').textContent=s.val()?'✅ Sincronizzato in tempo reale':'❌ Offline – riconnessione…'});
-    calRef.on('value',s=>{allData=s.val()||{};render()});
-    giocatoriRef.on('value',s=>{allPlayers=s.val()||{};render()});
-    convocatiRef.on('value',s=>{allConvocati=s.val()||{};render()});
-
-    function buildPlayerMap(){
-      const map={};
-      GROUPS.forEach(grp=>{
-        const grpData=allPlayers[grp.key]||{};
-        Object.entries(grpData).forEach(([pid,player])=>{
-          map[pid]={...player,gruppo:grp.key};
-        });
-      });
-      return map;
-    }
-
-    function roleBadges(player){
-      const roles=[];
-      if(player && player.capitano) roles.push('C');
-      if(player && player.portiere) roles.push('P');
-      return roles.length ? ` <span class="conv-role-badge">${roles.join('')}</span>` : '';
-    }
-
-    function render(){
-      const today=new Date().toISOString().slice(0,10),c=$('calendario-container'),entries=Object.entries(allData).filter(([,p])=>activeFilter==='tutti'||p.campionato===activeFilter).sort((a,b)=>(a[1].data||'').localeCompare(b[1].data||''));
-      if(!entries.length){c.innerHTML='<div class="no-items">Nessuna partita in programma. 💤</div>';return}
-      const playerMap=buildPlayerMap();
-      c.innerHTML=entries.map(([id,p])=>{
-        const festa=p.campionato==='Festa',d=new Date((p.data||'')+'T12:00:00'),date=isNaN(d)?p.data:d.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}),maps=p.citta||p.indirizzo?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([p.citta,p.indirizzo].filter(Boolean).join(', '))}`:'',convPartita=allConvocati[id]||{},convCount=Object.keys(convPartita).length;
-        return `<div class="partita-card${p.data<today?' passata':''}${festa?' festa':''}"><div class="partita-top"><span class="campionato-badge">${esc(p.campionato)}</span><div class="partita-data">📅 ${esc(date)}${p.ora?' – '+esc(p.ora):''}</div><div class="partita-admin-btns">${isManager()?`<button class="partita-edit-btn" data-id="${id}">✏️</button><button class="partita-del-btn" data-id="${id}">🗑️</button>`:''}</div></div>${festa?`<div class="partita-avversario">🎉 ${esc(p.nomeEvento||'Festa')}</div>${p.descrizione?`<div>${esc(p.descrizione)}</div>`:''}`:`<div class="partita-avversario">vs ${esc(p.avversario)}</div><div class="partita-info"><span class="partita-luogo ${p.luogo==='casa'?'casa':'trasferta'}">${p.luogo==='casa'?'🏠 Casa':'✈️ Trasferta'}</span>${p.risultato?`<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>`:''}</div>${maps?`<div class="partita-trasferta-info">📍 <a href="${maps}" target="_blank" rel="noopener noreferrer">${esc([p.citta,p.indirizzo].filter(Boolean).join(' · '))} ↗</a></div>`:''}`}${p.note?`<div class="partita-note"><strong>📝 Note:</strong> ${esc(p.note)}</div>`:''}<button class="conv-toggle-btn" data-id="${id}">🤽 Convocati${convCount>0?` (${convCount})`:''}</button><div class="conv-section" id="conv-${id}"></div></div>`
-      }).join('');
-
-      if(isManager()){$$('.partita-del-btn').forEach(b=>b.onclick=()=>{if(confirm('Eliminare questa partita?'))calRef.child(b.dataset.id).remove()});$$('.partita-edit-btn').forEach(b=>b.onclick=()=>edit(b.dataset.id))}
-
-      $$('.conv-toggle-btn').forEach(btn=>{
-        btn.onclick=()=>{
-          const partitaId=btn.dataset.id,sec=$('conv-'+partitaId),isOpen=sec.classList.toggle('open');
-          if(isOpen&&sec.dataset.rendered!=='true'){
-            const convPartita=allConvocati[partitaId]||{},
-              convNomi=Object.keys(convPartita).map(pid=>{const pl=playerMap[pid];return pl?{id:pid,nome:pl.nome,gruppo:pl.gruppo,capitano:!!pl.capitano,portiere:!!pl.portiere}:null}).filter(Boolean).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
-            renderConvSection(partitaId,sec,convNomi,convPartita,playerMap);sec.dataset.rendered='true';
-          }
-        }
-      });
-    }
-
-    function renderConvSection(partitaId,section,convNomi,convPartita,playerMap){
-      const admin=isManager();section.innerHTML='';
-      if(convNomi.length>0){
-        const label=document.createElement('div');label.className='conv-label';label.textContent='🤽 Convocati';section.appendChild(label);
-        const list=document.createElement('div');list.className='conv-list';
-        convNomi.forEach(({id,nome,capitano,portiere})=>{
-          const chip=document.createElement('div');chip.className='conv-chip selected';
-          const roleHtml = `${capitano ? '<span class="conv-role-badge">C</span>' : ''}${portiere ? '<span class="conv-role-badge">P</span>' : ''}`;
-          chip.innerHTML=`${esc(nome)}${admin?`<button class="conv-chip-remove" data-pid="${id}" data-partita="${partitaId}" title="Rimuovi">✕</button>`:''}${roleHtml}`;
-          list.appendChild(chip);
-        });
-        section.appendChild(list);
-      } else {
-        const empty=document.createElement('div');empty.className='conv-empty';empty.textContent='Nessun convocato selezionato.';section.appendChild(empty);
-      }
-
-      if(admin){
-        const hr=document.createElement('hr');hr.className='conv-divider';section.appendChild(hr);
-        const selLabel=document.createElement('div');selLabel.className='conv-label';selLabel.textContent='🤽 Seleziona giocatori';section.appendChild(selLabel);
-        const filterRow=document.createElement('div');filterRow.className='conv-filter-row';
-        const allGroups=[{key:'tutti',label:'Tutti'},...GROUPS];
-        let activeGroupFilter='tutti';
-        allGroups.forEach(g=>{const fb=document.createElement('button');fb.className='conv-filter-btn'+(g.key==='tutti'?' active':'');fb.textContent=g.label;fb.dataset.gkey=g.key;filterRow.appendChild(fb);});
-        section.appendChild(filterRow);
-        const playerArea=document.createElement('div');playerArea.className='conv-list';section.appendChild(playerArea);
-
-        function renderPlayerSelection(){
-          playerArea.innerHTML='';const visibleGroups=activeGroupFilter==='tutti'?GROUPS:GROUPS.filter(g=>g.key===activeGroupFilter);const visibleKeys=new Set(visibleGroups.map(g=>g.key));let any=false;
-          Object.entries(playerMap).filter(([,pl])=>visibleKeys.has(pl.gruppo)).sort((a,b)=>(a[1].nome||'').localeCompare(b[1].nome||'')).forEach(([pid,player])=>{
-            any=true;const isConv=!!convPartita[pid];const pb=document.createElement('button');
-            const roles=[]; if(player.capitano) roles.push('C'); if(player.portiere) roles.push('P');
-            pb.className='conv-player-btn'+(isConv?' convocato':'');
-            pb.textContent=player.nome + (roles.length ? ` (${roles.join(',')})` : '');
-            pb.dataset.pid=pid;pb.dataset.partita=partitaId;playerArea.appendChild(pb);
-          });
-          if(!any) playerArea.innerHTML='<div class="conv-empty">Nessun giocatore disponibile.</div>';
-        }
-        renderPlayerSelection();
-        filterRow.querySelectorAll('.conv-filter-btn').forEach(fb=>{fb.onclick=()=>{filterRow.querySelectorAll('.conv-filter-btn').forEach(b=>b.classList.remove('active'));fb.classList.add('active');activeGroupFilter=fb.dataset.gkey;renderPlayerSelection();};});
-        playerArea.onclick=e=>{
-          const pb=e.target.closest('.conv-player-btn');if(!pb)return;const pid=pb.dataset.pid;const ref=convocatiRef.child(pb.dataset.partita).child(pid);if(pb.classList.contains('convocato'))ref.remove().catch(()=>toast('❌ Errore'));else ref.set(true).catch(()=>toast('❌ Errore'));
-        };
-        section.querySelectorAll('.conv-chip-remove').forEach(btn=>{btn.onclick=()=>convocatiRef.child(btn.dataset.partita).child(btn.dataset.pid).remove().catch(()=>toast('❌ Errore'));});
-      }
-    }
-
-    function edit(id){const p=allData[id];editingId=id;['data','ora','avversario','risultato','citta','indirizzo','note','nome-evento','descrizione'].forEach(k=>{const e=$( 'f-'+k );if(e)e.value=p[k]||''});$('f-campionato').value=p.campionato||'Habawaba';$('f-luogo').value=p.luogo||'casa';toggleFields();$('panel-title').textContent='✏️ Modifica partita';$('add-btn').textContent='💾 Salva modifiche';$('cancel-edit-btn').style.display='block';$('manager-panel').scrollIntoView({behavior:'smooth'})}
-    function toggleFields(){const isFesta=$('f-campionato').value==='Festa';$('partita-fields').style.display=isFesta?'none':'block';$('festa-fields').style.display=isFesta?'block':'none';$('trasferta-fields').style.display=$('f-luogo').value==='trasferta'?'block':'none'}
-    function reset(){editingId=null;$$('.manager-panel input,.manager-panel textarea').forEach(e=>e.value='');$('f-campionato').value='Habawaba';$('f-luogo').value='casa';toggleFields();$('panel-title').textContent='➕ Aggiungi Partita';$('add-btn').textContent='➕ Aggiungi partita';$('cancel-edit-btn').style.display='none'}
-
-    $('add-btn').onclick=()=>{
-      const festa=$('f-campionato').value==='Festa',e={data:$('f-data').value,ora:$('f-ora').value,campionato:$('f-campionato').value,note:$('f-note').value.trim()};
-      if(!e.data||(!festa&&!$('f-avversario').value.trim())) return toast('⚠️ Compila data e avversario!');
-      if(festa){e.nomeEvento=$('f-nome-evento').value.trim()||'Festa';e.descrizione=$('f-descrizione').value.trim()} else {e.avversario=$('f-avversario').value.trim();e.luogo=$('f-luogo').value;e.risultato=$('f-risultato').value.trim();if(e.luogo==='trasferta'){e.citta=$('f-citta').value.trim();e.indirizzo=$('f-indirizzo').value.trim()}}
-      (editingId?calRef.child(editingId).update(e):calRef.push(e)).then(()=>{reset();toast('✅ Salvato!')}).catch(()=>toast('❌ Errore nel salvataggio'));
-    };
-
-    $('cancel-edit-btn').onclick=reset;$('f-campionato').onchange=toggleFields;$('f-luogo').onchange=toggleFields;
-    $$('.filter-btn').forEach(b=>b.onclick=()=>{$$('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeFilter=b.dataset.filter;render()});
-
-    const overlay=$('modal-overlay');
-    $('pin-btn').onclick=()=>{if(isManager()){sessionStorage.setItem('nektonManager','0');$('manager-panel').classList.remove('visible');$('pin-btn').textContent='🔒';render()}else{overlay.classList.add('open');$('pin-input').focus()}};
-    $('modal-cancel').onclick=()=>overlay.classList.remove('open');
-    $('modal-confirm').onclick=()=>{if($('pin-input').value==='nekton2026'){sessionStorage.setItem('nektonManager','1');overlay.classList.remove('open');$('manager-panel').classList.add('visible');$('pin-btn').textContent='🔐';render()}else $('modal-error').textContent='❌ PIN non corretto'};
-    if(isManager()){$('manager-panel').classList.add('visible');$('pin-btn').textContent='🔐'}
-  </script>
-</body>
-</html>
+<div class="header"><a class="back-link" href="index.html">← Home</a><button class="pin-btn" id="pin-btn">🔒</button><div class="icons">📆</div><h1>Calendario Partite</h1><div class="subtitle">Tutti i campionati Nekton</div><div class="sync-status"><span class="sync-dot" id="sync-dot"></span> <span id="sync-label">Connessione in corso…</span></div></div>
+<div class="wave-divider"><svg viewBox="0 0 1440 72" preserveAspectRatio="none"><path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/></svg></div>
+<div class="container"><div class="manager-panel" id="manager-panel"><h3 id="panel-title">➕ Aggiungi Partita</h3><div class="form-row"><div class="form-group"><label>Data</label><input class="form-input" type="date" id="f-data"></div><div class="form-group"><label>Ora</label><input class="form-input" type="time" id="f-ora"></div></div><div class="form-group"><label>Campionato</label><select class="form-input" id="f-campionato"><option>Habawaba</option><option>U12</option><option>U13</option><option>U14</option><option>U15</option><option>U16</option><option>U17</option><option>U18</option><option value="Promozione">Prima Squadra Promozione</option><option value="Festa">Festa</option></select></div><div id="partita-fields"><div class="form-group"><label>Avversario</label><input class="form-input" id="f-avversario" maxlength="60"></div><div class="form-row"><div class="form-group"><label>Casa / Trasferta</label><select class="form-input" id="f-luogo"><option value="casa">🏠 Casa</option><option value="trasferta">✈️ Trasferta</option></select></div><div class="form-group"><label>Risultato (opz.)</label><input class="form-input" id="f-risultato" maxlength="10"></div></div><div id="trasferta-fields" style="display:none"><div class="form-group"><label>Città</label><input class="form-input" id="f-citta" maxlength="60"></div><div class="form-group"><label>Indirizzo piscina</label><input class="form-input" id="f-indirizzo" maxlength="100"></div></div></div><div id="festa-fields" style="display:none"><div class="form-group"><label>Nome evento</label><input class="form-input" id="f-nome-evento" maxlength="60"></div><div class="form-group"><label>Descrizione</label><input class="form-input" id="f-descrizione" maxlength="120"></div></div><div class="form-group"><label>Note (opz.)</label><textarea class="form-input" id="f-note" maxlength="500"></textarea></div><div class="pub-btn-row"><button class="pub-btn" id="add-btn">➕ Aggiungi partita</button><button class="cancel-edit-btn" id="cancel-edit-btn">✕ Annulla modifica</button></div></div>
+<div class="filter-row"><button class="filter-btn active" data-filter="tutti">Tutti</button><button class="filter-btn" data-filter="Habawaba">Habawaba</button><button class="filter-btn" data-filter="U12">U12</button><button class="filter-btn" data-filter="U13">U13</button><button class="filter-btn" data-filter="U14">U14</button><button class="filter-btn" data-filter="U15">U15</button><button class="filter-btn" data-filter="U16">U16</button><button class="filter-btn" data-filter="U17">U17</button><button class="filter-btn" data-filter="U18">U18</button><button class="filter-btn" data-filter="Promozione">Promozione</button></div><div class="section-title">🤽 Partite</div><div id="calendario-container"></div></div><div class="page-footer">📆 Calendario · Nekton Pallanuoto</div><div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal"><h3>🔑 Accesso Gestore</h3><p>Inserisci il PIN per gestire il calendario</p><input type="password" id="pin-input"><div id="modal-error"></div><div class="modal-btns"><button class="modal-btn" id="modal-cancel">Annulla</button><button class="modal-btn primary" id="modal-confirm">Accedi</button></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
+firebase.initializeApp({apiKey:'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',authDomain:'lista-spesa-b9eb1.firebaseapp.com',databaseURL:'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app',projectId:'lista-spesa-b9eb1',storageBucket:'lista-spesa-b9eb1.firebasestorage.app',messagingSenderId:'468690890938',appId:'1:468690890938:web:048be7f27779d8862d9283'});
+const db=firebase.database(),calRef=db.ref('nekton/calendario'),giocatoriRef=db.ref('nekton/giocatori'),convocatiRef=db.ref('nekton/convocati');
+const GROUPS=[{key:'acquagol',label:'🌊 Acquagol'},{key:'u12u13',label:'🏊 U12 U13'},{key:'u14u15u16',label:'🏊 U14 U15 U16'},{key:'u16',label:'🏊 U16'},{key:'senior',label:'🤽 Senior'}];
+let allData={},allPlayers={},allConvocati={},activeFilter='tutti',editingId=null;const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s),esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),admin=()=>sessionStorage.getItem('nektonManager')==='1';function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
+db.ref('.info/connected').on('value',s=>{$('sync-dot').className='sync-dot '+(s.val()?'connected':'error');$('sync-label').textContent=s.val()?'✅ Sincronizzato in tempo reale':'❌ Offline – riconnessione…'});calRef.on('value',s=>{allData=s.val()||{};render()});giocatoriRef.on('value',s=>{allPlayers=s.val()||{};render()});convocatiRef.on('value',s=>{allConvocati=s.val()||{};render()});
+function playerMap(){const m={};GROUPS.forEach(g=>Object.entries(allPlayers[g.key]||{}).forEach(([id,p])=>m[id]={...p,gruppo:g.key}));return m}
+function render(){const c=$('calendario-container'),today=new Date().toISOString().slice(0,10),entries=Object.entries(allData).filter(([,p])=>activeFilter==='tutti'||p.campionato===activeFilter).sort((a,b)=>(a[1].data||'').localeCompare(b[1].data||''));if(!entries.length){c.innerHTML='<div class="no-items">Nessuna partita in programma. 💤</div>';return}const pm=playerMap();c.innerHTML=entries.map(([id,p])=>{const festa=p.campionato==='Festa',d=new Date((p.data||'')+'T12:00:00'),date=isNaN(d)?p.data:d.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}),mapUrl=p.citta||p.indirizzo?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([p.citta,p.indirizzo].filter(Boolean).join(', ')):'',count=Object.keys(allConvocati[id]||{}).length;return `<div class="partita-card${p.data<today?' passata':''}${festa?' festa':''}"><div class="partita-top"><span class="campionato-badge">${esc(p.campionato)}</span><span class="partita-data">📅 ${esc(date)}${p.ora?' – '+esc(p.ora):''} ${admin()?`<button class="partita-edit-btn" data-id="${id}">✏️</button><button class="partita-del-btn" data-id="${id}">🗑️</button>`:''}</span></div>${festa?`<div class="partita-avversario">🎉 ${esc(p.nomeEvento||'Festa')}</div>${p.descrizione?`<div>${esc(p.descrizione)}</div>`:''}`:`<div class="partita-avversario">vs ${esc(p.avversario)}</div><div class="partita-info"><span class="partita-luogo ${p.luogo==='casa'?'casa':'trasferta'}">${p.luogo==='casa'?'🏠 Casa':'✈️ Trasferta'}</span>${p.risultato?`<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>`:''}</div>${mapUrl?`<div class="partita-trasferta-info">📍 <a href="${mapUrl}" target="_blank" rel="noopener noreferrer">${esc([p.citta,p.indirizzo].filter(Boolean).join(' · '))} ↗</a></div>`:''}`}${p.note?`<div class="partita-note"><strong>📝 Note:</strong> ${esc(p.note)}</div>`:''}<button class="conv-toggle-btn" data-id="${id}">🤽 Convocati${count?' ('+count+')':''}</button><div class="conv-section" id="conv-${id}"></div></div>`}).join('');if(admin()){$$('.partita-del-btn').forEach(b=>b.onclick=()=>{if(confirm('Eliminare questa partita?'))calRef.child(b.dataset.id).remove()});$$('.partita-edit-btn').forEach(b=>b.onclick=()=>edit(b.dataset.id))}$$('.conv-toggle-btn').forEach(b=>b.onclick=()=>{const s=$('conv-'+b.dataset.id),open=s.classList.toggle('open');if(open&&s.dataset.rendered!=='1'){renderConv(b.dataset.id,s,pm);s.dataset.rendered='1'}})}
+function renderConv(pid,section,pm){const selected=allConvocati[pid]||{};section.innerHTML='';const names=Object.keys(selected).map(id=>pm[id]?{id,...pm[id]}:null).filter(Boolean).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));const label=document.createElement('div');label.className='conv-label';label.textContent='🤽 Convocati';section.appendChild(label);const list=document.createElement('div');list.className='conv-list';names.forEach(p=>{const x=document.createElement('div');x.className='conv-chip';x.innerHTML=`${esc(p.nome)}${p.capitano?'<span class="conv-role-badge">C</span>':''}${p.portiere?'<span class="conv-role-badge">P</span>':''}${admin()?`<button class="conv-chip-remove" data-id="${p.id}">✕</button>`:''}`;list.appendChild(x)});section.appendChild(list);if(!admin())return;const hr=document.createElement('hr');hr.className='conv-divider';section.appendChild(hr);const filter=document.createElement('div');filter.className='conv-filter-row';const groups=[{key:'tutti',label:'Tutti'},...GROUPS];groups.forEach(g=>{const b=document.createElement('button');b.className='conv-filter-btn'+(g.key==='tutti'?' active':'');b.textContent=g.label;b.dataset.group=g.key;filter.appendChild(b)});section.appendChild(filter);const area=document.createElement('div');area.className='conv-list';section.appendChild(area);let active='tutti';function draw(){area.innerHTML='';Object.entries(pm).filter(([,p])=>active==='tutti'||p.gruppo===active).sort((a,b)=>(a[1].nome||'').localeCompare(b[1].nome||'')).forEach(([id,p])=>{const b=document.createElement('button');b.className='conv-player-btn'+(selected[id]?' convocato':'');b.textContent=p.nome+(p.capitano?' (C)':'')+(p.portiere?' (P)':'');b.dataset.id=id;area.appendChild(b)})}draw();filter.onclick=e=>{const b=e.target.closest('button');if(!b)return;active=b.dataset.group;filter.querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');draw()};area.onclick=e=>{const b=e.target.closest('button');if(!b)return;const r=convocatiRef.child(pid).child(b.dataset.id);(selected[b.dataset.id]?r.remove():r.set(true)).catch(()=>toast('❌ Errore'))};list.querySelectorAll('.conv-chip-remove').forEach(b=>b.onclick=()=>convocatiRef.child(pid).child(b.dataset.id).remove())}
+function edit(id){const p=allData[id];editingId=id;['data','ora','avversario','risultato','citta','indirizzo','note','nome-evento','descrizione'].forEach(k=>{const e=$('f-'+k);if(e)e.value=p[k]||''});$('f-campionato').value=p.campionato||'Habawaba';$('f-luogo').value=p.luogo||'casa';toggle();$('panel-title').textContent='✏️ Modifica partita';$('add-btn').textContent='💾 Salva modifiche';$('cancel-edit-btn').style.display='block';$('manager-panel').scrollIntoView({behavior:'smooth'})}function toggle(){const festa=$('f-campionato').value==='Festa';$('partita-fields').style.display=festa?'none':'block';$('festa-fields').style.display=festa?'block':'none';$('trasferta-fields').style.display=$('f-luogo').value==='trasferta'?'block':'none'}function reset(){editingId=null;$$('.manager-panel input,.manager-panel textarea').forEach(e=>e.value='');$('f-campionato').value='Habawaba';$('f-luogo').value='casa';toggle();$('panel-title').textContent='➕ Aggiungi Partita';$('add-btn').textContent='➕ Aggiungi partita';$('cancel-edit-btn').style.display='none'}
+$('add-btn').onclick=()=>{const festa=$('f-campionato').value==='Festa',e={data:$('f-data').value,ora:$('f-ora').value,campionato:$('f-campionato').value,note:$('f-note').value.trim()};if(!e.data||(!festa&&!$('f-avversario').value.trim()))return toast('⚠️ Compila data e avversario!');if(festa){e.nomeEvento=$('f-nome-evento').value.trim()||'Festa';e.descrizione=$('f-descrizione').value.trim()}else{e.avversario=$('f-avversario').value.trim();e.luogo=$('f-luogo').value;e.risultato=$('f-risultato').value.trim();if(e.luogo==='trasferta'){e.citta=$('f-citta').value.trim();e.indirizzo=$('f-indirizzo').value.trim()}}(editingId?calRef.child(editingId).update(e):calRef.push(e)).then(()=>{reset();toast('✅ Salvato!')}).catch(()=>toast('❌ Errore nel salvataggio'))};$('cancel-edit-btn').onclick=reset;$('f-campionato').onchange=toggle;$('f-luogo').onchange=toggle;$$('.filter-btn').forEach(b=>b.onclick=()=>{$$('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeFilter=b.dataset.filter;render()});const overlay=$('modal-overlay');$('pin-btn').onclick=()=>{if(admin()){sessionStorage.setItem('nektonManager','0');$('manager-panel').classList.remove('visible');$('pin-btn').textContent='🔒';render()}else{overlay.classList.add('open');$('pin-input').focus()}};$('modal-cancel').onclick=()=>overlay.classList.remove('open');$('modal-confirm').onclick=()=>{if($('pin-input').value==='nekton2026'){sessionStorage.setItem('nektonManager','1');overlay.classList.remove('open');$('manager-panel').classList.add('visible');$('pin-btn').textContent='🔐';render()}else $('modal-error').textContent='❌ PIN non corretto'};if(admin()){$('manager-panel').classList.add('visible');$('pin-btn').textContent='🔐'}
+</script></body></html>
