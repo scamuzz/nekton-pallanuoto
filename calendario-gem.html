@@ -151,6 +151,7 @@
       background: none;
       border: 0;
       cursor: pointer;
+      margin-left: 4px;
     }
 
     .manager-panel {
@@ -460,7 +461,8 @@
     let activeFilter = 'tutti';
     let editingId = null;
 
-    const $ = id => document.getElementById(id);     const $$ = s => document.querySelectorAll(s);
+    const $ = id => document.getElementById(id);
+    const $$ = s => document.querySelectorAll(s);
     const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const admin = () => sessionStorage.getItem('nektonManager') === '1';
 
@@ -474,7 +476,7 @@
       let r = [];
       if (p.capitano) r.push('C');
       if (p.portiere) r.push('P');
-      return r.length ? `<span class="conv-role-badge">${r.join('')}</span>` : '';
+      return r.length ? '<span class="conv-role-badge">' + r.join('') + '</span>' : '';
     }
 
     function playerMap() {
@@ -512,17 +514,128 @@
 
     function render() {
       const open = new Set([...document.querySelectorAll('.conv-section.open')].map(x => x.id.replace('conv-', '')));
-      const c = $('calendario-container');       const today = new Date().toISOString().slice(0, 10);        const entries = Object.entries(allData)         .filter(([, p]) => activeFilter === 'tutti' \vert{}\vert{} p.campionato === activeFilter)         .sort((a, b) => (a[1].data \vert{}\vert{} '').localeCompare(b[1].data \vert{}\vert{} ''));        if (!entries.length) {         c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';         return;       }        const pm = playerMap();       c.innerHTML = '';        entries.forEach(([id, p]) => {         const festa = p.campionato === 'Festa';         const d = new Date((p.data \vert{}\vert{} '') + 'T12:00:00');         const date = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });         const mapUrl = (p.citta \vert{}\vert{} p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';         const convCount = Object.keys(allConv[id] \vert{}\vert{} {}).length;          const card = document.createElement('div');         card.className = 'partita-card' + (p.data < today ? ' passata' : '');          let html = '<div class="partita-top">';         html += '<span class="campionato-badge">' + esc(p.campionato) + '</span>';         html += '<span class="partita-data">📅 ' + esc(date) + (p.ora ? ' – ' + esc(p.ora) : '');         if (admin()) {           html += ' <button class="partita-edit-btn" data-id="' + id + '">✏️</button><button class="partita-del-btn" data-id="' + id + '">🗑️</button>';         }         html += '</span></div>';          if (festa) {           html += '<div class="partita-avversario">🎉 ' + esc(p.nomeEvento \vert{}\vert{} 'Festa') + '</div>';         } else {           html += '<div class="partita-avversario">vs ' + esc(p.avversario) + '</div>';           html += '<div class="partita-info">';           html += '<span class="partita-luogo ' + (p.luogo === 'casa' ? 'casa' : 'trasferta') + '">' + (p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta') + '</span>';           if (p.risultato) {             html += '<span class="partita-risultato">🏆 ' + esc(p.risultato) + '</span>';           }           html += '</div>';           if (mapUrl) {             html += '<div class="partita-trasferta-info">📍 <a href="' + mapUrl + '" target="_blank" rel="noopener noreferrer">' + esc([p.citta, p.indirizzo].filter(Boolean).join(' · ')) + ' ↗</a></div>';           }         }          if (p.note) {           html += '<div class="partita-note"><strong>📝 Note:</strong> ' + esc(p.note) + '</div>';         }          html += '<button class="conv-toggle-btn" data-id="' + id + '">🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '') + '</button>';         html += '<div class="conv-section" id="conv-' + id + '"></div>';          card.innerHTML = html;         c.appendChild(card);       });        $$('.partita-del-btn').forEach(b => b.onclick = () => {
-        if (confirm('Eliminare questa partita?')) calRef.child(b.dataset.id).remove();
+      const c = $('calendario-container');
+      const today = new Date().toISOString().slice(0, 10);
+
+      const entries = Object.entries(allData)
+        .filter(([, p]) => activeFilter === 'tutti' || p.campionato === activeFilter)
+        .sort((a, b) => (a[1].data || '').localeCompare(b[1].data || ''));
+
+      c.innerHTML = '';
+
+      if (!entries.length) {
+        c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';
+        return;
+      }
+
+      const pm = playerMap();
+
+      entries.forEach(([id, p]) => {
+        const festa = p.campionato === 'Festa';
+        const d = new Date((p.data || '') + 'T12:00:00');
+        const dateStr = isNaN(d) ? (p.data || '') : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        const mapUrl = (p.citta || p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';
+        const convCount = Object.keys(allConv[id] || {}).length;
+
+        const card = document.createElement('div');
+        card.className = 'partita-card' + (p.data < today ? ' passata' : '');
+
+        // Top Row
+        const topRow = document.createElement('div');
+        topRow.className = 'partita-top';
+
+        const badge = document.createElement('span');
+        badge.className = 'campionato-badge';
+        badge.textContent = p.campionato || '';
+        topRow.appendChild(badge);
+
+        const dataSpan = document.createElement('span');
+        dataSpan.className = 'partita-data';
+        dataSpan.textContent = '📅 ' + dateStr + (p.ora ? ' – ' + p.ora : '');
+
+        if (admin()) {
+          const editBtn = document.createElement('button');
+          editBtn.className = 'partita-edit-btn';
+          editBtn.textContent = '✏️';
+          editBtn.onclick = () => edit(id);
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'partita-del-btn';
+          delBtn.textContent = '🗑️';
+          delBtn.onclick = () => {
+            if (confirm('Eliminare questa partita?')) calRef.child(id).remove();
+          };
+
+          dataSpan.appendChild(editBtn);
+          dataSpan.appendChild(delBtn);
+        }
+        topRow.appendChild(dataSpan);
+        card.appendChild(topRow);
+
+        // Body Info
+        if (festa) {
+          const festaDiv = document.createElement('div');
+          festaDiv.className = 'partita-avversario';
+          festaDiv.textContent = '🎉 ' + (p.nomeEvento || 'Festa');
+          card.appendChild(festaDiv);
+        } else {
+          const avvDiv = document.createElement('div');
+          avvDiv.className = 'partita-avversario';
+          avvDiv.textContent = 'vs ' + (p.avversario || '');
+          card.appendChild(avvDiv);
+
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'partita-info';
+
+          const luogoSpan = document.createElement('span');
+          luogoSpan.className = 'partita-luogo ' + (p.luogo === 'casa' ? 'casa' : 'trasferta');
+          luogoSpan.textContent = p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta';
+          infoDiv.appendChild(luogoSpan);
+
+          if (p.risultato) {
+            const risSpan = document.createElement('span');
+            risSpan.className = 'partita-risultato';
+            risSpan.textContent = '🏆 ' + p.risultato;
+            infoDiv.appendChild(risSpan);
+          }
+          card.appendChild(infoDiv);
+
+          if (mapUrl) {
+            const mapDiv = document.createElement('div');
+            mapDiv.className = 'partita-trasferta-info';
+            mapDiv.innerHTML = '📍 <a href="' + mapUrl + '" target="_blank" rel="noopener noreferrer">' + esc([p.citta, p.indirizzo].filter(Boolean).join(' · ')) + ' ↗</a>';
+            card.appendChild(mapDiv);
+          }
+        }
+
+        // Note
+        if (p.note) {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'partita-note';
+          noteDiv.innerHTML = '<strong>📝 Note:</strong> ' + esc(p.note);
+          card.appendChild(noteDiv);
+        }
+
+        // Convocati Toggle Button
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'conv-toggle-btn';
+        toggleBtn.textContent = '🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '');
+
+        const convSection = document.createElement('div');
+        convSection.className = 'conv-section';
+        convSection.id = 'conv-' + id;
+
+        toggleBtn.onclick = () => {
+          convSection.classList.toggle('open');
+          if (convSection.classList.contains('open')) renderConv(id, convSection, pm);
+        };
+
+        card.appendChild(toggleBtn);
+        card.appendChild(convSection);
+        c.appendChild(card);
       });
 
-      $$('.partita-edit-btn').forEach(b => b.onclick = () => edit(b.dataset.id));        $$
-('.conv-toggle-btn').forEach(b => b.onclick = () => {
-        const s = $('conv-' + b.dataset.id);
-        s.classList.toggle('open');
-        if (s.classList.contains('open')) renderConv(b.dataset.id, s, pm);
-      });
-
+      // Ripristina stato sezioni aperte
       open.forEach(id => {
         const s = $('conv-' + id);
         if (s) {
@@ -539,16 +652,25 @@
       const list = document.createElement('div');
       list.className = 'conv-list';
 
-      Object.keys(selected)
+      const playerKeys = Object.keys(selected)
         .map(k => pm[k] ? { id: k, ...pm[k] } : null)
         .filter(Boolean)
-        .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''))
-        .forEach(p => {
-          const x = document.createElement('div');
-          x.className = 'conv-chip';
-          x.innerHTML = esc(p.nome) + roles(p) + (admin() ? '<button class="conv-chip-remove" data-id="' + p.id + '">✕</button>' : '');
-          list.appendChild(x);
-        });
+        .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+
+      playerKeys.forEach(p => {
+        const x = document.createElement('div');
+        x.className = 'conv-chip';
+        x.innerHTML = esc(p.nome) + roles(p);
+
+        if (admin()) {
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'conv-chip-remove';
+          removeBtn.textContent = '✕';
+          removeBtn.onclick = () => convRef.child(id).child(p.id).remove();
+          x.appendChild(removeBtn);
+        }
+        list.appendChild(x);
+      });
 
       if (!list.children.length) {
         list.innerHTML = '<span class="conv-empty">Nessun convocato selezionato.</span>';
@@ -607,17 +729,15 @@
       area.onclick = e => {
         const b = e.target.closest('button');
         if (!b) return;
-        const r = convRef.child(id).child(b.dataset.id);
-        selected[b.dataset.id] ? r.remove() : r.set(true);
+        const pid = b.dataset.id;
+        const r = convRef.child(id).child(pid);
+        selected[pid] ? r.remove() : r.set(true);
       };
-
-      section.querySelectorAll('.conv-chip-remove').forEach(b => {
-        b.onclick = () => convRef.child(id).child(b.dataset.id).remove();
-      });
     }
 
     function edit(id) {
       const p = allData[id];
+      if (!p) return;
       editingId = id;
 
       ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach(k => {
@@ -625,20 +745,29 @@
         if (e) e.value = p[k] || '';
       });
 
-      $('f-campionato').value = p.campionato \vert{}\vert{} 'Habawaba';$('f-luogo').value = p.luogo || 'casa';
+      $('f-campionato').value = p.campionato || 'Habawaba';
+      $('f-luogo').value = p.luogo || 'casa';
 
       toggle();
 
-      $('manager-panel').classList.add('visible');$('panel-title').textContent = '✏️ Modifica partita';
+      $('manager-panel').classList.add('visible');
+      $('panel-title').textContent = '✏️ Modifica partita';
       $('add-btn').textContent = '💾 Salva modifiche';
       $('cancel-edit-btn').style.display = 'block';
     }
 
     function toggle() {
-      const f = $('f-campionato').value === 'Festa';$('partita-fields').style.display = f ? 'none' : 'block';
+      const f = $('f-campionato').value === 'Festa';
+      $('partita-fields').style.display = f ? 'none' : 'block';
       $('festa-fields').style.display = f ? 'block' : 'none';
-      $('trasferta-fields').style.display = $('f-luogo').value === 'trasferta' ? 'block' : 'none';     }      function reset() {       editingId = null;       $$('.form-input').forEach(e => e.value = '');
-      $('f-campionato').value = 'Habawaba';$('f-luogo').value = 'casa';
+      $('trasferta-fields').style.display = $('f-luogo').value === 'trasferta' ? 'block' : 'none';
+    }
+
+    function reset() {
+      editingId = null;
+      $$('.form-input').forEach(e => e.value = '');
+      $('f-campionato').value = 'Habawaba';
+      $('f-luogo').value = 'casa';
       toggle();
       $('panel-title').textContent = '➕ Aggiungi Partita';
       $('add-btn').textContent = '➕ Aggiungi partita';
@@ -683,8 +812,8 @@
     $('f-campionato').onchange = toggle;
     $('f-luogo').onchange = toggle;
 
-    $$('.filter-btn').forEach(b => b.onclick = () => {$$
-('.filter-btn').forEach(x => x.classList.remove('active'));
+    $$('.filter-btn').forEach(b => b.onclick = () => {
+      $$('.filter-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       activeFilter = b.dataset.filter;
       render();
@@ -695,7 +824,8 @@
     $('pin-btn').onclick = () => {
       if (admin()) {
         sessionStorage.setItem('nektonManager', '0');
-        $('manager-panel').classList.remove('visible');$('pin-btn').textContent = '🔒';
+        $('manager-panel').classList.remove('visible');
+        $('pin-btn').textContent = '🔒';
         render();
       } else {
         overlay.classList.add('open');
@@ -713,7 +843,8 @@
         sessionStorage.setItem('nektonManager', '1');
         overlay.classList.remove('open');
         $('modal-error').textContent = '';
-        $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
+        $('manager-panel').classList.add('visible');
+        $('pin-btn').textContent = '🔐';
         render();
       } else {
         $('modal-error').textContent = '❌ PIN non corretto';
@@ -721,7 +852,8 @@
     };
 
     if (admin()) {
-      $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
+      $('manager-panel').classList.add('visible');
+      $('pin-btn').textContent = '🔐';
     }
   </script>
 </body>
