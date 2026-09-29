@@ -17,7 +17,6 @@
       color: #1a3a5c;
     }
 
-    /* Header e Navigazione */
     .header {
       background: linear-gradient(160deg, #012AFE, #0055cc 40%, #00b4d8);
       color: #fff;
@@ -89,7 +88,6 @@
       width: 100%;
     }
 
-    /* Layout Principale */
     .container {
       max-width: 540px;
       margin: auto;
@@ -128,7 +126,6 @@
       color: #fff;
     }
 
-    /* Partita Card */
     .partita-card {
       background: #fff;
       border: 2px solid #ddeeff;
@@ -224,7 +221,6 @@
       cursor: pointer;
     }
 
-    /* Manager Panel & Form */
     .manager-panel {
       display: none;
       background: #fff8e1;
@@ -303,7 +299,6 @@
       font-size: 0.7rem;
     }
 
-    /* Overlays & Modals */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -314,6 +309,7 @@
       padding: 10px 22px;
       border-radius: 24px;
       display: none;
+      z-index: 1000;
     }
 
     .toast.show {
@@ -327,6 +323,7 @@
       background: #0008;
       align-items: center;
       justify-content: center;
+      z-index: 999;
     }
 
     .modal-overlay.open {
@@ -350,6 +347,7 @@
       padding: 10px;
       border: 0;
       border-radius: 8px;
+      cursor: pointer;
     }
 
     .primary {
@@ -357,7 +355,6 @@
       color: #fff;
     }
 
-    /* Sezione Convocati */
     .conv-toggle-btn {
       display: block;
       width: 100%;
@@ -467,10 +464,13 @@
       margin: 10px 0;
     }
   </style>
+
+  <!-- SDK Firebase caricati nella head per garantire l'ordine di caricamento -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <!-- Header principale -->
   <div class="header">
     <a class="back-link" href="index.html">← Home</a>
     <button class="pin-btn" id="pin-btn">🔒</button>
@@ -483,7 +483,6 @@
     </div>
   </div>
 
-  <!-- Onda divisoria SVG -->
   <div class="wave-divider">
     <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
       <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd" />
@@ -491,8 +490,6 @@
   </div>
 
   <div class="container">
-    
-    <!-- Panello di Gestione Admin -->
     <div class="manager-panel" id="manager-panel">
       <h3 id="panel-title">➕ Aggiungi Partita</h3>
       
@@ -523,7 +520,6 @@
         </select>
       </div>
 
-      <!-- Campi specifici per Partita standard -->
       <div id="partita-fields">
         <div class="form-group">
           <label>Avversario</label>
@@ -554,7 +550,6 @@
         </div>
       </div>
 
-      <!-- Campi specifici per Evento "Festa" -->
       <div id="festa-fields" style="display:none">
         <div class="form-group">
           <label>Nome evento</label>
@@ -577,7 +572,6 @@
       </div>
     </div>
 
-    <!-- Filtri Campionato -->
     <div class="filter-row">
       <button class="filter-btn active" data-filter="tutti">Tutti</button>
       <button class="filter-btn" data-filter="Habawaba">Habawaba</button>
@@ -591,23 +585,20 @@
       <button class="filter-btn" data-filter="Promozione">Promozione</button>
     </div>
 
-    <!-- Elenco Partite Generato Dinamicamente -->
     <div class="section-title">🤽 Partite</div>
     <div id="calendario-container"></div>
   </div>
 
   <div class="page-footer">📆 Calendario · Nekton Pallanuoto</div>
 
-  <!-- Toast Notifiche -->
   <div class="toast" id="toast"></div>
 
-  <!-- Modal Autenticazione PIN Admin -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
       <p>Inserisci il PIN</p>
       <input type="password" id="pin-input">
-      <div id="modal-error"></div>
+      <div id="modal-error" style="color:#ff5252; font-size:0.8rem; margin-top:6px;"></div>
       <div class="modal-btns">
         <button class="modal-btn" id="modal-cancel">Annulla</button>
         <button class="modal-btn primary" id="modal-confirm">Accedi</button>
@@ -615,14 +606,9 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <!-- Logica JavaScript App -->
   <script>
-    // Inizializzazione Firebase
-    firebase.initializeApp({
+    // Controllo inizializzazione Firebase
+    const firebaseConfig = {
       apiKey: 'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',
       authDomain: 'lista-spesa-b9eb1.firebaseapp.com',
       databaseURL: 'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app',
@@ -630,7 +616,11 @@
       storageBucket: 'lista-spesa-b9eb1.firebasestorage.app',
       messagingSenderId: '468690890938',
       appId: '1:468690890938:web:048be7f27779d8862d9283'
-    });
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
 
     const db = firebase.database();
     const calRef = db.ref('nekton/calendario');
@@ -651,7 +641,6 @@
     let activeFilter = 'tutti';
     let editingId = null;
 
-    // Helper Utility
     const $ = id => document.getElementById(id);     const $$ = s => document.querySelectorAll(s);
     const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const admin = () => sessionStorage.getItem('nektonManager') === '1';
@@ -679,14 +668,19 @@
       return m;
     }
 
-    // Listener Realtime Firebase
+    // Listener Stato Connessione
     db.ref('.info/connected').on('value', s => {
-      $('sync-dot').className = 'sync-dot ' + (s.val() ? 'connected' : 'error');$('sync-label').textContent = s.val() ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riconnessione…';
+      const isConnected = !!s.val();
+      $('sync-dot').className = 'sync-dot ' + (isConnected ? 'connected' : 'error');
+      $('sync-label').textContent = isConnected ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riconnessione…';
     });
 
     calRef.on('value', s => {
       allData = s.val() || {};
       render();
+    }, err => {
+      console.error("Errore lettura Calendario:", err);
+      $('sync-label').textContent = '❌ Errore permessi / DB';
     });
 
     playersRef.on('value', s => {
@@ -699,7 +693,6 @@
       render();
     });
 
-    // Render Calendario
     function render() {
       const open = new Set([...document.querySelectorAll('.conv-section.open')].map(x => x.id.replace('conv-', '')));
       const c = $('calendario-container');
@@ -746,14 +739,13 @@
             }
             ${p.note ? `<div class="partita-note"><strong>📝 Note:</strong> ${esc(p.note)}</div>` : ''}
             <button class="conv-toggle-btn" data-id="${id}">
-              parser Convocati${Object.keys(allConv[id] || {}).length ? ' (' + Object.keys(allConv[id]).length + ')' : ''}
+              🤽 Convocati${Object.keys(allConv[id] || {}).length ? ' (' + Object.keys(allConv[id]).length + ')' : ''}
             </button>
             <div class="conv-section" id="conv-${id}"></div>
           </div>
         `;
       }).join('');
 
-      // Listener Eventi Dinamici Card
       $$('.partita-del-btn').forEach(b => b.onclick = () => {
         if (confirm('Eliminare questa partita?')) calRef.child(b.dataset.id).remove();
       });
@@ -774,7 +766,6 @@
       });
     }
 
-    // Render Modulo Convocati
     function renderConv(id, section, pm) {
       const selected = allConv[id] || {};
       section.innerHTML = '<div class="conv-label">🤽 Convocati</div>';
@@ -859,7 +850,6 @@
       });
     }
 
-    // Gestione Form e Editing
     function edit(id) {
       const p = allData[id];
       editingId = id;
@@ -889,7 +879,6 @@
       $('cancel-edit-btn').style.display = 'none';
     }
 
-    // Event Listeners Globali
     $('add-btn').onclick = () => {
       const festa = $('f-campionato').value === 'Festa';
       const e = {
@@ -935,7 +924,6 @@
       render();
     });
 
-    // Gestione PIN e Autenticazione Admin
     const overlay = $('modal-overlay');
 
     $('pin-btn').onclick = () => {
@@ -949,12 +937,16 @@
       }
     };
 
-    $('modal-cancel').onclick = () => overlay.classList.remove('open');
+    $('modal-cancel').onclick = () => {
+      overlay.classList.remove('open');
+      $('modal-error').textContent = '';
+    };
 
     $('modal-confirm').onclick = () => {
       if ($('pin-input').value === 'nekton2026') {
         sessionStorage.setItem('nektonManager', '1');
         overlay.classList.remove('open');
+        $('modal-error').textContent = '';
         $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
         render();
       } else {
@@ -962,7 +954,6 @@
       }
     };
 
-    // Inizializzazione Stato Admin all'avvio
     if (admin()) {
       $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
     }
