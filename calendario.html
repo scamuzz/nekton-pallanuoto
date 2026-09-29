@@ -5,723 +5,605 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>📆 Calendario Partite · Nekton</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: #e8f4fd;
       color: #1a3a5c;
     }
+
     .header {
       background: linear-gradient(160deg, #012AFE, #0055cc 40%, #00b4d8);
       color: #fff;
-      padding: 36px 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 36px 24px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 85, 204, 0.15);
     }
-    .header a { color: inherit; text-decoration: none; font-weight: bold; }
-    .back-link { font-size: 18px; }
+
     .header h1 {
-      margin: 10px 0 5px 0;
-      font-size: 2.5em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      margin: 8px 0;
+      font-size: 32px;
+      font-weight: 600;
     }
-    .pin-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0.7;
+
+    .header .icons {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .back-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: 12px;
+      opacity: 0.9;
       transition: opacity 0.2s;
     }
-    .pin-btn:hover { opacity: 1; }
+
+    .back-link:hover {
+      opacity: 1;
+    }
+
     .subtitle {
-      font-size: 14px;
       opacity: 0.9;
-      font-weight: 300;
+      font-size: 13px;
     }
-    .icons { font-size: 32px; }
-    .wave-divider {
-      height: 72px;
-      background: #fff;
-      overflow: hidden;
+
+    .pin-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+
+    .pin-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
     .wave-divider svg {
       display: block;
       width: 100%;
-      height: 100%;
+      height: auto;
     }
-    .sync-status {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      padding: 12px 16px;
-      border-radius: 50px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      font-size: 12px;
-    }
-    .sync-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ccc;
-      transition: background 0.3s;
-    }
-    .sync-dot.connected { background: #4CAF50; }
-    .sync-dot.error { background: #f44336; }
+
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 24px;
     }
+
     .manager-panel {
       background: #fff;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
-    #panel-title { margin-top: 0; color: #012AFE; }
+
+    .manager-panel h3 {
+      margin-top: 0;
+      color: #012AFE;
+      font-size: 18px;
+    }
+
     .form-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
       margin-bottom: 16px;
     }
-    @media (max-width: 768px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
+
     .form-group {
       display: flex;
       flex-direction: column;
     }
-    label {
-      font-weight: 600;
+
+    .form-group label {
+      font-weight: 500;
       margin-bottom: 6px;
-      color: #1a3a5c;
-      font-size: 14px;
+      font-size: 13px;
+      color: #555;
     }
-    input, select, textarea {
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       padding: 10px;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 6px;
       font-family: inherit;
       font-size: 14px;
       transition: border-color 0.2s;
     }
-    input:focus, select:focus, textarea:focus {
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       outline: none;
       border-color: #012AFE;
-      box-shadow: 0 0 0 2px rgba(1, 42, 254, 0.1);
+      box-shadow: 0 0 0 3px rgba(1, 42, 254, 0.1);
     }
-    textarea { resize: vertical; min-height: 80px; }
-    .form-row.full { grid-column: 1 / -1; }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
     button {
       padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    #add-btn {
       background: #012AFE;
       color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-size: 14px;
+      flex: 1;
     }
-    button:hover { background: #0055cc; }
-    button:active { transform: scale(0.98); }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+
+    #add-btn:hover {
+      background: #0055cc;
+      box-shadow: 0 4px 12px rgba(1, 42, 254, 0.3);
     }
-    @media (max-width: 768px) {
-      .calendar-grid { grid-template-columns: 1fr; }
+
+    #cancel-btn {
+      background: #f0f0f0;
+      color: #666;
     }
-    .match-card {
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+
+    #cancel-btn:hover {
+      background: #e0e0e0;
     }
-    .match-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-    .match-card.past { opacity: 0.7; }
-    .match-header {
-      background: linear-gradient(135deg, #012AFE, #0055cc);
-      color: #fff;
-      padding: 16px;
-    }
-    .match-date { font-size: 12px; opacity: 0.9; }
-    .match-time {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 4px 0 8px 0;
-    }
-    .match-opponent { font-size: 16px; }
-    .match-body { padding: 16px; }
-    .match-row {
+
+    .sync-info {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
-    .match-label {
-      color: #666;
-      font-weight: 600;
-    }
-    .match-value { color: #1a3a5c; }
-    .result {
-      font-size: 24px;
-      font-weight: bold;
-      color: #00b4d8;
-    }
-    .match-location {
-      color: #666;
-      font-size: 13px;
-      margin-top: 8px;
-    }
-    .match-actions {
-      border-top: 1px solid #eee;
-      padding-top: 12px;
-      display: flex;
       gap: 8px;
       margin-top: 12px;
+      font-size: 12px;
     }
-    .match-actions button {
-      flex: 1;
-      padding: 8px;
-      font-size: 13px;
-      margin: 0;
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
     }
-    .match-actions .edit-btn { background: #012AFE; }
-    .match-actions .delete-btn { background: #f44336; }
-    .conv-section {
-      margin-top: 16px;
-      padding: 12px;
-      background: #f5f9ff;
-      border-radius: 8px;
+
+    .sync-dot.connected {
+      background: #4caf50;
+    }
+
+    .sync-dot.error {
+      background: #f44336;
+    }
+
+    .evento-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       border-left: 4px solid #012AFE;
     }
-    .conv-section.open { background: #e3f2fd; }
-    .conv-label {
+
+    .evento-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .evento-title {
+      font-size: 16px;
       font-weight: 600;
       color: #012AFE;
+    }
+
+    .evento-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: #f0f0f0;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .evento-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .evento-detail {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .conv-section {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f5f9ff;
+      border-radius: 6px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .conv-section.open {
+      max-height: 500px;
+    }
+
+    .conv-label {
+      font-weight: 600;
       margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      cursor: pointer;
+      user-select: none;
     }
+
     .conv-list {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 8px;
-      margin-bottom: 12px;
     }
-    .conv-chip {
-      background: #fff;
-      border: 1px solid #012AFE;
-      color: #012AFE;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 13px;
+
+    .conv-player {
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-    .conv-chip-remove {
-      background: none;
-      border: none;
-      color: #f44336;
+      padding: 6px 10px;
+      background: #fff;
+      border-radius: 4px;
+      font-size: 13px;
       cursor: pointer;
-      padding: 0;
-      font-weight: bold;
-      margin-left: 4px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s;
     }
-    .conv-chip-remove:hover { color: #d32f2f; }
-    .conv-empty {
+
+    .conv-player:hover {
+      border-color: #012AFE;
+      background: #f0f5ff;
+    }
+
+    .conv-player input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .no-events {
+      text-align: center;
+      padding: 40px 24px;
       color: #999;
-      font-style: italic;
     }
-    .conv-divider {
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 12px 0;
-    }
-    .conv-filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+
+    .no-events emoji {
+      font-size: 48px;
+      display: block;
       margin-bottom: 12px;
     }
-    .conv-filter-btn {
-      flex: 0 1 auto;
-      padding: 8px 16px;
-      background: #fff;
-      border: 1px solid #ddd;
-      color: #1a3a5c;
-      font-weight: 500;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .conv-filter-btn:hover {
-      border-color: #012AFE;
-      background: #f0f7ff;
-    }
-    .conv-filter-btn.active {
-      background: #012AFE;
-      color: #fff;
-      border-color: #012AFE;
-    }
-    .conv-player-btn {
-      width: 100%;
-      text-align: left;
-      padding: 10px 12px;
-      background: #fff;
-      border: 2px solid #ddd;
-      color: #1a3a5c;
-      cursor: pointer;
-      transition: all 0.2s;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .conv-player-btn:hover {
-      border-color: #012AFE;
-      background: #f0f7ff;
-    }
-    .conv-player-btn.convocato {
-      background: #012AFE;
-      color: #fff;
-      border-color: #012AFE;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #999;
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .evento-details {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <div class="header">
     <a class="back-link" href="index.html">← Home</a>
     <button class="pin-btn" id="pin-btn">🔒</button>
     <div class="icons">📆</div>
     <h1>Calendario Partite</h1>
-    <div class="subtitle">Tutte le partite della stagione</div>
+    <div class="subtitle">Gestisci i tuoi eventi sportivi</div>
+    <div class="sync-info">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">Caricamento...</span>
+    </div>
   </div>
 
+  <!-- Wave Divider -->
   <div class="wave-divider">
     <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
-      <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/>
+      <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd" />
     </svg>
   </div>
 
+  <!-- Main Container -->
   <div class="container">
+    <!-- Manager Panel -->
     <div class="manager-panel" id="manager-panel">
       <h3 id="panel-title">➕ Aggiungi Partita</h3>
 
       <div class="form-row">
         <div class="form-group">
           <label>Data</label>
-          <input class="form-input" id="f-data" type="date">
+          <input class="form-input" type="date" id="f-data">
         </div>
         <div class="form-group">
           <label>Ora</label>
-          <input class="form-input" id="f-ora" type="time">
+          <input class="form-input" type="time" id="f-ora">
         </div>
-      </div>
-
-      <div class="form-row">
         <div class="form-group">
-          <label>Campionato</label>
-          <select class="form-input" id="f-campionato">
-            <option value="">Seleziona tipo</option>
-            <option value="Campionato">⚽ Campionato</option>
-            <option value="Amichevole">🤝 Amichevole</option>
-            <option value="Festa">🎉 Festa</option>
+          <label>Tipo Evento</label>
+          <select id="f-campionato">
+            <option value="">-- Scegli --</option>
+            <option value="Campionato">Campionato</option>
+            <option value="Amichevole">Amichevole</option>
+            <option value="Torneo">Torneo</option>
+            <option value="Festa">Festa</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
           <label>Avversario</label>
-          <input class="form-input" id="f-avversario" placeholder="Es. AS Roma" style="display: none;">
+          <input class="form-input" type="text" id="f-avversario" placeholder="Nome della squadra">
         </div>
-      </div>
-
-      <div class="form-row full">
-        <div class="form-group" id="evento-section" style="display: none;">
-          <label>Nome evento</label>
-          <input class="form-input" id="f-nome-evento" placeholder="Es. Pizza party">
-        </div>
-      </div>
-
-      <div class="form-row full">
-        <div class="form-group" id="desc-section" style="display: none;">
-          <label>Descrizione</label>
-          <textarea class="form-input" id="f-descrizione" placeholder="Dettagli dell'evento"></textarea>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group" id="city-section" style="display: none;">
-          <label>Città</label>
-          <input class="form-input" id="f-citta">
-        </div>
-        <div class="form-group" id="addr-section" style="display: none;">
-          <label>Indirizzo</label>
-          <input class="form-input" id="f-indirizzo">
-        </div>
-      </div>
-
-      <div class="form-row full">
-        <div class="form-group">
-          <label>Note</label>
-          <textarea class="form-input" id="f-note" placeholder="Note aggiuntive"></textarea>
-        </div>
-      </div>
-
-      <div class="form-row">
         <div class="form-group">
           <label>Risultato</label>
-          <input class="form-input" id="f-risultato" placeholder="Es. 10-8">
+          <input class="form-input" type="text" id="f-risultato" placeholder="Es: 5-2">
+        </div>
+        <div class="form-group">
+          <label>Città</label>
+          <input class="form-input" type="text" id="f-citta" placeholder="Luogo della partita">
         </div>
       </div>
 
-      <button id="add-btn">Salva Partita</button>
-      <button id="cancel-btn" style="display: none; background: #999;">Annulla</button>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Indirizzo</label>
+          <input class="form-input" type="text" id="f-indirizzo" placeholder="Via, numero civico">
+        </div>
+        <div class="form-group">
+          <label>Nome Evento</label>
+          <input class="form-input" type="text" id="f-nome-evento" placeholder="Titolo dell'evento">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Note</label>
+        <textarea class="form-input" id="f-note" placeholder="Informazioni aggiuntive..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Descrizione</label>
+        <textarea class="form-input" id="f-descrizione" placeholder="Dettagli dell'evento..."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button id="add-btn">Aggiungi</button>
+        <button id="cancel-btn" style="display:none;">Annulla</button>
+      </div>
     </div>
 
-    <div class="sync-status">
-      <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-label">⏳ Caricamento...</span>
-    </div>
-
-    <div id="calendario-container" class="calendar-grid"></div>
-
-    <div class="footer">© 2024 Nekton Pallanuoto</div>
+    <!-- Events Container -->
+    <div id="calendario-container"></div>
   </div>
 
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
+    // Firebase Configuration
     firebase.initializeApp({
       apiKey: 'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',
       authDomain: 'lista-spesa-b9eb1.firebaseapp.com',
-      databaseURL: 'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app',
+      databaseURL: 'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedb.app',
       projectId: 'lista-spesa-b9eb1',
       storageBucket: 'lista-spesa-b9eb1.appspot.com',
-      messagingSenderId: '988249919063',
-      appId: '1:988249919063:web:1cccd4e0c37e2cbe98e3f6'
+      messagingSenderId: '1080850653945',
+      appId: '1:1080850653945:web:0e1d6b4bbf5c3a96cc3aa4'
     });
 
+    // Database References
     const db = firebase.database();
     const calRef = db.ref('nekton/calendario');
     const playersRef = db.ref('nekton/giocatori');
     const convRef = db.ref('nekton/convocati');
 
+    // Groups Configuration
     const GROUPS = [
       { key: 'acquagol', label: '🌊 Acquagol' },
-      { key: 'u12u13', label: '🏊 U12-U13' },
-      { key: 'u14u15', label: '🏊 U14-U15' },
-      { key: 'u16u17', label: '🏊 U16-U17' },
-      { key: 'seniores', label: '👨‍🦱 Seniores' },
-      { key: 'allenatrici', label: '👩 Allenatrici' }
+      { key: 'u12u13', label: '🏊 U12/U13' },
+      { key: 'u14u15', label: '🏊 U14/U15' },
+      { key: 'juniores', label: '🏊 Juniores' },
+      { key: 'seniores', label: '🏊 Seniores' }
     ];
 
+    // Helper Functions
+    const $ = (id) => document.getElementById(id);
     let allData = {};
+    let allPlayers = {};
     let allConv = {};
     let editingId = null;
-    let categoryStates = {};
 
-    const $ = id => document.getElementById(id);
-
-    function hashCode(s) {
-      let h = 0;
-      for (let i = 0; i < s.length; i++)
-        h = ((h << 5) - h) + s.charCodeAt(i), h = h & h;
-      return Math.abs(h);
-    }
-
-    function esc(s) {
-      const e = document.createElement('div');
-      e.textContent = s;
-      return e.innerHTML;
-    }
-
-    function roles(p) {
-      return p.roles ? ` <span style="font-size: 11px; opacity: 0.7;">(${p.roles.join(', ')})</span>` : '';
-    }
-
-    function admin() {
-      return localStorage.getItem('admin') === 'true';
-    }
-
-    function setPinned(v) {
-      localStorage.setItem('pinned', v.toString());
-    }
-
-    function getPinned() {
-      return localStorage.getItem('pinned') === 'true';
-    }
-
-    $('pin-btn').onclick = () => {
-      const p = !getPinned();
-      setPinned(p);
-      $('pin-btn').style.opacity = p ? '1' : '0.5';
-      $('manager-panel').style.display = p ? 'block' : 'none';
-    };
-
-    (() => {
-      const p = getPinned();
-      $('pin-btn').style.opacity = p ? '1' : '0.5';
-      $('manager-panel').style.display = p ? 'block' : 'none';
-    })();
-
-    db.ref('.info/connected').on('value', s => {
+    // Sync Status
+    db.ref('.info/connected').on('value', (s) => {
       $('sync-dot').className = 'sync-dot ' + (s.val() ? 'connected' : 'error');
-      $('sync-label').textContent = s.val() ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riconnettersi...';
+      $('sync-label').textContent = s.val() ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riprova tra poco';
     });
 
+    // Load Data
+    calRef.on('value', (snap) => {
+      allData = snap.val() || {};
+      render();
+    });
+
+    playersRef.on('value', (snap) => {
+      allPlayers = snap.val() || {};
+      render();
+    });
+
+    convRef.on('value', (snap) => {
+      allConv = snap.val() || {};
+      render();
+    });
+
+    // Render Calendar
     function render() {
       const open = new Set([...document.querySelectorAll('.conv-section.open')].map(x => x.id.replace('conv-', '')));
       const c = $('calendario-container');
       const today = new Date().toISOString().slice(0, 10);
 
-      const entri = Object.entries(allData)
-        .sort(([, a], [, b]) => (a.data || '').localeCompare(b.data || ''))
-        .map(([id, p]) => {
-          const ele = document.createElement('div');
-          ele.className = 'match-card' + (new Date(p.data) < new Date(today) ? ' past' : '');
+      // Sort events by date
+      const events = Object.entries(allData)
+        .sort(([, a], [, b]) => (a.data || '').localeCompare(b.data || ''));
 
-          let html = `<div class="match-header"><div class="match-date">${p.data ? new Date(p.data + 'T00:00').toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }) : ''}</div>`;
-          html += p.ora ? `<div class="match-time">${p.ora}</div>` : '';
+      if (events.length === 0) {
+        c.innerHTML = '<div class="no-events"><emoji>📅</emoji><p>Nessuna partita programmata</p></div>';
+        return;
+      }
 
-          if (p.campionato === 'Festa') {
-            html += `<div class="match-opponent" style="font-size: 18px; margin-top: 8px;">${esc(p['nome-evento'] || 'Evento')}</div>`;
-          } else {
-            html += `<div class="match-opponent">${esc(p.avversario || 'Partita')}</div>`;
-          }
+      c.innerHTML = events.map(([id, p]) => `
+        <div class="evento-card" data-date="${p.data}">
+          <div class="evento-header">
+            <div>
+              <div class="evento-title">${p.nome_evento || (p.campionato || 'Evento')}</div>
+              <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                📅 ${p.data || 'TBD'} ${p.ora ? '⏰ ' + p.ora : ''}
+              </div>
+            </div>
+            <div class="evento-actions">
+              <button class="icon-btn" onclick="edit('${id}')">✏️</button>
+              <button class="icon-btn" onclick="remove('${id}')">🗑️</button>
+            </div>
+          </div>
 
-          html += '</div><div class="match-body">';
+          <div class="evento-details">
+            ${p.avversario ? `<div class="evento-detail">⚽ ${p.avversario}</div>` : ''}
+            ${p.risultato ? `<div class="evento-detail">📊 ${p.risultato}</div>` : ''}
+            ${p.citta ? `<div class="evento-detail">📍 ${p.citta}</div>` : ''}
+            ${p.indirizzo ? `<div class="evento-detail">🏟️ ${p.indirizzo}</div>` : ''}
+          </div>
 
-          if (p.campionato !== 'Festa') {
-            html += `<div class="match-row"><span class="match-label">Campionato</span><span class="match-value">${esc(p.campionato || '')}</span></div>`;
-            if (p.risultato) {
-              html += `<div class="match-row"><span class="match-label">Risultato</span><span class="result">${esc(p.risultato)}</span></div>`;
-            }
-          }
+          ${p.note ? `<div style="font-size: 13px; color: #666; margin-bottom: 8px;">📝 ${p.note}</div>` : ''}
 
-          if (p.campionato === 'Festa' && p.descrizione) {
-            html += `<div class="match-row"><span class="match-value">${esc(p.descrizione)}</span></div>`;
-          }
+          <div class="conv-section ${open.has(id) ? 'open' : ''}" id="conv-${id}">
+            <!-- Convocati renderati qui -->
+          </div>
+        </div>
+      `).join('');
 
-          if (p.citta) {
-            html += `<div class="match-row"><span class="match-label">Città</span><span class="match-value">${esc(p.citta)}</span></div>`;
-          }
-
-          if (p.indirizzo) {
-            html += `<div class="match-location">${esc(p.indirizzo)}</div>`;
-          }
-
-          if (p.note) {
-            html += `<div class="match-row"><span class="match-label">Note</span><span class="match-value">${esc(p.note)}</span></div>`;
-          }
-
-          html += '</div>';
-
-          const sec = document.createElement('div');
-          sec.className = 'conv-section';
-          sec.id = 'conv-' + id;
-          if (open.has(id)) sec.classList.add('open');
-          sec.onclick = e => { if (e.target === sec) sec.classList.toggle('open'); };
-
-          ele.appendChild(Object.assign(document.createElement('div'), { innerHTML: html }));
-
-          const e3 = document.createElement('div');
-          e3.innerHTML = '';
-
-          if (admin()) {
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
-            editBtn.textContent = '✏️ Modifica';
-            editBtn.onclick = () => edit(id);
-
-            const delBtn = document.createElement('button');
-            delBtn.className = 'delete-btn';
-            delBtn.textContent = '🗑️ Elimina';
-            delBtn.onclick = () => {
-              if (confirm('Eliminare questa partita?')) {
-                calRef.child(id).remove();
-                convRef.child(id).remove();
-              }
-            };
-
-            e3.appendChild(editBtn);
-            e3.appendChild(delBtn);
-          }
-
-          e3.className = 'match-actions';
-          ele.appendChild(e3);
-
-          renderConv(id, sec, allData[id]._playersMap || {});
-          ele.appendChild(sec);
-
-          return ele;
-        });
-
-      c.innerHTML = '';
-      entri.forEach(e => c.appendChild(e));
+      // Render convocati for each event
+      events.forEach(([id]) => {
+        const section = $(`conv-${id}`);
+        renderConv(id, section, $(`evento-card[data-date="${allData[id].data}"]`));
+      });
     }
 
+    // Render Convocati
     function renderConv(id, section, pm) {
       const selected = allConv[id] || {};
-
       section.innerHTML = '<div class="conv-label">🤽 Convocati</div>';
+
       const list = document.createElement('div');
       list.className = 'conv-list';
 
-      Object.keys(selected)
-        .map(k => pm[k] ? { id: k, ...pm[k] } : null)
-        .filter(Boolean)
-        .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''))
-        .forEach(p => {
-          const x = document.createElement('div');
-          x.className = 'conv-chip';
-          x.innerHTML = `${esc(p.nome)}${roles(p)}${admin() ? `<button class="conv-chip-remove" data-id="${p.id}">✕</button>` : ''}`;
-          list.appendChild(x);
+      GROUPS.forEach((group) => {
+        const groupPlayers = allPlayers[group.key] || [];
+        groupPlayers.forEach((player) => {
+          const isSelected = selected[player] || false;
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = isSelected;
+          checkbox.onchange = () => {
+            const newConv = { ...selected };
+            if (checkbox.checked) {
+              newConv[player] = true;
+            } else {
+              delete newConv[player];
+            }
+            convRef.child(id).set(Object.keys(newConv).length > 0 ? newConv : null);
+          };
+
+          const label = document.createElement('label');
+          label.className = 'conv-player';
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(player));
+          list.appendChild(label);
         });
-
-      if (!list.children.length) list.innerHTML = '<span class="conv-empty">Nessun convocato selezionato.</span>';
-      section.appendChild(list);
-
-      if (!admin()) return;
-
-      section.insertAdjacentHTML('beforeend', '<hr class="conv-divider"><div class="conv-label">Seleziona categoria e giocatori</div>');
-
-      const filters = document.createElement('div');
-      filters.className = 'conv-filter-row';
-
-      const area = document.createElement('div');
-      area.className = 'conv-list';
-
-      let active = categoryStates[id] || 'tutti';
-
-      [{ key: 'tutti', label: 'Tutte le categorie' }, ...GROUPS].forEach(g => {
-        const b = document.createElement('button');
-        b.className = 'conv-filter-btn' + (g.key === active ? ' active' : '');
-        b.textContent = g.label;
-        b.dataset.group = g.key;
-        filters.appendChild(b);
       });
 
-      section.appendChild(filters);
-      section.appendChild(area);
+      section.appendChild(list);
 
-      function draw() {
-        area.innerHTML = '';
-        Object.entries(pm)
-          .filter(([, p]) => active === 'tutti' || p.gruppo === active)
-          .sort((a, b) => (a[1].nome || '').localeCompare(b[1].nome || ''))
-          .forEach(([pid, p]) => {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'conv-player-btn' + (selected[pid] ? ' convocato' : '');
-            b.innerHTML = `<span>${esc(p.nome)}</span>${roles(p)}`;
-            b.dataset.id = pid;
-            area.appendChild(b);
-          });
-      }
-
-      draw();
-
-      filters.onclick = e => {
-        const b = e.target.closest('button');
-        if (!b) return;
-        active = b.dataset.group;
-        categoryStates[id] = active;
-        filters.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        draw();
+      // Toggle section on click
+      section.querySelector('.conv-label').onclick = () => {
+        section.classList.toggle('open');
       };
-
-      area.onclick = e => {
-        const b = e.target.closest('button');
-        if (!b) return;
-        const r = convRef.child(id).child(b.dataset.id);
-        selected[b.dataset.id] ? r.remove() : r.set(true);
-      };
-
-      section.querySelectorAll('.conv-chip-remove').forEach(b =>
-        b.onclick = () => convRef.child(id).child(b.dataset.id).remove()
-      );
     }
 
+    // Edit Event
     function edit(id) {
       const p = allData[id];
       editingId = id;
-
-      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach(k => {
+      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach((k) => {
         const e = $('f-' + k);
         if (e) e.value = p[k] || '';
       });
-
       $('f-campionato').value = p.campionato || '';
-
-      const isFesta = p.campionato === 'Festa';
-      $('evento-section').style.display = isFesta ? 'grid' : 'none';
-      $('desc-section').style.display = isFesta ? 'grid' : 'none';
-      $('city-section').style.display = isFesta ? 'none' : 'grid';
-      $('addr-section').style.display = isFesta ? 'none' : 'grid';
-      $('f-avversario').style.display = isFesta ? 'none' : 'block';
-
       $('panel-title').textContent = '✏️ Modifica Partita';
-      $('add-btn').textContent = 'Aggiorna';
+      $('add-btn').textContent = 'Salva';
       $('cancel-btn').style.display = 'inline-block';
     }
 
-    $('f-campionato').onchange = () => {
-      const isFesta = $('f-campionato').value === 'Festa';
-      $('evento-section').style.display = isFesta ? 'grid' : 'none';
-      $('desc-section').style.display = isFesta ? 'grid' : 'none';
-      $('city-section').style.display = isFesta ? 'none' : 'grid';
-      $('addr-section').style.display = isFesta ? 'none' : 'grid';
-      $('f-avversario').style.display = isFesta ? 'none' : 'block';
-    };
-
+    // Cancel Edit
     $('cancel-btn').onclick = () => {
       editingId = null;
-      $('panel-title').textContent = '➕ Aggiungi Partita';
-      $('add-btn').textContent = 'Salva Partita';
-      $('cancel-btn').style.display = 'none';
-
-      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach(k => {
+      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione', 'campionato'].forEach((k) => {
         const e = $('f-' + k);
         if (e) e.value = '';
       });
-      $('f-campionato').value = '';
-      $('evento-section').style.display = 'none';
-      $('desc-section').style.display = 'none';
-      $('city-section').style.display = 'grid';
-      $('addr-section').style.display = 'grid';
-      $('f-avversario').style.display = 'block';
+      $('panel-title').textContent = '➕ Aggiungi Partita';
+      $('add-btn').textContent = 'Aggiungi';
+      $('cancel-btn').style.display = 'none';
     };
 
+    // Add/Update Event
     $('add-btn').onclick = () => {
       const festa = $('f-campionato').value === 'Festa';
       const e = {
@@ -731,8 +613,8 @@
         note: $('f-note').value.trim()
       };
 
-      if (!e.data || (festa ? !$('f-nome-evento').value : !$('f-avversario').value)) {
-        alert('Compila i campi obbligatori');
+      if (!e.data || (!festa && !$('f-campionato').value)) {
+        alert('Compila almeno Data e Tipo Evento!');
         return;
       }
 
@@ -743,60 +625,45 @@
         e.indirizzo = $('f-indirizzo').value.trim();
       }
 
-      if (festa) {
-        e['nome-evento'] = $('f-nome-evento').value.trim();
-        e.descrizione = $('f-descrizione').value.trim();
-      }
+      e.nome_evento = $('f-nome-evento').value.trim();
+      e.descrizione = $('f-descrizione').value.trim();
 
       if (editingId) {
         calRef.child(editingId).update(e);
         editingId = null;
-        $('panel-title').textContent = '➕ Aggiungi Partita';
-        $('add-btn').textContent = 'Salva Partita';
-        $('cancel-btn').style.display = 'none';
+        $('cancel-btn').onclick();
       } else {
-        const newRef = calRef.push();
-        newRef.set(e);
+        calRef.push(e);
       }
 
-      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach(k => {
+      ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione', 'campionato'].forEach((k) => {
         const elem = $('f-' + k);
         if (elem) elem.value = '';
       });
-      $('f-campionato').value = '';
     };
 
-    playersRef.on('value', snap => {
-      const players = snap.val() || {};
-      Object.keys(allData).forEach(matchId => {
-        allData[matchId]._playersMap = {};
-      });
-      Object.entries(players).forEach(([pid, p]) => {
-        Object.keys(allData).forEach(matchId => {
-          allData[matchId]._playersMap[pid] = {
-            nome: p.nome || pid,
-            gruppo: p.gruppo || '',
-            roles: p.roles || []
-          };
-        });
-      });
-      render();
-    });
+    // Remove Event
+    function remove(id) {
+      if (confirm('Vuoi davvero eliminare questa partita?')) {
+        calRef.child(id).remove();
+        convRef.child(id).remove();
+      }
+    }
 
-    convRef.on('value', snap => {
-      allConv = snap.val() || {};
-      render();
-    });
-
-    calRef.on('value', snap => {
-      allData = snap.val() || {};
-      Object.keys(allData).forEach(id => {
-        allData[id]._playersMap = allData[id]._playersMap || {};
-      });
-      render();
-    });
-
-    if (admin()) localStorage.setItem('admin', 'true');
+    // Pin Button
+    $('pin-btn').onclick = () => {
+      const isPinned = $('manager-panel').style.position === 'fixed';
+      if (isPinned) {
+        $('manager-panel').style.position = 'relative';
+        $('manager-panel').style.top = 'auto';
+        $('pin-btn').textContent = '🔒';
+      } else {
+        $('manager-panel').style.position = 'fixed';
+        $('manager-panel').style.top = '90px';
+        $('manager-panel').style.zIndex = '100';
+        $('pin-btn').textContent = '📌';
+      }
+    };
   </script>
 </body>
 </html>
