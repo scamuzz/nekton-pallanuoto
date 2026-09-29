@@ -6,9 +6,7 @@
   <title>📆 Calendario Partite · Nekton</title>
   
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -25,8 +23,7 @@
       position: relative;
     }
 
-    .back-link,
-    .pin-btn {
+    .back-link, .pin-btn {
       position: absolute;
       top: 14px;
       background: #ffffff40;
@@ -49,19 +46,9 @@
       height: 40px;
     }
 
-    .icons {
-      font-size: 3rem;
-    }
-
-    .subtitle {
-      font-size: 0.82rem;
-      opacity: 0.9;
-    }
-
-    .sync-status {
-      font-size: 0.7rem;
-      margin-top: 10px;
-    }
+    .icons { font-size: 3rem; }
+    .subtitle { font-size: 0.82rem; opacity: 0.9; }
+    .sync-status { font-size: 0.7rem; margin-top: 10px; }
 
     .sync-dot {
       display: inline-block;
@@ -71,22 +58,11 @@
       background: #fff;
     }
 
-    .sync-dot.connected {
-      background: #69f0ae;
-    }
+    .sync-dot.connected { background: #69f0ae; }
+    .sync-dot.error { background: #ff5252; }
 
-    .sync-dot.error {
-      background: #ff5252;
-    }
-
-    .wave-divider {
-      line-height: 0;
-      background: #0055cc;
-    }
-
-    .wave-divider svg {
-      width: 100%;
-    }
+    .wave-divider { line-height: 0; background: #0055cc; }
+    .wave-divider svg { width: 100%; }
 
     .container {
       max-width: 540px;
@@ -94,21 +70,15 @@
       padding: 16px 12px 64px;
     }
 
-    .filter-row,
-    .form-row,
-    .partita-info,
-    .pub-btn-row {
+    .filter-row, .form-row, .partita-info, .pub-btn-row {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .filter-row {
-      margin-bottom: 18px;
-    }
+    .filter-row { margin-bottom: 18px; }
 
-    .filter-btn,
-    .conv-filter-btn {
+    .filter-btn, .conv-filter-btn {
       background: #fff;
       border: 2px solid #b3d9f7;
       border-radius: 20px;
@@ -118,10 +88,8 @@
       cursor: pointer;
     }
 
-    .filter-btn.active,
-    .filter-btn:hover,
-    .conv-filter-btn.active,
-    .conv-filter-btn:hover {
+    .filter-btn.active, .filter-btn:hover,
+    .conv-filter-btn.active, .conv-filter-btn:hover {
       background: linear-gradient(135deg, #006994, #00b4d8);
       color: #fff;
     }
@@ -135,9 +103,7 @@
       margin-bottom: 12px;
     }
 
-    .partita-card.passata {
-      opacity: 0.65;
-    }
+    .partita-card.passata { opacity: 0.65; }
 
     .partita-top {
       display: flex;
@@ -155,51 +121,22 @@
       color: #006994;
     }
 
-    .partita-data {
-      font-size: 0.72rem;
-      color: #90a4ae;
-      font-weight: 700;
-    }
+    .partita-data { font-size: 0.72rem; color: #90a4ae; font-weight: 700; }
+    .partita-avversario { font-size: 1rem; font-weight: 800; margin-bottom: 6px; }
 
-    .partita-avversario {
-      font-size: 1rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .partita-luogo,
-    .partita-risultato {
+    .partita-luogo, .partita-risultato {
       font-size: 0.76rem;
       font-weight: 700;
       padding: 3px 10px;
       border-radius: 8px;
     }
 
-    .casa {
-      background: #e0f7fa;
-      color: #006994;
-    }
+    .casa { background: #e0f7fa; color: #006994; }
+    .trasferta { background: #fff3e0; color: #e65100; }
+    .partita-risultato { background: #e3f2fd; color: #006994; }
 
-    .trasferta {
-      background: #fff3e0;
-      color: #e65100;
-    }
-
-    .partita-risultato {
-      background: #e3f2fd;
-      color: #006994;
-    }
-
-    .partita-trasferta-info {
-      font-size: 0.8rem;
-      margin-top: 8px;
-    }
-
-    .partita-trasferta-info a {
-      color: #e65100;
-      font-weight: 700;
-      text-decoration: underline;
-    }
+    .partita-trasferta-info { font-size: 0.8rem; margin-top: 8px; }
+    .partita-trasferta-info a { color: #e65100; font-weight: 700; text-decoration: underline; }
 
     .partita-note {
       font-size: 0.82rem;
@@ -210,12 +147,7 @@
       white-space: pre-wrap;
     }
 
-    .partita-admin-btns {
-      display: inline-flex;
-    }
-
-    .partita-edit-btn,
-    .partita-del-btn {
+    .partita-edit-btn, .partita-del-btn {
       background: none;
       border: 0;
       cursor: pointer;
@@ -230,21 +162,10 @@
       margin-bottom: 18px;
     }
 
-    .manager-panel.visible {
-      display: block;
-    }
+    .manager-panel.visible { display: block; }
 
-    .form-group {
-      flex: 1;
-      margin-bottom: 8px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+    .form-group { flex: 1; margin-bottom: 8px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; }
 
     .form-input {
       width: 100%;
@@ -255,12 +176,9 @@
       background: #fff;
     }
 
-    textarea.form-input {
-      min-height: 58px;
-    }
+    textarea.form-input { min-height: 58px; }
 
-    .pub-btn,
-    .cancel-edit-btn {
+    .pub-btn, .cancel-edit-btn {
       border: 0;
       border-radius: 10px;
       padding: 11px;
@@ -268,36 +186,12 @@
       cursor: pointer;
     }
 
-    .pub-btn {
-      background: #006994;
-      color: #fff;
-    }
+    .pub-btn { background: #006994; color: #fff; }
+    .cancel-edit-btn { display: none; background: #eceff1; }
 
-    .cancel-edit-btn {
-      display: none;
-      background: #eceff1;
-    }
-
-    .section-title {
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: #006994;
-      margin: 20px 0 14px;
-    }
-
-    .no-items {
-      text-align: center;
-      background: #fff;
-      padding: 30px;
-      border-radius: 16px;
-      color: #90a4ae;
-    }
-
-    .page-footer {
-      text-align: center;
-      color: #aabbc8;
-      font-size: 0.7rem;
-    }
+    .section-title { font-size: 0.78rem; font-weight: 800; color: #006994; margin: 20px 0 14px; }
+    .no-items { text-align: center; background: #fff; padding: 30px; border-radius: 16px; color: #90a4ae; }
+    .page-footer { text-align: center; color: #aabbc8; font-size: 0.7rem; }
 
     .toast {
       position: fixed;
@@ -312,9 +206,7 @@
       z-index: 1000;
     }
 
-    .toast.show {
-      display: block;
-    }
+    .toast.show { display: block; }
 
     .modal-overlay {
       display: none;
@@ -326,9 +218,7 @@
       z-index: 999;
     }
 
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
 
     .modal {
       background: #fff;
@@ -337,23 +227,9 @@
       text-align: center;
     }
 
-    .modal-btns {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .modal-btn {
-      padding: 10px;
-      border: 0;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .primary {
-      background: #006994;
-      color: #fff;
-    }
+    .modal-btns { display: flex; gap: 8px; margin-top: 12px; }
+    .modal-btn { padding: 10px; border: 0; border-radius: 8px; cursor: pointer; }
+    .primary { background: #006994; color: #fff; }
 
     .conv-toggle-btn {
       display: block;
@@ -368,14 +244,8 @@
       cursor: pointer;
     }
 
-    .conv-section {
-      display: none;
-      margin-top: 10px;
-    }
-
-    .conv-section.open {
-      display: block;
-    }
+    .conv-section { display: none; margin-top: 10px; }
+    .conv-section.open { display: block; }
 
     .conv-filter-row {
       display: flex;
@@ -388,20 +258,10 @@
       border-radius: 12px;
     }
 
-    .conv-filter-btn {
-      padding: 6px 10px;
-      font-size: 0.72rem;
-      white-space: nowrap;
-    }
+    .conv-filter-btn { padding: 6px 10px; font-size: 0.72rem; white-space: nowrap; }
+    .conv-list { display: flex; flex-wrap: wrap; gap: 7px; }
 
-    .conv-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .conv-chip,
-    .conv-player-btn {
+    .conv-chip, .conv-player-btn {
       display: flex;
       align-items: center;
       gap: 5px;
@@ -412,10 +272,7 @@
       font-size: 0.76rem;
     }
 
-    .conv-chip {
-      background: linear-gradient(135deg, #006994, #00b4d8);
-      color: #fff;
-    }
+    .conv-chip { background: linear-gradient(135deg, #006994, #00b4d8); color: #fff; }
 
     .conv-player-btn {
       background: #fff;
@@ -425,44 +282,12 @@
       justify-content: space-between;
     }
 
-    .conv-player-btn.convocato {
-      background: linear-gradient(135deg, #006994, #00b4d8);
-      color: #fff;
-    }
-
-    .conv-chip-remove {
-      border: 0;
-      background: none;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .conv-role-badge {
-      font-size: 0.62rem;
-      border-radius: 9px;
-      background: #ffffff40;
-      padding: 2px 5px;
-    }
-
-    .conv-label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #607d8b;
-      text-transform: uppercase;
-      margin: 9px 0 6px;
-    }
-
-    .conv-empty {
-      font-size: 0.8rem;
-      color: #90a4ae;
-      font-style: italic;
-    }
-
-    .conv-divider {
-      border: 0;
-      border-top: 1px solid #e3f2fd;
-      margin: 10px 0;
-    }
+    .conv-player-btn.convocato { background: linear-gradient(135deg, #006994, #00b4d8); color: #fff; }
+    .conv-chip-remove { border: 0; background: none; color: #fff; cursor: pointer; }
+    .conv-role-badge { font-size: 0.62rem; border-radius: 9px; background: #ffffff40; padding: 2px 5px; }
+    .conv-label { font-size: 0.72rem; font-weight: 800; color: #607d8b; text-transform: uppercase; margin: 9px 0 6px; }
+    .conv-empty { font-size: 0.8rem; color: #90a4ae; font-style: italic; }
+    .conv-divider { border: 0; border-top: 1px solid #e3f2fd; margin: 10px 0; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -687,7 +512,7 @@
 
     function render() {
       const open = new Set([...document.querySelectorAll('.conv-section.open')].map(x => x.id.replace('conv-', '')));
-      const c = $('calendario-container');       const today = new Date().toISOString().slice(0, 10);        const entries = Object.entries(allData)         .filter(([, p]) => activeFilter === 'tutti' \vert{}\vert{} p.campionato === activeFilter)         .sort((a, b) => (a[1].data \vert{}\vert{} '').localeCompare(b[1].data \vert{}\vert{} ''));        if (!entries.length) {         c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';         return;       }        const pm = playerMap();        c.innerHTML = entries.map(([id, p]) => {         const festa = p.campionato === 'Festa';         const d = new Date((p.data \vert{}\vert{} '') + 'T12:00:00');         const date = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });         const mapUrl = (p.citta \vert{}\vert{} p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';          const convCount = Object.keys(allConv[id] \vert{}\vert{} {}).length;          return '<div class="partita-card ' + (p.data < today ? 'passata' : '') + '">' +           '<div class="partita-top">' +             '<span class="campionato-badge">' + esc(p.campionato) + '</span>' +             '<span class="partita-data">📅 ' + esc(date) + (p.ora ? ' – ' + esc(p.ora) : '') +               (admin() ? ' <button class="partita-edit-btn" data-id="' + id + '">✏️</button><button class="partita-del-btn" data-id="' + id + '">🗑️</button>' : '') +             '</span>' +           '</div>' +           (festa              ? '<div class="partita-avversario">🎉 ' + esc(p.nomeEvento \vert{}\vert{} 'Festa') + '</div>'              : '<div class="partita-avversario">vs ' + esc(p.avversario) + '</div>' +               '<div class="partita-info">' +                 '<span class="partita-luogo ' + (p.luogo === 'casa' ? 'casa' : 'trasferta') + '">' + (p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta') + '</span>' +                 (p.risultato ? '<span class="partita-risultato">🏆 ' + esc(p.risultato) + '</span>' : '') +               '</div>' +               (mapUrl ? '<div class="partita-trasferta-info">📍 <a href="' + mapUrl + '" target="_blank" rel="noopener noreferrer">' + esc([p.citta, p.indirizzo].filter(Boolean).join(' · ')) + ' ↗</a></div>' : '')           ) +           (p.note ? '<div class="partita-note"><strong>📝 Note:</strong> ' + esc(p.note) + '</div>' : '') +           '<button class="conv-toggle-btn" data-id="' + id + '">🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '') + '</button>' +           '<div class="conv-section" id="conv-' + id + '"></div>' +         '</div>';       }).join('');        $$('.partita-del-btn').forEach(b => b.onclick = () => {
+      const c = $('calendario-container');       const today = new Date().toISOString().slice(0, 10);        const entries = Object.entries(allData)         .filter(([, p]) => activeFilter === 'tutti' \vert{}\vert{} p.campionato === activeFilter)         .sort((a, b) => (a[1].data \vert{}\vert{} '').localeCompare(b[1].data \vert{}\vert{} ''));        if (!entries.length) {         c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';         return;       }        const pm = playerMap();       c.innerHTML = '';        entries.forEach(([id, p]) => {         const festa = p.campionato === 'Festa';         const d = new Date((p.data \vert{}\vert{} '') + 'T12:00:00');         const date = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });         const mapUrl = (p.citta \vert{}\vert{} p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';         const convCount = Object.keys(allConv[id] \vert{}\vert{} {}).length;          const card = document.createElement('div');         card.className = 'partita-card' + (p.data < today ? ' passata' : '');          let html = '<div class="partita-top">';         html += '<span class="campionato-badge">' + esc(p.campionato) + '</span>';         html += '<span class="partita-data">📅 ' + esc(date) + (p.ora ? ' – ' + esc(p.ora) : '');         if (admin()) {           html += ' <button class="partita-edit-btn" data-id="' + id + '">✏️</button><button class="partita-del-btn" data-id="' + id + '">🗑️</button>';         }         html += '</span></div>';          if (festa) {           html += '<div class="partita-avversario">🎉 ' + esc(p.nomeEvento \vert{}\vert{} 'Festa') + '</div>';         } else {           html += '<div class="partita-avversario">vs ' + esc(p.avversario) + '</div>';           html += '<div class="partita-info">';           html += '<span class="partita-luogo ' + (p.luogo === 'casa' ? 'casa' : 'trasferta') + '">' + (p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta') + '</span>';           if (p.risultato) {             html += '<span class="partita-risultato">🏆 ' + esc(p.risultato) + '</span>';           }           html += '</div>';           if (mapUrl) {             html += '<div class="partita-trasferta-info">📍 <a href="' + mapUrl + '" target="_blank" rel="noopener noreferrer">' + esc([p.citta, p.indirizzo].filter(Boolean).join(' · ')) + ' ↗</a></div>';           }         }          if (p.note) {           html += '<div class="partita-note"><strong>📝 Note:</strong> ' + esc(p.note) + '</div>';         }          html += '<button class="conv-toggle-btn" data-id="' + id + '">🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '') + '</button>';         html += '<div class="conv-section" id="conv-' + id + '"></div>';          card.innerHTML = html;         c.appendChild(card);       });        $$('.partita-del-btn').forEach(b => b.onclick = () => {
         if (confirm('Eliminare questa partita?')) calRef.child(b.dataset.id).remove();
       });
 
