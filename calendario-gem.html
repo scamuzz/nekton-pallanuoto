@@ -465,7 +465,6 @@
     }
   </style>
 
-  <!-- SDK Firebase caricati nella head per garantire l'ordine di caricamento -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
@@ -607,8 +606,7 @@
   </div>
 
   <script>
-    // Controllo inizializzazione Firebase
-    const firebaseConfig = {
+    firebase.initializeApp({
       apiKey: 'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',
       authDomain: 'lista-spesa-b9eb1.firebaseapp.com',
       databaseURL: 'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app',
@@ -616,11 +614,7 @@
       storageBucket: 'lista-spesa-b9eb1.firebasestorage.app',
       messagingSenderId: '468690890938',
       appId: '1:468690890938:web:048be7f27779d8862d9283'
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    });
 
     const db = firebase.database();
     const calRef = db.ref('nekton/calendario');
@@ -660,27 +654,25 @@
 
     function playerMap() {
       const m = {};
-      GROUPS.forEach(g =>
-        Object.entries(allPlayers[g.key] || {}).forEach(([id, p]) =>
-          m[id] = { ...p, gruppo: g.key }
-        )
-      );
+      GROUPS.forEach(g => {
+        if (allPlayers[g.key]) {
+          Object.entries(allPlayers[g.key]).forEach(([id, p]) => {
+            m[id] = { ...p, gruppo: g.key };
+          });
+        }
+      });
       return m;
     }
 
-    // Listener Stato Connessione
     db.ref('.info/connected').on('value', s => {
-      const isConnected = !!s.val();
-      $('sync-dot').className = 'sync-dot ' + (isConnected ? 'connected' : 'error');
-      $('sync-label').textContent = isConnected ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riconnessione…';
+      const conn = !!s.val();
+      $('sync-dot').className = 'sync-dot ' + (conn ? 'connected' : 'error');
+      $('sync-label').textContent = conn ? '✅ Sincronizzato in tempo reale' : '❌ Offline – riconnessione…';
     });
 
     calRef.on('value', s => {
       allData = s.val() || {};
       render();
-    }, err => {
-      console.error("Errore lettura Calendario:", err);
-      $('sync-label').textContent = '❌ Errore permessi / DB';
     });
 
     playersRef.on('value', s => {
@@ -695,58 +687,7 @@
 
     function render() {
       const open = new Set([...document.querySelectorAll('.conv-section.open')].map(x => x.id.replace('conv-', '')));
-      const c = $('calendario-container');
-      const today = new Date().toISOString().slice(0, 10);
-      
-      const entries = Object.entries(allData)
-        .filter(([, p]) => activeFilter === 'tutti' || p.campionato === activeFilter)
-        .sort((a, b) => (a[1].data || '').localeCompare(b[1].data || ''));
-
-      if (!entries.length) {
-        c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';
-        return;
-      }
-
-      const pm = playerMap();
-
-      c.innerHTML = entries.map(([id, p]) => {
-        const festa = p.campionato === 'Festa';
-        const d = new Date((p.data || '') + 'T12:00:00');
-        const date = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-        const mapUrl = (p.citta || p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';
-
-        return `
-          <div class="partita-card ${p.data < today ? 'passata' : ''}">
-            <div class="partita-top">
-              <span class="campionato-badge">${esc(p.campionato)}</span>
-              <span class="partita-data">
-                📅 ${esc(date)}${p.ora ? ' – ' + esc(p.ora) : ''}
-                ${admin() ? `<button class="partita-edit-btn" data-id="${id}">✏️</button><button class="partita-del-btn" data-id="${id}">🗑️</button>` : ''}
-              </span>
-            </div>
-            ${festa 
-              ? `<div class="partita-avversario">🎉 ${esc(p.nomeEvento || 'Festa')}</div>` 
-              : `
-                <div class="partita-avversario">vs ${esc(p.avversario)}</div>
-                <div class="partita-info">
-                  <span class="partita-luogo ${p.luogo === 'casa' ? 'casa' : 'trasferta'}">
-                    ${p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta'}
-                  </span>
-                  ${p.risultato ? `<span class="partita-risultato">🏆 ${esc(p.risultato)}</span>` : ''}
-                </div>
-                ${mapUrl ? `<div class="partita-trasferta-info">📍 <a href="${mapUrl}" target="_blank" rel="noopener noreferrer">${esc([p.citta, p.indirizzo].filter(Boolean).join(' · '))} ↗</a></div>` : ''}
-              `
-            }
-            ${p.note ? `<div class="partita-note"><strong>📝 Note:</strong> ${esc(p.note)}</div>` : ''}
-            <button class="conv-toggle-btn" data-id="${id}">
-              🤽 Convocati${Object.keys(allConv[id] || {}).length ? ' (' + Object.keys(allConv[id]).length + ')' : ''}
-            </button>
-            <div class="conv-section" id="conv-${id}"></div>
-          </div>
-        `;
-      }).join('');
-
-      $$('.partita-del-btn').forEach(b => b.onclick = () => {
+      const c = $('calendario-container');       const today = new Date().toISOString().slice(0, 10);        const entries = Object.entries(allData)         .filter(([, p]) => activeFilter === 'tutti' \vert{}\vert{} p.campionato === activeFilter)         .sort((a, b) => (a[1].data \vert{}\vert{} '').localeCompare(b[1].data \vert{}\vert{} ''));        if (!entries.length) {         c.innerHTML = '<div class="no-items">Nessuna partita in programma. 💤</div>';         return;       }        const pm = playerMap();        c.innerHTML = entries.map(([id, p]) => {         const festa = p.campionato === 'Festa';         const d = new Date((p.data \vert{}\vert{} '') + 'T12:00:00');         const date = isNaN(d) ? p.data : d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });         const mapUrl = (p.citta \vert{}\vert{} p.indirizzo) ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.citta, p.indirizzo].filter(Boolean).join(', ')) : '';          const convCount = Object.keys(allConv[id] \vert{}\vert{} {}).length;          return '<div class="partita-card ' + (p.data < today ? 'passata' : '') + '">' +           '<div class="partita-top">' +             '<span class="campionato-badge">' + esc(p.campionato) + '</span>' +             '<span class="partita-data">📅 ' + esc(date) + (p.ora ? ' – ' + esc(p.ora) : '') +               (admin() ? ' <button class="partita-edit-btn" data-id="' + id + '">✏️</button><button class="partita-del-btn" data-id="' + id + '">🗑️</button>' : '') +             '</span>' +           '</div>' +           (festa              ? '<div class="partita-avversario">🎉 ' + esc(p.nomeEvento \vert{}\vert{} 'Festa') + '</div>'              : '<div class="partita-avversario">vs ' + esc(p.avversario) + '</div>' +               '<div class="partita-info">' +                 '<span class="partita-luogo ' + (p.luogo === 'casa' ? 'casa' : 'trasferta') + '">' + (p.luogo === 'casa' ? '🏠 Casa' : '✈️ Trasferta') + '</span>' +                 (p.risultato ? '<span class="partita-risultato">🏆 ' + esc(p.risultato) + '</span>' : '') +               '</div>' +               (mapUrl ? '<div class="partita-trasferta-info">📍 <a href="' + mapUrl + '" target="_blank" rel="noopener noreferrer">' + esc([p.citta, p.indirizzo].filter(Boolean).join(' · ')) + ' ↗</a></div>' : '')           ) +           (p.note ? '<div class="partita-note"><strong>📝 Note:</strong> ' + esc(p.note) + '</div>' : '') +           '<button class="conv-toggle-btn" data-id="' + id + '">🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '') + '</button>' +           '<div class="conv-section" id="conv-' + id + '"></div>' +         '</div>';       }).join('');        $$('.partita-del-btn').forEach(b => b.onclick = () => {
         if (confirm('Eliminare questa partita?')) calRef.child(b.dataset.id).remove();
       });
 
@@ -769,7 +710,7 @@
     function renderConv(id, section, pm) {
       const selected = allConv[id] || {};
       section.innerHTML = '<div class="conv-label">🤽 Convocati</div>';
-      
+
       const list = document.createElement('div');
       list.className = 'conv-list';
 
@@ -780,7 +721,7 @@
         .forEach(p => {
           const x = document.createElement('div');
           x.className = 'conv-chip';
-          x.innerHTML = `${esc(p.nome)}${roles(p)}${admin() ? `<button class="conv-chip-remove" data-id="${p.id}">✕</button>` : ''}`;
+          x.innerHTML = esc(p.nome) + roles(p) + (admin() ? '<button class="conv-chip-remove" data-id="' + p.id + '">✕</button>' : '');
           list.appendChild(x);
         });
 
@@ -821,7 +762,7 @@
             const b = document.createElement('button');
             b.type = 'button';
             b.className = 'conv-player-btn' + (selected[pid] ? ' convocato' : '');
-            b.innerHTML = `<span>${esc(p.nome)}</span>${roles(p)}`;
+            b.innerHTML = '<span>' + esc(p.nome) + '</span>' + roles(p);
             b.dataset.id = pid;
             area.appendChild(b);
           });
@@ -853,16 +794,16 @@
     function edit(id) {
       const p = allData[id];
       editingId = id;
-      
+
       ['data', 'ora', 'avversario', 'risultato', 'citta', 'indirizzo', 'note', 'nome-evento', 'descrizione'].forEach(k => {
         const e = $('f-' + k);
         if (e) e.value = p[k] || '';
       });
 
       $('f-campionato').value = p.campionato \vert{}\vert{} 'Habawaba';$('f-luogo').value = p.luogo || 'casa';
-      
+
       toggle();
-      
+
       $('manager-panel').classList.add('visible');$('panel-title').textContent = '✏️ Modifica partita';
       $('add-btn').textContent = '💾 Salva modifiche';
       $('cancel-edit-btn').style.display = 'block';
