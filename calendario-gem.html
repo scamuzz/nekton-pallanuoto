@@ -460,9 +460,11 @@
     let allConv = {};
     let activeFilter = 'tutti';
     let editingId = null;
+    
+    // Mappa per memorizzare la categoria selezionata per ciascuna partita
+    const activeConvFilters = {};
 
-    const $ = id => document.getElementById(id);
-    const $$ = s => document.querySelectorAll(s);
+    const $ = id => document.getElementById(id);     const $$ = s => document.querySelectorAll(s);
     const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const admin = () => sessionStorage.getItem('nektonManager') === '1';
 
@@ -619,7 +621,7 @@
         // Convocati Toggle Button
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'conv-toggle-btn';
-        toggleBtn.textContent = '🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '');
+        toggleBtn.textContent = '`🤽 Convocati`' + (convCount ? ' (' + convCount + ')' : '');
 
         const convSection = document.createElement('div');
         convSection.className = 'conv-section';
@@ -687,11 +689,14 @@
       const area = document.createElement('div');
       area.className = 'conv-list';
 
-      let active = 'tutti';
+      // Recupera il filtro salvato per questa partita o imposta di default 'tutti'
+      if (!activeConvFilters[id]) {
+        activeConvFilters[id] = 'tutti';
+      }
 
       [{ key: 'tutti', label: 'Tutte le categorie' }, ...GROUPS].forEach(g => {
         const b = document.createElement('button');
-        b.className = 'conv-filter-btn' + (g.key === 'tutti' ? ' active' : '');
+        b.className = 'conv-filter-btn' + (g.key === activeConvFilters[id] ? ' active' : '');
         b.textContent = g.label;
         b.dataset.group = g.key;
         filters.appendChild(b);
@@ -703,7 +708,7 @@
       function draw() {
         area.innerHTML = '';
         Object.entries(pm)
-          .filter(([, p]) => active === 'tutti' || p.gruppo === active)
+          .filter(([, p]) => activeConvFilters[id] === 'tutti' || p.gruppo === activeConvFilters[id])
           .sort((a, b) => (a[1].nome || '').localeCompare(b[1].nome || ''))
           .forEach(([pid, p]) => {
             const b = document.createElement('button');
@@ -720,7 +725,7 @@
       filters.onclick = e => {
         const b = e.target.closest('button');
         if (!b) return;
-        active = b.dataset.group;
+        activeConvFilters[id] = b.dataset.group;
         filters.querySelectorAll('button').forEach(x => x.classList.remove('active'));
         b.classList.add('active');
         draw();
@@ -745,29 +750,20 @@
         if (e) e.value = p[k] || '';
       });
 
-      $('f-campionato').value = p.campionato || 'Habawaba';
-      $('f-luogo').value = p.luogo || 'casa';
+      $('f-campionato').value = p.campionato \vert{}\vert{} 'Habawaba';$('f-luogo').value = p.luogo || 'casa';
 
       toggle();
 
-      $('manager-panel').classList.add('visible');
-      $('panel-title').textContent = '✏️ Modifica partita';
+      $('manager-panel').classList.add('visible');$('panel-title').textContent = '✏️ Modifica partita';
       $('add-btn').textContent = '💾 Salva modifiche';
       $('cancel-edit-btn').style.display = 'block';
     }
 
     function toggle() {
-      const f = $('f-campionato').value === 'Festa';
-      $('partita-fields').style.display = f ? 'none' : 'block';
+      const f = $('f-campionato').value === 'Festa';$('partita-fields').style.display = f ? 'none' : 'block';
       $('festa-fields').style.display = f ? 'block' : 'none';
-      $('trasferta-fields').style.display = $('f-luogo').value === 'trasferta' ? 'block' : 'none';
-    }
-
-    function reset() {
-      editingId = null;
-      $$('.form-input').forEach(e => e.value = '');
-      $('f-campionato').value = 'Habawaba';
-      $('f-luogo').value = 'casa';
+      $('trasferta-fields').style.display = $('f-luogo').value === 'trasferta' ? 'block' : 'none';     }      function reset() {       editingId = null;       $$('.form-input').forEach(e => e.value = '');
+      $('f-campionato').value = 'Habawaba';$('f-luogo').value = 'casa';
       toggle();
       $('panel-title').textContent = '➕ Aggiungi Partita';
       $('add-btn').textContent = '➕ Aggiungi partita';
@@ -812,8 +808,8 @@
     $('f-campionato').onchange = toggle;
     $('f-luogo').onchange = toggle;
 
-    $$('.filter-btn').forEach(b => b.onclick = () => {
-      $$('.filter-btn').forEach(x => x.classList.remove('active'));
+    $$('.filter-btn').forEach(b => b.onclick = () => {$$
+('.filter-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       activeFilter = b.dataset.filter;
       render();
@@ -824,8 +820,7 @@
     $('pin-btn').onclick = () => {
       if (admin()) {
         sessionStorage.setItem('nektonManager', '0');
-        $('manager-panel').classList.remove('visible');
-        $('pin-btn').textContent = '🔒';
+        $('manager-panel').classList.remove('visible');$('pin-btn').textContent = '🔒';
         render();
       } else {
         overlay.classList.add('open');
@@ -843,8 +838,7 @@
         sessionStorage.setItem('nektonManager', '1');
         overlay.classList.remove('open');
         $('modal-error').textContent = '';
-        $('manager-panel').classList.add('visible');
-        $('pin-btn').textContent = '🔐';
+        $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
         render();
       } else {
         $('modal-error').textContent = '❌ PIN non corretto';
@@ -852,8 +846,7 @@
     };
 
     if (admin()) {
-      $('manager-panel').classList.add('visible');
-      $('pin-btn').textContent = '🔐';
+      $('manager-panel').classList.add('visible');$('pin-btn').textContent = '🔐';
     }
   </script>
 </body>
