@@ -37,6 +37,15 @@
       border-radius: 20px;
       padding: 7px 15px;
       text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 700;
+      z-index: 2;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: rgba(255,255,255,0.40);
     }
 
     .pin-btn {
@@ -44,6 +53,14 @@
       border-radius: 50%;
       width: 40px;
       height: 40px;
+      font-size: 1.3rem;
+      z-index: 2;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+
+    .pin-btn:hover {
+      background: rgba(255,255,255,0.40);
     }
 
     .icons { font-size: 3rem; }
@@ -86,12 +103,16 @@
       color: #006994;
       font-weight: 700;
       cursor: pointer;
+      font-size: 0.76rem;
+      transition: all 0.2s;
+      font-family: inherit;
     }
 
     .filter-btn.active, .filter-btn:hover,
     .conv-filter-btn.active, .conv-filter-btn:hover {
       background: linear-gradient(135deg, #006994, #00b4d8);
       color: #fff;
+      border-color: transparent;
     }
 
     .partita-card {
@@ -101,6 +122,7 @@
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 12px;
+      box-shadow: 0 4px 18px rgba(0,105,148,0.08);
     }
 
     .partita-card.passata { opacity: 0.65; }
@@ -161,12 +183,28 @@
       border-radius: 18px;
       padding: 18px;
       margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(255,193,7,0.10);
     }
 
     .manager-panel.visible { display: block; }
 
+    .manager-panel h3 {
+      font-size: 0.76rem;
+      color: #f57f17;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
     .form-group { flex: 1; margin-bottom: 8px; }
-    .form-group label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; }
+    .form-group label { 
+      display: block; 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      margin-bottom: 4px;
+      color: #555;
+    }
 
     .form-input {
       width: 100%;
@@ -174,21 +212,43 @@
       border-radius: 10px;
       padding: 9px 12px;
       font: inherit;
+      font-size: 0.82rem;
       background: #fff;
+      color: #333;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #ffb300;
     }
 
     textarea.form-input { min-height: 58px; }
 
     .pub-btn, .cancel-edit-btn {
-      border: 0;
+      border: none;
       border-radius: 10px;
       padding: 11px;
       font-weight: 700;
       cursor: pointer;
+      font-family: inherit;
+      font-size: 0.82rem;
+      transition: opacity 0.2s;
     }
 
-    .pub-btn { background: #006994; color: #fff; }
-    .cancel-edit-btn { display: none; background: #eceff1; }
+    .pub-btn { 
+      background: linear-gradient(135deg, #ffb300, #ff8f00); 
+      color: #3e2723;
+    }
+
+    .pub-btn:hover { opacity: 0.9; }
+
+    .cancel-edit-btn { 
+      display: none; 
+      background: #eceff1;
+      color: #607d8b;
+    }
 
     .section-title { font-size: 0.78rem; font-weight: 800; color: #006994; margin: 20px 0 14px; }
     .no-items { text-align: center; background: #fff; padding: 30px; border-radius: 16px; color: #90a4ae; }
@@ -198,16 +258,24 @@
       position: fixed;
       bottom: 24px;
       left: 50%;
-      transform: translateX(-50%);
-      background: #006994;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a3a5c;
       color: #fff;
       padding: 10px 22px;
       border-radius: 24px;
-      display: none;
+      font-size: 0.83rem;
+      font-weight: 600;
+      transition: transform 0.3s ease;
       z-index: 1000;
+      box-shadow: 0 6px 24px rgba(26,58,92,0.3);
+      white-space: nowrap;
+      display: none;
     }
 
-    .toast.show { display: block; }
+    .toast.show { 
+      display: block;
+      transform: translateX(-50%) translateY(0);
+    }
 
     .modal-overlay {
       display: none;
@@ -231,24 +299,71 @@
       text-align: center;
     }
 
-    .modal h3 { font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 8px; }
-    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
+    .modal h3 { 
+      font-size: 1rem; 
+      font-weight: 800; 
+      color: #1a3a5c; 
+      margin-bottom: 8px; 
+    }
+
+    .modal p { 
+      font-size: 0.78rem; 
+      color: #607d8b; 
+      margin-bottom: 16px; 
+    }
+
+    .pin-input-wrap { 
+      position: relative; 
+      margin-bottom: 8px;
+    }
 
     .modal input {
       width: 100%;
       border: 2px solid #b3d9f7;
       border-radius: 10px;
-      padding: 11px 14px;
+      padding: 11px 40px 11px 14px;
       font-size: 1rem;
       text-align: center;
       letter-spacing: 2px;
       outline: none;
       font-family: inherit;
+      color: #333;
+      transition: border-color 0.2s;
     }
 
-    .modal input:focus { border-color: #006994; }
+    .modal input:focus { 
+      border-color: #006994; 
+    }
 
-    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .pin-input-wrap::placeholder {
+      color: #b0bec5;
+    }
+
+    .pin-toggle { 
+      position: absolute; 
+      right: 10px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      font-size: 1.1rem; 
+      padding: 2px; 
+      line-height: 1;
+      color: #607d8b;
+      transition: color 0.2s;
+    }
+
+    .pin-toggle:hover { 
+      color: #006994; 
+    }
+
+    .modal-btns { 
+      display: flex; 
+      gap: 10px; 
+      margin-top: 14px; 
+    }
+
     .modal-btn {
       flex: 1;
       padding: 11px;
@@ -258,12 +373,32 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
+      transition: opacity 0.2s;
     }
 
-    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: #fff; }
-    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
+    .modal-btn.primary { 
+      background: linear-gradient(135deg, #006994, #00b4d8); 
+      color: #fff;
+    }
 
-    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
+    .modal-btn.primary:hover { 
+      opacity: 0.9; 
+    }
+
+    .modal-btn.secondary { 
+      background: #eceff1; 
+      color: #607d8b;
+    }
+
+    .modal-btn.secondary:hover { 
+      opacity: 0.9; 
+    }
+
+    .modal-error { 
+      font-size: 0.75rem; 
+      color: #e53935; 
+      margin-top: 8px; 
+    }
 
     .conv-toggle-btn {
       display: block;
@@ -276,6 +411,14 @@
       color: #006994;
       font-weight: 700;
       cursor: pointer;
+      font-size: 0.76rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .conv-toggle-btn:hover {
+      background: #b3d9f7;
+      color: #004d7a;
     }
 
     .conv-section { display: none; margin-top: 10px; }
@@ -349,7 +492,7 @@
 
   <div class="container">
     <div class="manager-panel" id="manager-panel">
-      <h3 id="panel-title">➕ Aggiungi Partita</h3>
+      <h3>⚙️ Pannello Gestore – Aggiungi/Modifica Partita</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -362,20 +505,6 @@
         </div>
       </div>
 
-      <!--
-          Fin 
-            Habawaba 
-            Esordienti
-            Ragazzi 
-            Allievi 
-            Juniores 
-            Promozione 
-
-        PNI 
-          U13
-          U15
-        -->
-      
       <div class="form-group">
         <label>Campionato</label>
         <select class="form-input" id="f-campionato">
@@ -387,9 +516,7 @@
           <option value="Promozione" >FIN - Promozione</option>
           <option value="U13"        >PNI - U13</option>
           <option value="U15"        >PNI - U15</option>
-         
-         <!--  <option value="Festa">Festa</option> -->
-         </select>
+        </select>
       </div>
 
       <div id="partita-fields">
@@ -467,9 +594,12 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
-      <p>Inserisci il PIN</p>
-      <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off">
-      <div id="modal-error" style="color:#e53935; font-size:0.75rem; margin-top:8px;"></div>
+      <p>Inserisci il PIN per accedere alla modalità gestore</p>
+      <div class="pin-input-wrap">
+        <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off">
+        <button class="pin-toggle" id="pin-toggle" type="button" title="Mostra/Nascondi PIN">👁️</button>
+      </div>
+      <div class="modal-error" id="modal-error"></div>
       <div class="modal-btns">
         <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
         <button class="modal-btn primary" id="modal-confirm">Accedi</button>
@@ -507,7 +637,6 @@
     let activeFilter = 'tutti';
     let editingId = null;
     
-    // Mappa la categoria selezionata per ciascuna partita
     const activeConvFilters = {};
 
     const $ = id => document.getElementById(id);
@@ -589,7 +718,6 @@
         const card = document.createElement('div');
         card.className = 'partita-card' + (p.data < today ? ' passata' : '');
 
-        // Top Row
         const topRow = document.createElement('div');
         topRow.className = 'partita-top';
 
@@ -621,7 +749,6 @@
         topRow.appendChild(dataSpan);
         card.appendChild(topRow);
 
-        // Body Info
         if (festa) {
           const festaDiv = document.createElement('div');
           festaDiv.className = 'partita-avversario';
@@ -657,7 +784,6 @@
           }
         }
 
-        // Note
         if (p.note) {
           const noteDiv = document.createElement('div');
           noteDiv.className = 'partita-note';
@@ -665,7 +791,6 @@
           card.appendChild(noteDiv);
         }
 
-        // Convocati Toggle Button
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'conv-toggle-btn';
         toggleBtn.textContent = '🤽 Convocati' + (convCount ? ' (' + convCount + ')' : '');
@@ -684,7 +809,6 @@
         c.appendChild(card);
       });
 
-      // Ripristina stato sezioni aperte
       open.forEach(id => {
         const s = $('conv-' + id);
         if (s) {
@@ -736,7 +860,6 @@
       const area = document.createElement('div');
       area.className = 'conv-list';
 
-      // Salva la categoria corrente
       if (!activeConvFilters[id]) {
         activeConvFilters[id] = 'tutti';
       }
@@ -803,7 +926,6 @@
       toggle();
 
       $('manager-panel').classList.add('visible');
-      $('panel-title').textContent = '✏️ Modifica partita';
       $('add-btn').textContent = '💾 Salva modifiche';
       $('cancel-edit-btn').style.display = 'block';
     }
@@ -821,7 +943,6 @@
       $('f-campionato').value = 'Habawaba';
       $('f-luogo').value = 'casa';
       toggle();
-      $('panel-title').textContent = '➕ Aggiungi Partita';
       $('add-btn').textContent = '➕ Aggiungi partita';
       $('cancel-edit-btn').style.display = 'none';
     }
@@ -880,8 +1001,12 @@
         $('pin-btn').textContent = '🔒';
         render();
       } else {
+        $('modal-error').textContent = '';
+        $('pin-input').value = '';
+        $('pin-input').type = 'password';
+        $('pin-toggle').textContent = '👁️';
         overlay.classList.add('open');
-        $('pin-input').focus();
+        setTimeout(() => $('pin-input').focus(), 100);
       }
     };
 
@@ -890,8 +1015,27 @@
       $('modal-error').textContent = '';
     };
 
-    $('modal-confirm').onclick = () => {
-      if ($('pin-input').value === 'nekton2026') {
+    $('modal-confirm').onclick = checkPin;
+
+    $('pin-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPin();
+    });
+
+    $('pin-toggle').addEventListener('click', () => {
+      const inp = $('pin-input');
+      const tog = $('pin-toggle');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        tog.textContent = '🙈';
+      } else {
+        inp.type = 'password';
+        tog.textContent = '👁️';
+      }
+    });
+
+    function checkPin() {
+      const val = $('pin-input').value;
+      if (val === 'nekton2026') {
         sessionStorage.setItem('nektonManager', '1');
         overlay.classList.remove('open');
         $('modal-error').textContent = '';
@@ -901,7 +1045,7 @@
       } else {
         $('modal-error').textContent = '❌ PIN non corretto';
       }
-    };
+    }
 
     if (admin()) {
       $('manager-panel').classList.add('visible');
