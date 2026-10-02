@@ -213,7 +213,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: #0008;
+      background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
       z-index: 999;
@@ -223,14 +223,47 @@
 
     .modal {
       background: #fff;
-      padding: 24px;
       border-radius: 20px;
+      padding: 28px 24px;
+      max-width: 300px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       text-align: center;
     }
 
-    .modal-btns { display: flex; gap: 8px; margin-top: 12px; }
-    .modal-btn { padding: 10px; border: 0; border-radius: 8px; cursor: pointer; }
-    .primary { background: #006994; color: #fff; }
+    .modal h3 { font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 8px; }
+    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
+
+    .modal input {
+      width: 100%;
+      border: 2px solid #b3d9f7;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 2px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .modal input:focus { border-color: #006994; }
+
+    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-btn {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: #fff; }
+    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
+
+    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
 
     .conv-toggle-btn {
       display: block;
@@ -355,8 +388,8 @@
           <option value="U13"        >PNI - U13</option>
           <option value="U15"        >PNI - U15</option>
          
-        <!--  <option value="Festa">Festa</option> -->
-        </select>
+         <!--  <option value="Festa">Festa</option> -->
+         </select>
       </div>
 
       <div id="partita-fields">
@@ -435,10 +468,10 @@
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
       <p>Inserisci il PIN</p>
-      <input type="password" id="pin-input">
-      <div id="modal-error" style="color:#ff5252; font-size:0.8rem; margin-top:6px;"></div>
+      <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off">
+      <div id="modal-error" style="color:#e53935; font-size:0.75rem; margin-top:8px;"></div>
       <div class="modal-btns">
-        <button class="modal-btn" id="modal-cancel">Annulla</button>
+        <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
         <button class="modal-btn primary" id="modal-confirm">Accedi</button>
       </div>
     </div>
