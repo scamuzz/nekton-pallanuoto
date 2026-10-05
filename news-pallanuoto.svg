@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Sfumatura per l'onda/acqua -->
+    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00b4db"/>
+      <stop offset="100%" stop-color="#0083b0"/>
+    </linearGradient>
+    
+    <!-- Sfumatura per la palla da pallanuoto -->
+    <linearGradient id="ballGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8c00"/>
+      <stop offset="100%" stop-color="#e55039"/>
+    </linearGradient>
+
+    <!-- Ombra morbida -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#dropShadow)">
+    <!-- Onde d'acqua sullo sfondo -->
+    <path d="M 60 380 Q 140 340 220 380 T 380 380 T 460 380 L 460 420 Q 380 440 300 400 T 140 420 T 60 400 Z" fill="url(#waterGrad)" opacity="0.4"/>
+    <path d="M 40 410 Q 130 370 220 410 T 400 410 T 480 410 L 480 450 Q 390 470 300 430 T 120 450 T 40 430 Z" fill="url(#waterGrad)"/>
+
+    <!-- Foglio del giornale / News -->
+    <rect x="110" y="80" width="240" height="300" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="4"/>
+    
+    <!-- Intestazione giornale -->
+    <rect x="140" y="115" width="180" height="18" rx="4" fill="#1e293b"/>
+    <line x1="140" y1="148" x2="320" y2="148" stroke="#cbd5e1" stroke-width="3"/>
+    
+    <!-- Righe di testo del giornale -->
+    <rect x="140" y="170" width="100" height="10" rx="3" fill="#94a3b8"/>
+    <rect x="140" y="190" width="180" height="8" rx="2" fill="#cbd5e1"/>
+    <rect x="140" y="206" width="160" height="8" rx="2" fill="#cbd5e1"/>
+    <rect x="140" y="222" width="175" height="8" rx="2" fill="#cbd5e1"/>
+
+    <rect x="140" y="248" width="180" height="8" rx="2" fill="#cbd5e1"/>
+    <rect x="140" y="264" width="150" height="8" rx="2" fill="#cbd5e1"/>
+    <rect x="140" y="280" width="170" height="8" rx="2" fill="#cbd5e1"/>
+
+    <!-- Palla da pallanuoto in primo piano -->
+    <g transform="translate(340, 280)">
+      <!-- Corpo palla -->
+      <circle cx="0" cy="0" r="75" fill="url(#ballGrad)"/>
+      
+      <!-- Scanalature/Righe palla da pallanuoto -->
+      <path d="M -75 0 A 75 75 0 0 0 75 0" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.85"/>
+      <path d="M 0 -75 A 75 75 0 0 0 0 75" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.85"/>
+      <path d="M -53 -53 C -20 -20 -20 20 -53 53" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.85"/>
+      <path d="M 53 -53 C 20 -20 20 20 53 53" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.85"/>
+      
+      <!-- Bordo palla -->
+      <circle cx="0" cy="0" r="75" fill="none" stroke="#d97706" stroke-width="3" opacity="0.5"/>
+    </g>
+
+    <!-- Badge "NEWS" in alto a destra -->
+    <g transform="translate(310, 70)">
+      <rect x="0" y="0" width="110" height="42" rx="21" fill="#ef4444"/>
+      <text x="55" y="26" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">NEWS</text>
+    </g>
+  </g>
+</svg>
