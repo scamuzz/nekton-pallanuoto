@@ -17,9 +17,9 @@
     
     <!-- Forza la scadenza immediata del contenuto -->
     <meta http-equiv="Expires" content="0">
-  <!-- OneSignal SDK -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
+  <!-- OneSignal SDK temporarily disabled because the app is hosted on Cloudflare Pages and not on the GitHub Pages domain allowed by the SDK -->
+  <!-- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script> -->
+  <!-- <script>
   let oneSignalReady = false;
 
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -85,11 +85,8 @@
     }
     await refreshNotifyUI();
   }
-</script>
+</script> -->
 
-
-
-  
   <link rel="manifest" href="manifest.json">
   <title>🤽 Nekton Treviglio Waterpolo</title>
   <style>
@@ -341,7 +338,7 @@
   </style>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('https://nekton-waterpolo.pages.dev/service-worker.js');
+      navigator.serviceWorker.register('/service-worker.js');
     } 
 
     let deferredPrompt;
