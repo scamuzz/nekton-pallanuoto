@@ -5,61 +5,298 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0078d4">
   <title>Amministrazione notifiche · Nekton</title>
+
   <style>
-    :root { font-family: system-ui, sans-serif; color: #123; background: #e8f4fd; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
-    main { width: min(100%, 520px); background: white; padding: 28px; border-radius: 18px; box-shadow: 0 8px 30px #00699422; }
-    h1 { margin-top: 0; color: #006994; }
-    label { display: block; font-weight: 700; margin: 16px 0 6px; }
-    input, textarea, button { width: 100%; padding: 12px; border: 1px solid #b7d8ed; border-radius: 9px; font: inherit; }
-    textarea { min-height: 120px; resize: vertical; }
-    button { margin-top: 20px; border: 0; background: #0078d4; color: white; font-weight: 700; cursor: pointer; }
-    button:disabled { opacity: .6; cursor: wait; }
-    #status { margin-top: 16px; padding: 12px; border-radius: 9px; display: none; white-space: pre-wrap; }
-    #status.ok { display: block; color: #075b2a; background: #e5f7eb; }
-    #status.error { display: block; color: #8b1e1e; background: #ffeded; }
-    .hint { color: #607d8b; font-size: .9rem; line-height: 1.5; }
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #123;
+      background: #e8f4fd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      display: grid;
+      place-items: center;
+    }
+
+    main {
+      width: min(100%, 540px);
+      padding: 28px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0, 105, 148, 0.15);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #006994;
+      font-size: 1.6rem;
+    }
+
+    .description {
+      margin: 0 0 22px;
+      color: #607d8b;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      color: #234;
+      font-weight: 700;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 9px;
+      font: inherit;
+    }
+
+    input,
+    textarea {
+      border: 1px solid #b7d8ed;
+      background: #fff;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: 3px solid rgba(0, 120, 212, 0.18);
+      border-color: #0078d4;
+    }
+
+    textarea {
+      min-height: 125px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 22px;
+      border: 0;
+      background: #0078d4;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0068b8;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .counter {
+      margin-top: 5px;
+      color: #78909c;
+      font-size: 0.75rem;
+      text-align: right;
+    }
+
+    #status {
+      display: none;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 9px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    #status.ok,
+    #status.warning,
+    #status.error {
+      display: block;
+    }
+
+    #status.ok {
+      color: #075b2a;
+      background: #e5f7eb;
+    }
+
+    #status.warning {
+      color: #795500;
+      background: #fff6d8;
+    }
+
+    #status.error {
+      color: #8b1e1e;
+      background: #ffeded;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #006994;
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
+
 <body>
   <main>
     <h1>📣 Invia notifica</h1>
-    <p class="hint">La notifica sarà inviata a tutti gli iscritti alle notifiche OneSignal (segmento <strong>All</strong>).</p>
+
+    <p class="description">
+      La notifica sarà inviata a tutti i dispositivi iscritti alle notifiche
+      OneSignal tramite il segmento <strong>All</strong>.
+    </p>
+
     <form id="notificationForm">
       <label for="password">Password amministratore</label>
-      <input id="password" name="password" type="password" required autocomplete="current-password">
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
       <label for="title">Titolo</label>
-      <input id="title" name="title" maxlength="100" required placeholder="Es. Allenamento annullato">
+      <input
+        id="title"
+        name="title"
+        type="text"
+        maxlength="100"
+        placeholder="Es. Allenamento annullato"
+        required
+      >
+      <div id="titleCounter" class="counter">0/100</div>
+
       <label for="body">Messaggio</label>
-      <textarea id="body" name="body" maxlength="500" required placeholder="Scrivi il contenuto della notifica"></textarea>
-      <label for="url">Link (facoltativo)</label>
-      <input id="url" name="url" type="url" value="https://nekton-waterpolo.pages.dev/">
-      <button id="submit" type="submit">Invia a tutti</button>
+      <textarea
+        id="body"
+        name="body"
+        maxlength="500"
+        placeholder="Scrivi il contenuto della notifica"
+        required
+      ></textarea>
+      <div id="bodyCounter" class="counter">0/500</div>
+
+      <label for="url">Link di destinazione</label>
+      <input
+        id="url"
+        name="url"
+        type="url"
+        value="https://nekton-waterpolo.pages.dev/"
+        placeholder="https://nekton-waterpolo.pages.dev/"
+      >
+
+      <button id="submitButton" type="submit">
+        Invia a tutti
+      </button>
     </form>
-    <div id="status" role="status"></div>
+
+    <div id="status" role="status" aria-live="polite"></div>
+
+    <a class="back-link" href="/">
+      ← Torna al sito
+    </a>
   </main>
+
   <script>
-    const form = document.getElementById('notificationForm');
-    const submit = document.getElementById('submit');
-    const status = document.getElementById('status');
-    form.addEventListener('submit', async (event) => {
+    const form = document.getElementById("notificationForm");
+    const submitButton = document.getElementById("submitButton");
+    const status = document.getElementById("status");
+    const titleInput = document.getElementById("title");
+    const bodyInput = document.getElementById("body");
+    const urlInput = document.getElementById("url");
+    const titleCounter = document.getElementById("titleCounter");
+    const bodyCounter = document.getElementById("bodyCounter");
+
+    function updateCounters() {
+      titleCounter.textContent = `${titleInput.value.length}/100`;
+      bodyCounter.textContent = `${bodyInput.value.length}/500`;
+    }
+
+    function showStatus(type, message) {
+      status.className = type;
+      status.textContent = message;
+    }
+
+    titleInput.addEventListener("input", updateCounters);
+    bodyInput.addEventListener("input", updateCounters);
+
+    form.addEventListener("submit", async event => {
       event.preventDefault();
-      submit.disabled = true;
-      status.className = ''; status.textContent = '';
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Invio in corso…";
+      status.className = "";
+      status.textContent = "";
+
+      const payload = {
+        password: document.getElementById("password").value,
+        title: titleInput.value.trim(),
+        body: bodyInput.value.trim(),
+        url: urlInput.value.trim()
+      };
+
       try {
-        const response = await fetch('/api/send-notification', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        const response = await fetch("/api/send-notification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
         });
+
         const result = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(result.error || 'Invio non riuscito.');
-        status.className = 'ok'; status.textContent = '✅ Notifica inviata correttamente.';
-        form.reset(); document.getElementById('url').value = 'https://nekton-waterpolo.pages.dev/';
+
+        if (!response.ok) {
+          throw new Error(
+            result.error || `Errore del server (${response.status}).`
+          );
+        }
+
+        const recipients = Number(result.recipients || 0);
+
+        if (recipients === 0) {
+          showStatus(
+            "warning",
+            "⚠️ OneSignal ha accettato la richiesta, ma non risultano dispositivi iscritti alle notifiche."
+          );
+        } else {
+          showStatus(
+            "ok",
+            `✅ Notifica inviata a ${recipients} dispositivo/i.`
+          );
+        }
+
+        document.getElementById("password").value = "";
+        titleInput.value = "";
+        bodyInput.value = "";
+        urlInput.value = "https://nekton-waterpolo.pages.dev/";
+        updateCounters();
       } catch (error) {
-        status.className = 'error'; status.textContent = '❌ ' + error.message;
-      } finally { submit.disabled = false; }
+        console.error("Errore invio notifica:", error);
+
+        showStatus(
+          "error",
+          `❌ ${error.message || "Invio non riuscito."}`
+        );
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Invia a tutti";
+      }
     });
+
+    updateCounters();
   </script>
 </body>
 </html>
