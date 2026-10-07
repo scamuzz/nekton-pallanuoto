@@ -9,6 +9,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nekton">
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0",
+      notifyButton: { enable: true },
+      allowLocalhostAsSecureOrigin: true
+    });
+  });
+</script>
+  
    <!-- Impedisce il salvataggio in cache (HTTP 1.1) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     
