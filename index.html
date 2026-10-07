@@ -13,11 +13,17 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
+
+  OneSignalDeferred.push(async function (OneSignal) {
     await OneSignal.init({
       appId: "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0",
-      notifyButton: { enable: true },
-      allowLocalhostAsSecureOrigin: true
+      serviceWorkerPath: "service-worker.js",
+      serviceWorkerParam: {
+        scope: "/"
+      },
+      notifyButton: {
+        enable: true
+      }
     });
   });
 </script>
@@ -281,9 +287,7 @@
     }
   </style>
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/nekton-pallanuoto/service-worker.js');
-    } 
+    
 
     let deferredPrompt;
     let isAppInstalled = false;
