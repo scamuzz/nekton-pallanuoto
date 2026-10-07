@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0078d4">
+  <title>Amministrazione notifiche · Nekton</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #123; background: #e8f4fd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+    main { width: min(100%, 520px); background: white; padding: 28px; border-radius: 18px; box-shadow: 0 8px 30px #00699422; }
+    h1 { margin-top: 0; color: #006994; }
+    label { display: block; font-weight: 700; margin: 16px 0 6px; }
+    input, textarea, button { width: 100%; padding: 12px; border: 1px solid #b7d8ed; border-radius: 9px; font: inherit; }
+    textarea { min-height: 120px; resize: vertical; }
+    button { margin-top: 20px; border: 0; background: #0078d4; color: white; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #status { margin-top: 16px; padding: 12px; border-radius: 9px; display: none; white-space: pre-wrap; }
+    #status.ok { display: block; color: #075b2a; background: #e5f7eb; }
+    #status.error { display: block; color: #8b1e1e; background: #ffeded; }
+    .hint { color: #607d8b; font-size: .9rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>📣 Invia notifica</h1>
+    <p class="hint">La notifica sarà inviata a tutti gli iscritti alle notifiche OneSignal (segmento <strong>All</strong>).</p>
+    <form id="notificationForm">
+      <label for="password">Password amministratore</label>
+      <input id="password" name="password" type="password" required autocomplete="current-password">
+      <label for="title">Titolo</label>
+      <input id="title" name="title" maxlength="100" required placeholder="Es. Allenamento annullato">
+      <label for="body">Messaggio</label>
+      <textarea id="body" name="body" maxlength="500" required placeholder="Scrivi il contenuto della notifica"></textarea>
+      <label for="url">Link (facoltativo)</label>
+      <input id="url" name="url" type="url" value="https://nekton-waterpolo.pages.dev/">
+      <button id="submit" type="submit">Invia a tutti</button>
+    </form>
+    <div id="status" role="status"></div>
+  </main>
+  <script>
+    const form = document.getElementById('notificationForm');
+    const submit = document.getElementById('submit');
+    const status = document.getElementById('status');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submit.disabled = true;
+      status.className = ''; status.textContent = '';
+      try {
+        const response = await fetch('/api/send-notification', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Invio non riuscito.');
+        status.className = 'ok'; status.textContent = '✅ Notifica inviata correttamente.';
+        form.reset(); document.getElementById('url').value = 'https://nekton-waterpolo.pages.dev/';
+      } catch (error) {
+        status.className = 'error'; status.textContent = '❌ ' + error.message;
+      } finally { submit.disabled = false; }
+    });
+  </script>
+</body>
+</html>
