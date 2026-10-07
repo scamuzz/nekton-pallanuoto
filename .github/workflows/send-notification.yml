@@ -1,1 +1,39 @@
+name: Invia notifica push
 
+on:
+  repository_dispatch:
+    types: [send-notification]
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invia notifica tramite OneSignal
+        env:
+          ONESIGNAL_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+          TITLE: ${{ github.event.client_payload.title }}
+          BODY: ${{ github.event.client_payload.body }}
+          URL: ${{ github.event.client_payload.url }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, urllib.request, urllib.error, sys
+          title = os.environ.get('TITLE', '').strip()
+          body = os.environ.get('BODY', '').strip()
+          url = os.environ.get('URL', '').strip() or 'https://nekton-waterpolo.pages.dev/'
+          key = os.environ.get('ONESIGNAL_KEY', '').strip()
+          if not title or not body or not key:
+              print('ERRORE: dati o secret mancanti'); sys.exit(1)
+          payload = {
+              'app_id': '95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0',
+              'included_segments': ['All'],
+              'headings': {'it': title, 'en': title},
+              'contents': {'it': body, 'en': body},
+              'url': url, 'ttl': 86400
+          }
+          req = urllib.request.Request('https://api.onesignal.com/notifications', data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'Authorization': f'Key {key}'})
+          try:
+              with urllib.request.urlopen(req) as response:
+                  print('Notifica inviata:', response.read().decode())
+          except urllib.error.HTTPError as error:
+              print('ERRORE HTTP', error.code, error.read().decode()); sys.exit(1)
+          EOF
