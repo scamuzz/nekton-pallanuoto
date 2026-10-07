@@ -288,7 +288,12 @@
     }
   </style>
   <script>
-    
+     if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      .catch(error => {
+        console.error('Registrazione service worker fallita:', error);
+      });
+  }
 
     let deferredPrompt;
     let isAppInstalled = false;
