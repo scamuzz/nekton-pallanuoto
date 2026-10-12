@@ -145,6 +145,24 @@
       cursor: pointer; margin-top: 8px; font-family: inherit;
     }
     .cancel-edit-btn.visible { display: block; }
+    .upload-hint {
+      display: block; font-size: 0.7rem; color: #607d8b; margin-top: 6px; line-height: 1.5;
+    }
+    .uploaded-files-list {
+      margin-top: 10px; display: grid; gap: 8px;
+    }
+    .uploaded-file-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: #fff; border: 1px solid #d9ecff; border-radius: 10px; padding: 8px 10px;
+      font-size: 0.76rem; color: #006994; font-weight: 700;
+    }
+    .uploaded-file-item small {
+      display: block; font-size: 0.65rem; color: #607d8b; font-weight: 600; margin-top: 2px;
+    }
+    .uploaded-file-remove {
+      border: none; background: #eef7ff; color: #006994; border-radius: 8px; padding: 6px 8px;
+      cursor: pointer; font-weight: 700; font-size: 0.7rem;
+    }
 
     .modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
@@ -215,6 +233,24 @@
       <label>Testo</label>
       <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio…"></textarea>
     </div>
+    <div class="form-group">
+      <label>Carica allegati</label>
+      <input type="file" class="form-input" id="news-file-upload" accept="image/*,.pdf" multiple />
+      <small class="upload-hint">I file vengono salvati in Firebase Storage nella cartella <strong>allegati</strong>.</small>
+      <div id="uploaded-files-list" class="uploaded-files-list"></div>
+    </div>
+    <div class="form-group">
+      <label>Allegati manuali (opzionali, uno per riga)</label>
+      <textarea class="form-input" id="news-attachments" placeholder="Esempi:
+allegati/locandina.jpg
+allegati/convocazione.pdf"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Titoli allegati (opzionali, uno per riga, stesso ordine)</label>
+      <textarea class="form-input" id="news-attachments-titles" placeholder="Esempi:
+Locandina Open Day
+Convocazione Torneo"></textarea>
+    </div>
     <button class="pub-btn" id="pub-btn">📤 Pubblica comunicazione</button>
     <button class="cancel-edit-btn" id="cancel-edit-btn" type="button">❌ Annulla modifica</button>
   </div>
@@ -245,6 +281,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
@@ -256,6 +293,7 @@ firebase.initializeApp({
   appId: "1:468690890938:web:048be7f27779d8862d9283"
 });
 const db = firebase.database();
+const storage = firebase.storage();
 
 const GROUPS = {
   generale: { ref: db.ref('nekton/news/generale'), label: 'Generale', icon: '📰', badgeClass: 'badge-generale' }
@@ -263,6 +301,7 @@ const GROUPS = {
 
 let allData = { generale: {} };
 let editingNewsId = null;
+let uploadedAttachmentQueue = [];
 
 function isManager() { return localStorage.getItem('nektonManager') === '1'; }
 function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
@@ -310,14 +349,43 @@ function renderAttachments(attachments) {
   return `<div class="news-attachments">${rows}</div>`;
 }
 
+function renderUploadedQueue() {
+  const list = document.getElementById('uploaded-files-list');
+  if (!list) return;
+
+  if (!uploadedAttachmentQueue.length) {
+    list.innerHTML = '';
+    return;
+  }
+
+  list.innerHTML = uploadedAttachmentQueue.map((item, index) => `
+    <div class="uploaded-file-item">
+      <div>
+        <span>${esc(item.titolo)}</span>
+        <small>${item.tipo === 'img' ? 'Immagine' : item.tipo === 'pdf' ? 'PDF' : 'File'}</small>
+      </div>
+      <button type="button" class="uploaded-file-remove" data-index="${index}">Rimuovi</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.uploaded-file-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.index);
+      uploadedAttachmentQueue.splice(idx, 1);
+      renderUploadedQueue();
+    });
+  });
+}
+
 function resetNewsForm() {
   editingNewsId = null;
+  uploadedAttachmentQueue = [];
+  renderUploadedQueue();
   document.getElementById('news-title').value = '';
   document.getElementById('news-text').value = '';
-  const f = document.getElementById('news-attachments');
-  const t = document.getElementById('news-attachments-titles');
-  if (f) f.value = '';
-  if (t) t.value = '';
+  document.getElementById('news-file-upload').value = '';
+  document.getElementById('news-attachments').value = '';
+  document.getElementById('news-attachments-titles').value = '';
   document.getElementById('pub-btn').textContent = '📤 Pubblica comunicazione';
   document.getElementById('manager-panel-title').textContent = '✏️ Pubblica una comunicazione';
   document.getElementById('cancel-edit-btn').classList.remove('visible');
@@ -332,39 +400,57 @@ function fillNewsForm(item) {
   const files = attachments.map(a => typeof a === 'string' ? a : (a.file || '')).filter(Boolean).join('\n');
   const titles = attachments.map(a => typeof a === 'string' ? '' : (a.titolo || (a.file || '').split('/').pop() || '')).join('\n');
 
-  const attachmentsField = document.getElementById('news-attachments');
-  const titlesField = document.getElementById('news-attachments-titles');
-  if (attachmentsField) attachmentsField.value = files;
-  if (titlesField) titlesField.value = titles;
+  document.getElementById('news-attachments').value = files;
+  document.getElementById('news-attachments-titles').value = titles;
+  document.getElementById('news-file-upload').value = '';
+  uploadedAttachmentQueue = [];
+  renderUploadedQueue();
 
   document.getElementById('pub-btn').textContent = '💾 Salva modifiche';
   document.getElementById('manager-panel-title').textContent = '✏️ Modifica comunicazione';
   document.getElementById('cancel-edit-btn').classList.add('visible');
 }
 
-/* campi allegati nel pannello gestore */
-(function injectAttachmentFields() {
-  const panel = document.getElementById('manager-panel');
-  const pubBtn = document.getElementById('pub-btn');
-  if (!panel || !pubBtn) return;
+async function uploadAttachmentFile(file) {
+  const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+  const ref = storage.ref(`allegati/${fileName}`);
+  await ref.put(file);
+  const url = await ref.getDownloadURL();
+  return {
+    file: url,
+    titolo: file.name,
+    tipo: inferAttachmentType(file.name)
+  };
+}
 
-  const wrap = document.createElement('div');
-  wrap.innerHTML = `
-    <div class="form-group">
-      <label>Allegati (opzionali, uno per riga)</label>
-      <textarea class="form-input" id="news-attachments" placeholder="Esempi:
-allegati/locandina.jpg
-allegati/convocazione.pdf"></textarea>
-    </div>
-    <div class="form-group">
-      <label>Titoli allegati (opzionali, uno per riga, stesso ordine)</label>
-      <textarea class="form-input" id="news-attachments-titles" placeholder="Esempi:
-Locandina Open Day
-Convocazione Torneo"></textarea>
-    </div>
-  `;
-  panel.insertBefore(wrap, pubBtn);
-})();
+document.getElementById('news-file-upload').addEventListener('change', async () => {
+  const files = Array.from(document.getElementById('news-file-upload').files || []);
+  if (!files.length) return;
+
+  try {
+    showToast('⬆️ Caricamento allegati in corso…');
+    const uploaded = [];
+    for (const file of files) {
+      if (!/\.(png|jpe?g|gif|webp|svg|pdf)$/i.test(file.name)) {
+        showToast('⚠️ Solo immagini o PDF sono ammessi');
+        continue;
+      }
+      const result = await uploadAttachmentFile(file);
+      uploaded.push(result);
+    }
+
+    uploadedAttachmentQueue.push(...uploaded);
+    renderUploadedQueue();
+    document.getElementById('news-file-upload').value = '';
+
+    if (uploaded.length) {
+      showToast(`✅ ${uploaded.length} allegato${uploaded.length > 1 ? 'i' : 'o'} caricato${uploaded.length > 1 ? 'i' : ''}`);
+    }
+  } catch (error) {
+    console.error('upload error', error);
+    showToast('❌ Errore nel caricamento allegati');
+  }
+});
 
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
 cancelEditBtn.addEventListener('click', resetNewsForm);
@@ -433,17 +519,24 @@ function renderNews() {
 }
 
 function buildAttachmentsFromForm() {
-  const filesRaw = (document.getElementById('news-attachments')?.value || '').trim();
-  const titlesRaw = (document.getElementById('news-attachments-titles')?.value || '').trim();
+  const filesRaw = (document.getElementById('news-attachments').value || '').trim();
+  const titlesRaw = (document.getElementById('news-attachments-titles').value || '').trim();
 
-  const files = filesRaw ? filesRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
-  const titles = titlesRaw ? titlesRaw.split('\n').map(s => s.trim()) : [];
+  const uploaded = uploadedAttachmentQueue.map(item => ({
+    file: item.file,
+    titolo: item.titolo,
+    tipo: item.tipo
+  }));
 
-  return files.map((file, i) => ({
+  const manualFiles = filesRaw ? filesRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const manualTitles = titlesRaw ? titlesRaw.split('\n').map(s => s.trim()) : [];
+  const manual = manualFiles.map((file, i) => ({
     file,
-    titolo: titles[i] || file.split('/').pop() || `Allegato ${i+1}`,
+    titolo: manualTitles[i] || file.split('/').pop() || `Allegato ${i+1}`,
     tipo: inferAttachmentType(file)
   }));
+
+  return [...uploaded, ...manual];
 }
 
 document.getElementById('pub-btn').addEventListener('click', () => {
