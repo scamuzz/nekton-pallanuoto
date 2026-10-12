@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📰 News · Nekton</title>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -49,7 +51,7 @@
     }
 
     .back-link,
-    .pin-btn {
+    .pin-button {
       position: absolute;
       top: 14px;
       color: white;
@@ -67,7 +69,7 @@
       text-decoration: none;
     }
 
-    .pin-btn {
+    .pin-button {
       right: 14px;
       width: 40px;
       height: 40px;
@@ -193,8 +195,8 @@
       margin: 5px 0;
     }
 
-    .pub-btn,
-    .cancel-edit-btn {
+    .publish-button,
+    .cancel-edit-button {
       width: 100%;
       padding: 11px;
       border: 0;
@@ -203,24 +205,24 @@
       cursor: pointer;
     }
 
-    .pub-btn {
+    .publish-button {
       color: white;
       background: linear-gradient(135deg, #006994, #00b4d8);
     }
 
-    .pub-btn:disabled {
+    .publish-button:disabled {
       cursor: wait;
       opacity: 0.6;
     }
 
-    .cancel-edit-btn {
+    .cancel-edit-button {
       display: none;
       margin-top: 8px;
       color: #607d8b;
       background: #eceff1;
     }
 
-    .cancel-edit-btn.visible {
+    .cancel-edit-button.visible {
       display: block;
     }
 
@@ -324,26 +326,26 @@
       background: white;
     }
 
-    .attachment-preview.pdf-preview {
-      height: 520px;
+    .pdf-preview {
+      min-height: 160px;
       background: white;
     }
 
-    .attachment-preview.pdf-preview iframe {
+    .pdf-preview canvas {
       display: block;
       width: 100%;
-      height: 100%;
-      border: 0;
+      height: auto;
     }
 
-    .pdf-fallback {
+    .pdf-loading,
+    .pdf-error {
       padding: 16px;
       color: #607d8b;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-align: center;
     }
 
-    .pdf-fallback a {
+    .pdf-error a {
       color: #006994;
       font-weight: 700;
     }
@@ -480,7 +482,7 @@
     <a class="back-link" href="index.html">← Home</a>
 
     <button
-      class="pin-btn"
+      class="pin-button"
       id="pin-button"
       type="button"
       title="Accesso gestore"
@@ -489,7 +491,6 @@
     </button>
 
     <div style="font-size: 3rem;">📰</div>
-
     <h1>News Generali</h1>
     <div class="subtitle">Comunicazioni per tutta la squadra</div>
 
@@ -545,6 +546,7 @@
 
       <div class="form-group">
         <label for="news-files">PDF / immagini da allegare</label>
+
         <input
           class="form-input"
           id="news-files"
@@ -555,7 +557,8 @@
 
         <div class="form-hint">
           Sono consentiti PDF e immagini fino a 10 MB per file.
-          I file vengono salvati nella cartella <b>allegati/</b>.
+          I file vengono salvati nella cartella
+          <b>allegati/</b>.
         </div>
 
         <div
@@ -581,7 +584,7 @@
       </div>
 
       <button
-        class="pub-btn"
+        class="publish-button"
         id="publish-button"
         type="button"
       >
@@ -589,7 +592,7 @@
       </button>
 
       <button
-        class="cancel-edit-btn"
+        class="cancel-edit-button"
         id="cancel-edit-button"
         type="button"
       >
@@ -665,6 +668,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
     firebase.initializeApp({
       apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
       authDomain: "lista-spesa-b9eb1.firebaseapp.com",
@@ -678,6 +684,7 @@
 
     const database = firebase.database();
     const newsReference = database.ref("nekton/news/generale");
+
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     let allNews = {};
@@ -743,10 +750,10 @@
         return "";
       }
 
-      const index = path.indexOf("allegati/");
+      const attachmentIndex = path.indexOf("allegati/");
 
-      if (index >= 0) {
-        path = path.slice(index);
+      if (attachmentIndex >= 0) {
+        path = path.slice(attachmentIndex);
       }
 
       return path.replace(/^\/+/, "");
@@ -794,7 +801,7 @@
     function renderAttachments(value) {
       const attachments = normalizeAttachments(value);
 
-      const rows = attachments
+      return attachments
         .map(attachment => {
           const file = getAttachmentFile(attachment);
 
@@ -837,6 +844,14 @@
           }
 
           if (type === "pdf") {
+            const previewId =
+              "pdf-preview-" +
+              Math.random().toString(36).slice(2);
+
+            setTimeout(() => {
+              renderPdfPreview(previewId, file);
+            }, 0);
+
             return `
               <a
                 class="attachment-link"
@@ -847,23 +862,13 @@
                 📄 ${safeTitle}
               </a>
 
-              <div class="attachment-preview pdf-preview">
-                <iframe
-                  src="${safeFile}"
-                  title="${safeTitle}"
-                  loading="lazy"
-                >
-                  <div class="pdf-fallback">
-                    Il browser non supporta l'anteprima PDF.
-                    <a
-                      href="${safeFile}"
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      Apri il PDF
-                    </a>
-                  </div>
-                </iframe>
+              <div
+                class="attachment-preview pdf-preview"
+                id="${previewId}"
+              >
+                <div class="pdf-loading">
+                  Caricamento anteprima PDF…
+                </div>
               </div>
             `;
           }
@@ -881,10 +886,93 @@
         })
         .filter(Boolean)
         .join("");
+    }
 
-      return rows
-        ? `<div class="news-attachments">${rows}</div>`
-        : "";
+    async function renderPdfPreview(containerId, filePath) {
+      const container = byId(containerId);
+
+      if (!container) {
+        return;
+      }
+
+      try {
+        const loadingTask =
+          pdfjsLib.getDocument(filePath);
+
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+
+        const width =
+          container.clientWidth || 320;
+
+        const initialViewport =
+          page.getViewport({ scale: 1 });
+
+        const scale =
+          width / initialViewport.width;
+
+        const viewport =
+          page.getViewport({ scale });
+
+        const canvas =
+          document.createElement("canvas");
+
+        const context =
+          canvas.getContext("2d");
+
+        const pixelRatio =
+          window.devicePixelRatio || 1;
+
+        canvas.width =
+          viewport.width * pixelRatio;
+
+        canvas.height =
+          viewport.height * pixelRatio;
+
+        canvas.style.width =
+          `${viewport.width}px`;
+
+        canvas.style.height =
+          `${viewport.height}px`;
+
+        await page.render({
+          canvasContext: context,
+          viewport,
+          transform: [
+            pixelRatio,
+            0,
+            0,
+            pixelRatio,
+            0,
+            0
+          ]
+        }).promise;
+
+        container.innerHTML = "";
+        container.appendChild(canvas);
+      } catch (error) {
+        console.error(
+          "Errore anteprima PDF:",
+          filePath,
+          error
+        );
+
+        const safeFile =
+          escapeHtml(filePath);
+
+        container.innerHTML = `
+          <div class="pdf-error">
+            Anteprima non disponibile.
+            <a
+              href="${safeFile}"
+              target="_blank"
+              rel="noopener"
+            >
+              Apri il PDF
+            </a>
+          </div>
+        `;
+      }
     }
 
     function renderNews() {
@@ -927,7 +1015,9 @@
                 ${escapeHtml(news.testo)}
               </div>
 
-              ${renderAttachments(news.allegati)}
+              <div class="news-attachments">
+                ${renderAttachments(news.allegati)}
+              </div>
 
               ${
                 isManager()
@@ -984,7 +1074,9 @@
       byId("news-title").value = news.titolo || "";
       byId("news-text").value = news.testo || "";
 
-      const attachments = normalizeAttachments(news.allegati);
+      const attachments = normalizeAttachments(
+        news.allegati
+      );
 
       if (attachments.length) {
         byId("existing-attachments").innerHTML = `
@@ -993,15 +1085,18 @@
             ${attachments.map(attachment => {
               const file = getAttachmentFile(attachment);
               const title =
-                typeof attachment === "object" && attachment.titolo
+                typeof attachment === "object" &&
+                attachment.titolo
                   ? attachment.titolo
                   : file.split("/").pop();
 
               return `<li>${escapeHtml(title || file)}</li>`;
             }).join("")}
           </ul>
+
           <div>
-            I nuovi allegati verranno aggiunti a quelli già presenti.
+            I nuovi allegati verranno aggiunti
+            a quelli già presenti.
           </div>
         `;
 
@@ -1020,11 +1115,6 @@
 
       byId("manager-panel")
         .classList.add("visible");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
     }
 
     function resetForm() {
@@ -1076,12 +1166,17 @@
         const reader = new FileReader();
 
         reader.onload = () => {
-          const result = String(reader.result || "");
-          const commaIndex = result.indexOf(",");
+          const result =
+            String(reader.result || "");
+
+          const commaIndex =
+            result.indexOf(",");
 
           if (commaIndex < 0) {
             reject(
-              new Error(`Impossibile leggere ${file.name}`)
+              new Error(
+                `Impossibile leggere ${file.name}`
+              )
             );
 
             return;
@@ -1092,7 +1187,9 @@
 
         reader.onerror = () => {
           reject(
-            new Error(`Errore nella lettura di ${file.name}`)
+            new Error(
+              `Errore nella lettura di ${file.name}`
+            )
           );
         };
 
@@ -1135,11 +1232,12 @@
 
       if (!currentManagerPin) {
         throw new Error(
-          "Sessione gestore non valida. Effettua nuovamente l'accesso."
+          "Sessione gestore non valida."
         );
       }
 
-      const contentBase64 = await fileToBase64(file);
+      const contentBase64 =
+        await fileToBase64(file);
 
       const result = await callUploadApi({
         action: "upload",
@@ -1151,7 +1249,7 @@
 
       if (!result.path) {
         throw new Error(
-          "Il server non ha restituito il percorso dell'allegato"
+          "Percorso allegato non restituito dal server"
         );
       }
 
@@ -1163,7 +1261,9 @@
         ...new Set(
           files
             .map(normalizeAttachmentPath)
-            .filter(file => file.startsWith("allegati/"))
+            .filter(file =>
+              file.startsWith("allegati/")
+            )
         )
       ];
 
@@ -1175,20 +1275,21 @@
         };
       }
 
-      if (!currentManagerPin) {
-        throw new Error(
-          "Sessione gestore non valida. Effettua nuovamente l'accesso."
-        );
-      }
-
-      return callUploadApi({
+      const result = await callUploadApi({
         action: "delete",
         files: normalizedFiles,
         pin: currentManagerPin
       });
+
+      console.log(
+        "Risposta cancellazione allegati:",
+        result
+      );
+
+      return result;
     }
 
-    function getFilesUsedByOtherNews(newsId) {
+    function getFilesUsedElsewhere(newsId) {
       const usedFiles = new Set();
 
       Object.entries(allNews).forEach(([id, news]) => {
@@ -1198,7 +1299,9 @@
 
         normalizeAttachments(news.allegati)
           .map(getAttachmentFile)
-          .filter(file => file.startsWith("allegati/"))
+          .filter(file =>
+            file.startsWith("allegati/")
+          )
           .forEach(file => {
             usedFiles.add(file);
           });
@@ -1222,14 +1325,18 @@
 
       const files = normalizeAttachments(news.allegati)
         .map(getAttachmentFile)
-        .filter(file => file.startsWith("allegati/"));
+        .filter(file =>
+          file.startsWith("allegati/")
+        );
 
       const usedElsewhere =
-        getFilesUsedByOtherNews(newsId);
+        getFilesUsedElsewhere(newsId);
 
       const filesToDelete = [
         ...new Set(
-          files.filter(file => !usedElsewhere.has(file))
+          files.filter(file =>
+            !usedElsewhere.has(file)
+          )
         )
       ];
 
@@ -1237,14 +1344,18 @@
         showToast("⏳ Eliminazione in corso…");
 
         if (filesToDelete.length) {
-          const result = await deleteAttachments(
-            filesToDelete
-          );
+          const result =
+            await deleteAttachments(filesToDelete);
 
-          if (result.skipped && result.skipped.length) {
+          if (
+            result.skipped &&
+            result.skipped.length
+          ) {
             throw new Error(
               result.skipped
-                .map(item => `${item.file}: ${item.reason}`)
+                .map(item =>
+                  `${item.file}: ${item.reason}`
+                )
                 .join(", ")
             );
           }
@@ -1268,14 +1379,20 @@
         );
 
         showToast(
-          `❌ ${error.message || "Errore durante la cancellazione"}`
+          `❌ ${error.message}`
         );
       }
     }
 
     async function publishNews() {
-      const title = byId("news-title").value.trim();
-      const text = byId("news-text").value.trim();
+      const title = byId("news-title")
+        .value
+        .trim();
+
+      const text = byId("news-text")
+        .value
+        .trim();
+
       const files = Array.from(
         byId("news-files").files || []
       );
@@ -1296,7 +1413,7 @@
       }
 
       const button = byId("publish-button");
-      const wasEditing = Boolean(editingNewsId);
+      const editing = Boolean(editingNewsId);
 
       button.disabled = true;
       button.textContent = "⏳ Pubblicazione…";
@@ -1311,7 +1428,8 @@
             `⏳ Caricamento ${index + 1}/${files.length}: ${file.name}`
           );
 
-          const path = await uploadAttachment(file);
+          const path =
+            await uploadAttachment(file);
 
           newAttachments.push({
             file: path,
@@ -1324,11 +1442,11 @@
           ? allNews[editingNewsId] || {}
           : {};
 
-        const existingAttachments =
+        const oldAttachments =
           normalizeAttachments(oldNews.allegati);
 
         const allAttachments = [
-          ...existingAttachments,
+          ...oldAttachments,
           ...newAttachments
         ];
 
@@ -1336,7 +1454,9 @@
           titolo: title,
           testo: text,
           data: oldNews.data ||
-            new Date().toISOString().slice(0, 10)
+            new Date()
+              .toISOString()
+              .slice(0, 10)
         };
 
         if (allAttachments.length) {
@@ -1348,10 +1468,15 @@
             .child(editingNewsId)
             .set(payload);
 
-          showToast("✅ Comunicazione modificata!");
+          showToast(
+            "✅ Comunicazione modificata!"
+          );
         } else {
           await newsReference.push(payload);
-          showToast("✅ Comunicazione pubblicata!");
+
+          showToast(
+            "✅ Comunicazione pubblicata!"
+          );
         }
 
         resetForm();
@@ -1362,18 +1487,13 @@
         );
 
         showToast(
-          `❌ ${error.message || "Errore durante la pubblicazione"}`
+          `❌ ${error.message}`
         );
       } finally {
         button.disabled = false;
-
-        if (!editingNewsId) {
-          button.textContent = "📤 Pubblica comunicazione";
-        } else {
-          button.textContent = wasEditing
-            ? "💾 Salva modifiche"
-            : "📤 Pubblica comunicazione";
-        }
+        button.textContent = editing
+          ? "💾 Salva modifiche"
+          : "📤 Pubblica comunicazione";
       }
     }
 
@@ -1382,8 +1502,8 @@
         byId("news-files").files || []
       );
 
-      byId("selected-files").innerHTML = files
-        .map(file => {
+      byId("selected-files").innerHTML =
+        files.map(file => {
           const size = (
             file.size / 1024 / 1024
           ).toFixed(2);
@@ -1400,8 +1520,7 @@
               — ${size} MB
             </div>
           `;
-        })
-        .join("");
+        }).join("");
     }
 
     function openLoginModal() {
@@ -1413,7 +1532,8 @@
     }
 
     function closeLoginModal() {
-      byId("login-modal").classList.remove("open");
+      byId("login-modal")
+        .classList.remove("open");
     }
 
     function confirmLogin() {
@@ -1430,27 +1550,34 @@
       setManager(true);
       closeLoginModal();
 
-      byId("manager-panel").classList.add("visible");
+      byId("manager-panel")
+        .classList.add("visible");
+
       byId("pin-button").textContent = "🔐";
 
       renderNews();
       showToast("✅ Modalità gestore attiva");
     }
 
-    database.ref(".info/connected").on("value", snapshot => {
-      const dot = byId("sync-dot");
-      const label = byId("sync-label");
+    database.ref(".info/connected")
+      .on("value", snapshot => {
+        const dot = byId("sync-dot");
+        const label = byId("sync-label");
 
-      if (snapshot.val()) {
-        dot.className = "sync-dot connected";
-        label.textContent =
-          "✅ Sincronizzato in tempo reale";
-      } else {
-        dot.className = "sync-dot error";
-        label.textContent =
-          "❌ Offline – riconnessione…";
-      }
-    });
+        if (snapshot.val()) {
+          dot.className =
+            "sync-dot connected";
+
+          label.textContent =
+            "✅ Sincronizzato in tempo reale";
+        } else {
+          dot.className =
+            "sync-dot error";
+
+          label.textContent =
+            "❌ Offline – riconnessione…";
+        }
+      });
 
     newsReference
       .orderByChild("data")
@@ -1468,22 +1595,25 @@
     byId("news-files")
       .addEventListener("change", updateSelectedFiles);
 
-    byId("pin-button").addEventListener("click", () => {
-      if (isManager()) {
-        setManager(false);
-        currentManagerPin = "";
+    byId("pin-button")
+      .addEventListener("click", () => {
+        if (isManager()) {
+          setManager(false);
+          currentManagerPin = "";
 
-        byId("manager-panel")
-          .classList.remove("visible");
+          byId("manager-panel")
+            .classList.remove("visible");
 
-        resetForm();
-        renderNews();
+          resetForm();
+          renderNews();
 
-        showToast("👋 Logout gestore effettuato");
-      } else {
-        openLoginModal();
-      }
-    });
+          showToast(
+            "👋 Logout gestore effettuato"
+          );
+        } else {
+          openLoginModal();
+        }
+      });
 
     byId("cancel-login-button")
       .addEventListener("click", closeLoginModal);
@@ -1491,30 +1621,33 @@
     byId("confirm-login-button")
       .addEventListener("click", confirmLogin);
 
-    byId("pin-input").addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        confirmLogin();
-      }
-    });
+    byId("pin-input")
+      .addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          confirmLogin();
+        }
+      });
 
-    byId("pin-toggle").addEventListener("click", () => {
-      const input = byId("pin-input");
-      const toggle = byId("pin-toggle");
+    byId("pin-toggle")
+      .addEventListener("click", () => {
+        const input = byId("pin-input");
+        const toggle = byId("pin-toggle");
 
-      if (input.type === "password") {
-        input.type = "text";
-        toggle.textContent = "🙈";
-      } else {
-        input.type = "password";
-        toggle.textContent = "👁️";
-      }
-    });
+        if (input.type === "password") {
+          input.type = "text";
+          toggle.textContent = "🙈";
+        } else {
+          input.type = "password";
+          toggle.textContent = "👁️";
+        }
+      });
 
-    byId("login-modal").addEventListener("click", event => {
-      if (event.target === byId("login-modal")) {
-        closeLoginModal();
-      }
-    });
+    byId("login-modal")
+      .addEventListener("click", event => {
+        if (event.target === byId("login-modal")) {
+          closeLoginModal();
+        }
+      });
 
     setManager(false);
     currentManagerPin = "";
