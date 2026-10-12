@@ -12,9 +12,14 @@
       padding: 0;
     }
 
+    html,
+    body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       min-height: 100vh;
-      overflow-x: hidden;
       font-family: "Segoe UI", sans-serif;
       background: #e8f4fd;
       color: #455a64;
@@ -31,7 +36,12 @@
       padding: 36px 20px 24px;
       color: white;
       text-align: center;
-      background: linear-gradient(160deg, #012afe, #0055cc 40%, #00b4d8);
+      background: linear-gradient(
+        160deg,
+        #012afe 0%,
+        #0055cc 40%,
+        #00b4d8 100%
+      );
     }
 
     .header h1 {
@@ -57,9 +67,9 @@
       left: 14px;
       padding: 7px 15px;
       border-radius: 20px;
-      text-decoration: none;
       font-size: 0.76rem;
       font-weight: 700;
+      text-decoration: none;
     }
 
     .pin-btn {
@@ -72,7 +82,12 @@
 
     .wave-divider {
       line-height: 0;
-      background: linear-gradient(160deg, #012afe, #0055cc 40%, #00b4d8);
+      background: linear-gradient(
+        160deg,
+        #012afe 0%,
+        #0055cc 40%,
+        #00b4d8 100%
+      );
     }
 
     .wave-divider svg {
@@ -82,7 +97,7 @@
 
     .container {
       max-width: 600px;
-      margin: auto;
+      margin: 0 auto;
       padding: 18px 12px 64px;
     }
 
@@ -447,6 +462,7 @@
     </button>
 
     <div style="font-size: 3rem;">📰</div>
+
     <h1>News Generali</h1>
     <div class="subtitle">Comunicazioni per tutta la squadra</div>
 
@@ -477,6 +493,7 @@
 
       <div class="form-group">
         <label for="news-title">Titolo</label>
+
         <input
           class="form-input"
           id="news-title"
@@ -488,6 +505,7 @@
 
       <div class="form-group">
         <label for="news-text">Testo</label>
+
         <textarea
           class="form-input"
           id="news-text"
@@ -502,6 +520,7 @@
 
       <div class="form-group">
         <label for="news-files">PDF / immagini da allegare</label>
+
         <input
           class="form-input"
           id="news-files"
@@ -512,7 +531,8 @@
 
         <div class="form-hint">
           Sono consentiti PDF e immagini fino a 10 MB per file.
-          I file vengono salvati nella cartella <b>allegati/</b>.
+          I file vengono salvati nella cartella
+          <b>allegati/</b>.
         </div>
 
         <div
@@ -573,6 +593,7 @@
   >
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
+
       <p>Inserisci il PIN per pubblicare comunicazioni</p>
 
       <div class="pin-input-wrap">
@@ -635,7 +656,6 @@
 
     const database = firebase.database();
     const newsReference = database.ref("nekton/news/generale");
-
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     let allNews = {};
@@ -694,24 +714,48 @@
       return [];
     }
 
-    function getAttachmentFile(attachment) {
-      if (typeof attachment === "string") {
-        return attachment;
+    /*
+     * Normalizza tutti i formati possibili:
+     *
+     * allegati/file.pdf
+     * /allegati/file.pdf
+     * https://nekton-waterpolo.pages.dev/allegati/file.pdf
+     */
+    function normalizeAttachmentPath(value) {
+      let path = String(value || "").trim();
+
+      if (!path) {
+        return "";
       }
 
-      return attachment && attachment.file
-        ? String(attachment.file)
-        : "";
+      const attachmentIndex = path.indexOf("allegati/");
+
+      if (attachmentIndex >= 0) {
+        path = path.slice(attachmentIndex);
+      }
+
+      return path.replace(/^\/+/, "");
+    }
+
+    function getAttachmentFile(attachment) {
+      const value =
+        typeof attachment === "string"
+          ? attachment
+          : attachment && attachment.file
+            ? attachment.file
+            : "";
+
+      return normalizeAttachmentPath(value);
     }
 
     function getAttachmentType(filePath) {
-      const file = String(filePath || "").toLowerCase();
+      const path = String(filePath || "").toLowerCase();
 
-      if (/\.(png|jpe?g|gif|webp|svg)$/.test(file)) {
+      if (/\.(png|jpe?g|gif|webp|svg)$/.test(path)) {
         return "img";
       }
 
-      if (/\.pdf$/.test(file)) {
+      if (/\.pdf$/.test(path)) {
         return "pdf";
       }
 
@@ -870,8 +914,7 @@
 
       document.querySelectorAll(".edit-button").forEach(button => {
         button.addEventListener("click", () => {
-          const id = button.dataset.id;
-          startEdit(id);
+          startEdit(button.dataset.id);
         });
       });
 
@@ -907,7 +950,7 @@
                   ? attachment.titolo
                   : file.split("/").pop();
 
-              return `<li>${escapeHtml(title)}</li>`;
+              return `<li>${escapeHtml(title || file)}</li>`;
             }).join("")}
           </ul>
           <div>
@@ -990,7 +1033,10 @@
           const commaIndex = result.indexOf(",");
 
           if (commaIndex < 0) {
-            reject(new Error(`Impossibile leggere ${file.name}`));
+            reject(
+              new Error(`Impossibile leggere ${file.name}`)
+            );
+
             return;
           }
 
@@ -998,20 +1044,22 @@
         };
 
         reader.onerror = () => {
-          reject(new Error(`Errore nella lettura di ${file.name}`));
+          reject(
+            new Error(`Errore nella lettura di ${file.name}`)
+          );
         };
 
         reader.readAsDataURL(file);
       });
     }
 
-    async function callUploadApi(body) {
+    async function callUploadApi(payload) {
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(payload)
       });
 
       const text = await response.text();
@@ -1038,6 +1086,12 @@
     async function uploadAttachment(file) {
       validateFile(file);
 
+      if (!currentManagerPin) {
+        throw new Error(
+          "Sessione gestore non valida. Effettua nuovamente l'accesso."
+        );
+      }
+
       const contentBase64 = await fileToBase64(file);
 
       const result = await callUploadApi({
@@ -1058,15 +1112,40 @@
     }
 
     async function deleteAttachments(files) {
-      if (!files.length) {
-        return;
+      const normalizedFiles = [
+        ...new Set(
+          files
+            .map(normalizeAttachmentPath)
+            .filter(file => file.startsWith("allegati/"))
+        )
+      ];
+
+      if (!normalizedFiles.length) {
+        return {
+          success: true,
+          deleted: [],
+          skipped: []
+        };
       }
 
-      return callUploadApi({
+      if (!currentManagerPin) {
+        throw new Error(
+          "Sessione gestore non valida. Effettua nuovamente l'accesso."
+        );
+      }
+
+      const result = await callUploadApi({
         action: "delete",
-        files,
+        files: normalizedFiles,
         pin: currentManagerPin
       });
+
+      console.log(
+        "Risposta cancellazione allegati:",
+        result
+      );
+
+      return result;
     }
 
     function getFilesUsedByOtherNews(newsId) {
@@ -1079,9 +1158,9 @@
 
         normalizeAttachments(news.allegati)
           .map(getAttachmentFile)
-          .filter(Boolean)
+          .filter(file => file.startsWith("allegati/"))
           .forEach(file => {
-            usedFiles.add(file.replace(/^\/+/, ""));
+            usedFiles.add(file);
           });
       });
 
@@ -1105,10 +1184,10 @@
 
       const files = attachments
         .map(getAttachmentFile)
-        .map(file => file.replace(/^\/+/, ""))
         .filter(file => file.startsWith("allegati/"));
 
-      const usedElsewhere = getFilesUsedByOtherNews(newsId);
+      const usedElsewhere =
+        getFilesUsedByOtherNews(newsId);
 
       const filesToDelete = [
         ...new Set(
@@ -1116,23 +1195,52 @@
         )
       ];
 
+      console.log("Comunicazione:", newsId);
+      console.log("Allegati:", files);
+      console.log("Allegati da eliminare:", filesToDelete);
+
       try {
         showToast("⏳ Eliminazione in corso…");
 
         if (filesToDelete.length) {
-          await deleteAttachments(filesToDelete);
+          const result = await deleteAttachments(
+            filesToDelete
+          );
+
+          if (result.skipped && result.skipped.length) {
+            console.warn(
+              "Allegati non cancellati:",
+              result.skipped
+            );
+
+            throw new Error(
+              result.skipped
+                .map(item => `${item.file}: ${item.reason}`)
+                .join(", ")
+            );
+          }
         }
 
-        await newsReference.child(newsId).remove();
+        await newsReference
+          .child(newsId)
+          .remove();
 
         if (editingNewsId === newsId) {
           resetForm();
         }
 
-        showToast("✅ Comunicazione e allegati eliminati");
+        showToast(
+          "✅ Comunicazione e allegati eliminati"
+        );
       } catch (error) {
-        console.error(error);
-        showToast(`❌ ${error.message}`);
+        console.error(
+          "Errore cancellazione:",
+          error
+        );
+
+        showToast(
+          `❌ ${error.message || "Errore durante la cancellazione"}`
+        );
       }
     }
 
@@ -1159,6 +1267,7 @@
       }
 
       const button = byId("publish-button");
+
       button.disabled = true;
       button.textContent = "⏳ Pubblicazione…";
 
@@ -1185,14 +1294,8 @@
           ? allNews[editingNewsId] || {}
           : {};
 
-        const existingAttachments = normalizeAttachments(
-          oldNews.allegati
-        );
-
-        const allAttachments = [
-          ...existingAttachments,
-          ...newAttachments
-        ];
+        const existingAttachments =
+          normalizeAttachments(oldNews.allegati);
 
         const payload = {
           titolo: title,
@@ -1200,6 +1303,11 @@
           data: oldNews.data ||
             new Date().toISOString().slice(0, 10)
         };
+
+        const allAttachments = [
+          ...existingAttachments,
+          ...newAttachments
+        ];
 
         if (allAttachments.length) {
           payload.allegati = allAttachments;
@@ -1218,8 +1326,14 @@
 
         resetForm();
       } catch (error) {
-        console.error(error);
-        showToast(`❌ ${error.message}`);
+        console.error(
+          "Errore pubblicazione:",
+          error
+        );
+
+        showToast(
+          `❌ ${error.message || "Errore durante la pubblicazione"}`
+        );
       } finally {
         button.disabled = false;
         button.textContent = editingNewsId
@@ -1246,7 +1360,8 @@
 
           return `
             <div class="selected-file">
-              ${icon} ${escapeHtml(file.name)}
+              ${icon}
+              ${escapeHtml(file.name)}
               — ${size} MB
             </div>
           `;
@@ -1272,16 +1387,18 @@
       if (pin !== "nekton2026") {
         byId("modal-error").textContent =
           "❌ PIN non corretto";
+
         return;
       }
 
       currentManagerPin = pin;
       setManager(true);
       closeLoginModal();
+
       byId("manager-panel").classList.add("visible");
       byId("pin-button").textContent = "🔐";
-      renderNews();
 
+      renderNews();
       showToast("✅ Modalità gestore attiva");
     }
 
@@ -1291,10 +1408,12 @@
 
       if (snapshot.val()) {
         dot.className = "sync-dot connected";
-        label.textContent = "✅ Sincronizzato in tempo reale";
+        label.textContent =
+          "✅ Sincronizzato in tempo reale";
       } else {
         dot.className = "sync-dot error";
-        label.textContent = "❌ Offline – riconnessione…";
+        label.textContent =
+          "❌ Offline – riconnessione…";
       }
     });
 
@@ -1318,9 +1437,13 @@
       if (isManager()) {
         setManager(false);
         currentManagerPin = "";
-        byId("manager-panel").classList.remove("visible");
+
+        byId("manager-panel")
+          .classList.remove("visible");
+
         resetForm();
         renderNews();
+
         showToast("👋 Logout gestore effettuato");
       } else {
         openLoginModal();
@@ -1349,6 +1472,12 @@
       } else {
         input.type = "password";
         toggle.textContent = "👁️";
+      }
+    });
+
+    byId("login-modal").addEventListener("click", event => {
+      if (event.target === byId("login-modal")) {
+        closeLoginModal();
       }
     });
 
