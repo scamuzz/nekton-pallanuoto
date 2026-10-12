@@ -12,14 +12,9 @@
       padding: 0;
     }
 
-    html,
-    body {
-      width: 100%;
-      overflow-x: hidden;
-    }
-
     body {
       min-height: 100vh;
+      overflow-x: hidden;
       font-family: "Segoe UI", sans-serif;
       background: #e8f4fd;
       color: #455a64;
@@ -289,7 +284,7 @@
 
     .news-attachments {
       display: grid;
-      gap: 9px;
+      gap: 10px;
       margin-top: 12px;
     }
 
@@ -308,17 +303,49 @@
       border-radius: 10px;
     }
 
+    .attachment-link:hover {
+      background: #e8f4ff;
+    }
+
     .attachment-preview {
+      width: 100%;
       overflow: hidden;
+      background: #f8fcff;
       border: 1px solid #d9ecff;
       border-radius: 10px;
     }
 
     .attachment-preview img {
       display: block;
-      max-width: 100%;
+      width: 100%;
+      height: auto;
       max-height: 360px;
-      margin: auto;
+      object-fit: contain;
+      background: white;
+    }
+
+    .attachment-preview.pdf-preview {
+      height: 520px;
+      background: white;
+    }
+
+    .attachment-preview.pdf-preview iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .pdf-fallback {
+      padding: 16px;
+      color: #607d8b;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .pdf-fallback a {
+      color: #006994;
+      font-weight: 700;
     }
 
     .no-news {
@@ -493,7 +520,6 @@
 
       <div class="form-group">
         <label for="news-title">Titolo</label>
-
         <input
           class="form-input"
           id="news-title"
@@ -505,7 +531,6 @@
 
       <div class="form-group">
         <label for="news-text">Testo</label>
-
         <textarea
           class="form-input"
           id="news-text"
@@ -520,7 +545,6 @@
 
       <div class="form-group">
         <label for="news-files">PDF / immagini da allegare</label>
-
         <input
           class="form-input"
           id="news-files"
@@ -531,8 +555,7 @@
 
         <div class="form-hint">
           Sono consentiti PDF e immagini fino a 10 MB per file.
-          I file vengono salvati nella cartella
-          <b>allegati/</b>.
+          I file vengono salvati nella cartella <b>allegati/</b>.
         </div>
 
         <div
@@ -593,7 +616,6 @@
   >
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
-
       <p>Inserisci il PIN per pubblicare comunicazioni</p>
 
       <div class="pin-input-wrap">
@@ -714,13 +736,6 @@
       return [];
     }
 
-    /*
-     * Normalizza tutti i formati possibili:
-     *
-     * allegati/file.pdf
-     * /allegati/file.pdf
-     * https://nekton-waterpolo.pages.dev/allegati/file.pdf
-     */
     function normalizeAttachmentPath(value) {
       let path = String(value || "").trim();
 
@@ -728,10 +743,10 @@
         return "";
       }
 
-      const attachmentIndex = path.indexOf("allegati/");
+      const index = path.indexOf("allegati/");
 
-      if (attachmentIndex >= 0) {
-        path = path.slice(attachmentIndex);
+      if (index >= 0) {
+        path = path.slice(index);
       }
 
       return path.replace(/^\/+/, "");
@@ -749,13 +764,13 @@
     }
 
     function getAttachmentType(filePath) {
-      const path = String(filePath || "").toLowerCase();
+      const file = String(filePath || "").toLowerCase();
 
-      if (/\.(png|jpe?g|gif|webp|svg)$/.test(path)) {
+      if (/\.(png|jpe?g|gif|webp|svg)$/.test(file)) {
         return "img";
       }
 
-      if (/\.pdf$/.test(path)) {
+      if (/\.pdf$/.test(file)) {
         return "pdf";
       }
 
@@ -821,6 +836,38 @@
             `;
           }
 
+          if (type === "pdf") {
+            return `
+              <a
+                class="attachment-link"
+                href="${safeFile}"
+                target="_blank"
+                rel="noopener"
+              >
+                📄 ${safeTitle}
+              </a>
+
+              <div class="attachment-preview pdf-preview">
+                <iframe
+                  src="${safeFile}"
+                  title="${safeTitle}"
+                  loading="lazy"
+                >
+                  <div class="pdf-fallback">
+                    Il browser non supporta l'anteprima PDF.
+                    <a
+                      href="${safeFile}"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Apri il PDF
+                    </a>
+                  </div>
+                </iframe>
+              </div>
+            `;
+          }
+
           return `
             <a
               class="attachment-link"
@@ -828,7 +875,7 @@
               target="_blank"
               rel="noopener"
             >
-              ${type === "pdf" ? "📄" : "📎"} ${safeTitle}
+              📎 ${safeTitle}
             </a>
           `;
         })
@@ -1134,18 +1181,11 @@
         );
       }
 
-      const result = await callUploadApi({
+      return callUploadApi({
         action: "delete",
         files: normalizedFiles,
         pin: currentManagerPin
       });
-
-      console.log(
-        "Risposta cancellazione allegati:",
-        result
-      );
-
-      return result;
     }
 
     function getFilesUsedByOtherNews(newsId) {
@@ -1180,9 +1220,7 @@
         return;
       }
 
-      const attachments = normalizeAttachments(news.allegati);
-
-      const files = attachments
+      const files = normalizeAttachments(news.allegati)
         .map(getAttachmentFile)
         .filter(file => file.startsWith("allegati/"));
 
@@ -1195,10 +1233,6 @@
         )
       ];
 
-      console.log("Comunicazione:", newsId);
-      console.log("Allegati:", files);
-      console.log("Allegati da eliminare:", filesToDelete);
-
       try {
         showToast("⏳ Eliminazione in corso…");
 
@@ -1208,11 +1242,6 @@
           );
 
           if (result.skipped && result.skipped.length) {
-            console.warn(
-              "Allegati non cancellati:",
-              result.skipped
-            );
-
             throw new Error(
               result.skipped
                 .map(item => `${item.file}: ${item.reason}`)
@@ -1267,6 +1296,7 @@
       }
 
       const button = byId("publish-button");
+      const wasEditing = Boolean(editingNewsId);
 
       button.disabled = true;
       button.textContent = "⏳ Pubblicazione…";
@@ -1297,17 +1327,17 @@
         const existingAttachments =
           normalizeAttachments(oldNews.allegati);
 
+        const allAttachments = [
+          ...existingAttachments,
+          ...newAttachments
+        ];
+
         const payload = {
           titolo: title,
           testo: text,
           data: oldNews.data ||
             new Date().toISOString().slice(0, 10)
         };
-
-        const allAttachments = [
-          ...existingAttachments,
-          ...newAttachments
-        ];
 
         if (allAttachments.length) {
           payload.allegati = allAttachments;
@@ -1336,9 +1366,14 @@
         );
       } finally {
         button.disabled = false;
-        button.textContent = editingNewsId
-          ? "💾 Salva modifiche"
-          : "📤 Pubblica comunicazione";
+
+        if (!editingNewsId) {
+          button.textContent = "📤 Pubblica comunicazione";
+        } else {
+          button.textContent = wasEditing
+            ? "💾 Salva modifiche"
+            : "📤 Pubblica comunicazione";
+        }
       }
     }
 
