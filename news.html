@@ -238,9 +238,9 @@
       <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio…"></textarea>
     </div>
     <div class="form-group">
-      <label>Carica file nella cartella allegati/</label>
+      <label>Carica file (immagini o PDF)</label>
       <input type="file" class="form-input" id="news-file-upload" accept="image/*,.pdf" multiple />
-      <small class="upload-hint">Carica i file che verranno salvati nella cartella <strong>allegati/</strong>. I nomi sono sanitizzati automaticamente.</small>
+      <small class="upload-hint">I file verranno salvati nella cartella <strong>allegati/</strong> con nomi sanitizzati automaticamente.</small>
       <div id="uploaded-files-list" class="uploaded-files-list"></div>
     </div>
     <div class="form-group" id="existing-attachments-group" style="display:none;">
@@ -312,12 +312,14 @@ function normalizeAttachments(raw) {
   if (typeof raw === 'object') return Object.values(raw).filter(Boolean);
   return [];
 }
+
 function inferAttachmentType(filePath = '') {
   const f = String(filePath).toLowerCase();
-  if (/\\.(png|jpe?g|gif|webp|svg)$/.test(f)) return 'img';
-  if (/\\.pdf$/.test(f)) return 'pdf';
+  if (/\.(png|jpe?g|gif|webp|svg)$/.test(f)) return 'img';
+  if (/\.pdf$/.test(f)) return 'pdf';
   return 'file';
 }
+
 function renderAttachments(attachments) {
   const list = normalizeAttachments(attachments);
   if (!list.length) return '';
@@ -331,17 +333,17 @@ function renderAttachments(attachments) {
     const safeFile = esc(file);
 
     if (type === 'img') {
-      return `<a class=\"attachment-link\" href=\"${safeFile}\" target=\"_blank\" rel=\"noopener\">🖼️ ${title}</a>
-              <div class=\"attachment-preview\"><img src=\"${safeFile}\" alt=\"${title}\" loading=\"lazy\"></div>`;
+      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">🖼️ ${title}</a>
+              <div class="attachment-preview"><img src="${safeFile}" alt="${title}" loading="lazy"></div>`;
     }
     if (type === 'pdf') {
-      return `<a class=\"attachment-link\" href=\"${safeFile}\" target=\"_blank\" rel=\"noopener\">📄 ${title}</a>`;
+      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📄 ${title}</a>`;
     }
-    return `<a class=\"attachment-link\" href=\"${safeFile}\" target=\"_blank\" rel=\"noopener\">📎 ${title}</a>`;
+    return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📎 ${title}</a>`;
   }).filter(Boolean).join('');
 
   if (!rows) return '';
-  return `<div class=\"news-attachments\">${rows}</div>`;
+  return `<div class="news-attachments">${rows}</div>`;
 }
 
 function sanitizeFileName(fileName) {
@@ -358,12 +360,12 @@ function renderUploadedQueue() {
   }
 
   list.innerHTML = uploadedFilesQueue.map((item, index) => `
-    <div class=\"uploaded-file-item\">
+    <div class="uploaded-file-item">
       <div>
         <span>${esc(item.nome)}</span>
-        <small>${item.tipo === 'img' ? 'Immagine' : item.tipo === 'pdf' ? 'PDF' : 'File'} • allegati/${esc(item.filePath)}</small>
+        <small>${item.tipo === 'img' ? '🖼️ Immagine' : item.tipo === 'pdf' ? '📄 PDF' : '📎 File'} • allegati/${esc(item.filePath)}</small>
       </div>
-      <button type=\"button\" class=\"uploaded-file-remove\" data-index=\"${index}\">Rimuovi</button>
+      <button type="button" class="uploaded-file-remove" data-index="${index}">Rimuovi</button>
     </div>
   `).join('');
 
@@ -389,12 +391,12 @@ function renderExistingAttachments() {
 
   group.style.display = 'block';
   list.innerHTML = existingAttachments.map((item, index) => `
-    <div class=\"existing-attachment-item\">
+    <div class="existing-attachment-item">
       <div>
         <span>${esc(item.titolo)}</span>
-        <small>${item.tipo === 'img' ? 'Immagine' : item.tipo === 'pdf' ? 'PDF' : 'File'}</small>
+        <small>${item.tipo === 'img' ? '🖼️ Immagine' : item.tipo === 'pdf' ? '📄 PDF' : '📎 File'}</small>
       </div>
-      <button type=\"button\" class=\"existing-attachment-remove\" data-index=\"${index}\">Rimuovi</button>
+      <button type="button" class="existing-attachment-remove" data-index="${index}">Rimuovi</button>
     </div>
   `).join('');
 
@@ -484,7 +486,7 @@ document.getElementById('news-file-upload').addEventListener('change', async () 
     const uploaded = [];
 
     for (const file of files) {
-      if (!/\\.(png|jpe?g|gif|webp|svg|pdf)$/i.test(file.name)) {
+      if (!/\.(png|jpe?g|gif|webp|svg|pdf)$/i.test(file.name)) {
         showToast('⚠️ Solo immagini o PDF sono ammessi');
         continue;
       }
@@ -536,11 +538,11 @@ function renderNews() {
     const card = document.createElement('div');
     card.className = 'news-card';
     card.dataset.id = id;
-    card.innerHTML = `<div class=\"news-meta\">📅 ${esc(dateStr)}</div>
-      <div class=\"news-title\">${esc(item.titolo)}</div>
-      <div class=\"news-text\">${esc(item.testo)}</div>
+    card.innerHTML = `<div class="news-meta">📅 ${esc(dateStr)}</div>
+      <div class="news-title">${esc(item.titolo)}</div>
+      <div class="news-text">${esc(item.testo)}</div>
       ${renderAttachments(item.allegati)}
-      ${isManager() ? `<div class=\"news-actions\"><button class=\"news-edit-btn\" title=\"Modifica\">✏️</button><button class=\"news-del-btn\" title=\"Elimina\">🗑️</button></div>` : ''}`;
+      ${isManager() ? `<div class="news-actions"><button class="news-edit-btn" title="Modifica">✏️</button><button class="news-del-btn" title="Elimina">🗑️</button></div>` : ''}`;
     container.appendChild(card);
   });
 
