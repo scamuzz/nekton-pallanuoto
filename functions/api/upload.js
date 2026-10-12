@@ -40,17 +40,6 @@ function sanitizeFileName(fileName) {
     .replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
-function isAllowedFile(fileName, mimeType) {
-  const validExtension =
-    ALLOWED_EXTENSIONS.test(fileName);
-
-  const validMimeType =
-    mimeType === "application/pdf" ||
-    String(mimeType || "").startsWith("image/");
-
-  return validExtension && validMimeType;
-}
-
 function normalizeAttachmentPath(filePath) {
   let path = String(filePath || "").trim();
 
@@ -67,14 +56,24 @@ function normalizeAttachmentPath(filePath) {
   return path.replace(/^\/+/, "");
 }
 
+function isAllowedFile(fileName, mimeType) {
+  const extensionIsValid =
+    ALLOWED_EXTENSIONS.test(fileName);
+
+  const mimeTypeIsValid =
+    mimeType === "application/pdf" ||
+    String(mimeType || "").startsWith("image/");
+
+  return extensionIsValid && mimeTypeIsValid;
+}
+
 function isAllowedAttachmentPath(filePath) {
-  const normalizedPath =
-    normalizeAttachmentPath(filePath);
+  const path = normalizeAttachmentPath(filePath);
 
   return (
-    normalizedPath.startsWith("allegati/") &&
-    !normalizedPath.includes("..") &&
-    normalizedPath.length > "allegati/".length
+    path.startsWith("allegati/") &&
+    !path.includes("..") &&
+    path.length > "allegati/".length
   );
 }
 
@@ -186,7 +185,7 @@ async function uploadFile(body, env) {
   if (fileSize > MAX_FILE_SIZE) {
     return jsonResponse(
       {
-        error: "Il file supera il limite di 10 MB"
+        error: "Il file supera il limite massimo di 10 MB"
       },
       413
     );
@@ -297,7 +296,10 @@ async function deleteFiles(body, env) {
   const deleted = [];
   const skipped = [];
 
-  for (const filePath of uniqueFiles) {
+  for (const originalPath of uniqueFiles) {
+    const filePath =
+      normalizeAttachmentPath(originalPath);
+
     if (!isAllowedAttachmentPath(filePath)) {
       skipped.push({
         file: filePath,
@@ -307,11 +309,8 @@ async function deleteFiles(body, env) {
       continue;
     }
 
-    const normalizedPath =
-      normalizeAttachmentPath(filePath);
-
     const githubUrl =
-      getGithubUrl(repository, normalizedPath);
+      getGithubUrl(repository, filePath);
 
     const existingResponse = await fetch(githubUrl, {
       method: "GET",
@@ -320,7 +319,7 @@ async function deleteFiles(body, env) {
 
     if (existingResponse.status === 404) {
       skipped.push({
-        file: normalizedPath,
+        file: filePath,
         reason: "File non trovato"
       });
 
@@ -331,7 +330,7 @@ async function deleteFiles(body, env) {
       return jsonResponse(
         {
           error:
-            `Impossibile leggere ${normalizedPath} su GitHub`,
+            `Impossibile leggere ${filePath} su GitHub`,
           details: await existingResponse.text()
         },
         existingResponse.status
@@ -344,7 +343,7 @@ async function deleteFiles(body, env) {
     if (!existingFile.sha) {
       return jsonResponse(
         {
-          error: `SHA mancante per ${normalizedPath}`
+          error: `SHA mancante per ${filePath}`
         },
         500
       );
@@ -357,8 +356,7 @@ async function deleteFiles(body, env) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message:
-          `Elimina allegato ${normalizedPath}`,
+        message: `Elimina allegato ${filePath}`,
         sha: existingFile.sha,
         branch
       })
@@ -368,14 +366,14 @@ async function deleteFiles(body, env) {
       return jsonResponse(
         {
           error:
-            `Impossibile eliminare ${normalizedPath}`,
+            `Impossibile eliminare ${filePath}`,
           details: await deleteResponse.text()
         },
         deleteResponse.status
       );
     }
 
-    deleted.push(normalizedPath);
+    deleted.push(filePath);
   }
 
   return jsonResponse({
