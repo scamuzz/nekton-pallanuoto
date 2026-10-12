@@ -1,530 +1,304 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="nekton-img.jpg" type="image/jpeg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📰 News · Nekton</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; overflow-x: hidden; }
-    body { font-family: 'Segoe UI', sans-serif; background: #e8f4fd; min-height: 100vh; }
-
-    .header {
-      background: linear-gradient(160deg, #012AFE 0%, #0055cc 40%, #00b4d8 100%);
-      color: white; padding: 36px 20px 24px;
-      text-align: center; position: relative; overflow: hidden;
-    }
-    .header::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255,255,255,0.10), transparent);
-    }
-    .back-link {
-      position: absolute; top: 14px; left: 14px;
-      background: rgba(255,255,255,0.25); border-radius: 20px;
-      padding: 7px 15px; font-size: 0.76rem; font-weight: 700;
-      color: white; text-decoration: none; z-index: 2; backdrop-filter: blur(4px);
-    }
-    .back-link:hover { background: rgba(255,255,255,0.40); }
-    .pin-btn {
-      position: absolute; top: 14px; right: 14px;
-      background: rgba(255,255,255,0.25); border: none; border-radius: 50%;
-      width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; z-index: 2;
-      backdrop-filter: blur(4px); color: white; transition: background 0.2s;
-    }
-    .pin-btn:hover { background: rgba(255,255,255,0.40); }
-    .header .icons { font-size: 3rem; display: block; margin-bottom: 10px; position: relative; }
-    .header h1 { font-size: 1.6rem; font-weight: 800; position: relative; }
-    .header .subtitle { font-size: 0.82rem; opacity: 0.9; margin-top: 6px; position: relative; }
-    .sync-status { display: flex; align-items: center; justify-content: center;
-      gap: 6px; font-size: 0.7rem; margin-top: 10px; opacity: 0.95; position: relative; }
-    .sync-dot { width: 8px; height: 8px; border-radius: 50%;
-      background: white; animation: blink 1.5s infinite; flex-shrink: 0; }
-    .sync-dot.connected { background: #69f0ae; animation: none; }
-    .sync-dot.error { background: #ff5252; animation: none; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
-
-    .wave-divider { display: block; line-height: 0; overflow: hidden;
-      background: linear-gradient(160deg, #012AFE 0%, #0055cc 40%, #00b4d8 100%); }
-    .wave-divider svg { display: block; width: 100%; }
-    .container { max-width: 540px; margin: 0 auto; padding: 16px 12px 64px; }
-
-    .news-card {
-      background: white; border-radius: 18px; padding: 18px;
-      margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,105,148,0.08);
-      border: 2px solid #ddeeff; border-left: 5px solid #006994; position: relative;
-    }
-    .news-meta { font-size: 0.68rem; color: #006994; font-weight: 700; margin-bottom: 6px; }
-    .news-title { font-size: 1rem; font-weight: 800; color: #1a3a5c; margin-bottom: 8px; }
-    .news-text { font-size: 0.85rem; color: #455a64; line-height: 1.65; white-space: pre-line; }
-    .news-actions {
-      position: absolute; top: 14px; right: 14px; display: flex; gap: 8px; align-items: center;
-    }
-    .news-del-btn, .news-edit-btn {
-      background: none; border: none; color: #b3d9f7; cursor: pointer;
-      font-size: 1rem; transition: color 0.2s;
-    }
-    .news-edit-btn:hover { color: #006994; }
-    .news-del-btn:hover { color: #e53935; }
-
-    .news-attachments {
-      margin-top: 12px;
-      display: grid;
-      gap: 10px;
-    }
-    .attachment-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: #f3f9ff;
-      border: 1px solid #d9ecff;
-      color: #006994;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 700;
-      width: fit-content;
-      max-width: 100%;
-      word-break: break-word;
-    }
-    .attachment-link:hover { background: #e8f4ff; }
-    .attachment-preview {
-      width: 100%;
-      border: 1px solid #d9ecff;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #f8fcff;
-    }
-    .attachment-preview img {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: 360px;
-      object-fit: contain;
-      background: #fff;
-    }
-
-    .no-news {
-      text-align: center; font-size: 0.88rem; color: #90a4ae; font-style: italic;
-      padding: 30px 10px; background: white; border-radius: 16px;
-      border: 2px dashed #ddeeff; margin-bottom: 16px;
-    }
-    .section-title {
-      font-size: 0.78rem; font-weight: 800; color: #006994;
-      text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 14px 2px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .section-title::after { content: ''; flex: 1; height: 2px;
-      background: linear-gradient(90deg, #b3d9f7 0%, transparent 100%); }
-
-    .manager-panel {
-      display: none; background: #fff8e1; border-radius: 18px;
-      padding: 18px; margin-bottom: 18px; border: 2px solid #ffe082;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #e8f4fd; color: #455a64; }
+    .header { position: relative; padding: 36px 20px 24px; text-align: center; color: white; background: linear-gradient(160deg, #012afe, #0055cc 40%, #00b4d8); }
+    .header h1 { margin: 8px 0; }
+    .back-link, .pin-btn { position: absolute; top: 14px; color: white; background: #ffffff40; border: 0; cursor: pointer; }
+    .back-link { left: 14px; padding: 7px 15px; border-radius: 20px; text-decoration: none; }
+    .pin-btn { right: 14px; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; }
+    .container { max-width: 600px; margin: auto; padding: 18px 12px 64px; }
+    .manager-panel, .news-card { margin-bottom: 14px; padding: 18px; border-radius: 18px; background: white; box-shadow: 0 4px 18px #00699414; }
+    .manager-panel { display: none; background: #fff8e1; border: 2px solid #ffe082; }
     .manager-panel.visible { display: block; }
-    .manager-panel h3 { font-size: 0.76rem; color: #f57f17; text-transform: uppercase;
-      letter-spacing: 0.9px; font-weight: 800; margin-bottom: 12px; }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { font-size: 0.75rem; font-weight: 700; color: #555; display: block; margin-bottom: 4px; }
-    .form-input {
-      width: 100%; border: 1.5px solid #ffe082; border-radius: 10px;
-      padding: 9px 12px; font-size: 0.88rem; font-family: inherit; color: #333; outline: none; background: white;
-    }
-    .form-input:focus { border-color: #ffb300; }
+    .manager-panel h3 { color: #f57f17; font-size: .8rem; text-transform: uppercase; }
+    .form-group { margin-bottom: 11px; }
+    label { display: block; margin-bottom: 4px; color: #555; font-size: .75rem; font-weight: 700; }
+    .form-input { width: 100%; padding: 10px 12px; border: 1.5px solid #ffe082; border-radius: 10px; font: inherit; }
     textarea.form-input { min-height: 90px; resize: vertical; }
-    .pub-btn {
-      width: 100%; background: linear-gradient(135deg, #006994, #00b4d8); color: white;
-      border: none; border-radius: 10px; padding: 11px; font-size: 0.86rem;
-      font-weight: 700; cursor: pointer; margin-top: 6px; font-family: inherit;
-    }
-    .pub-btn:hover { opacity: 0.9; }
-    .cancel-edit-btn {
-      display: none; width: 100%; background: #eceff1; color: #607d8b; border: none;
-      border-radius: 10px; padding: 10px; font-size: 0.8rem; font-weight: 700;
-      cursor: pointer; margin-top: 8px; font-family: inherit;
-    }
+    .hint { margin-top: 5px; color: #777; font-size: .7rem; line-height: 1.4; }
+    .pub-btn, .cancel-edit-btn { width: 100%; padding: 11px; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    .pub-btn { color: white; background: linear-gradient(135deg, #006994, #00b4d8); }
+    .cancel-edit-btn { display: none; margin-top: 8px; color: #607d8b; background: #eceff1; }
     .cancel-edit-btn.visible { display: block; }
-
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      z-index: 100; align-items: center; justify-content: center;
-    }
+    .section-title { margin: 20px 2px 14px; color: #006994; font-size: .8rem; font-weight: 800; text-transform: uppercase; }
+    .news-card { position: relative; border-left: 5px solid #006994; }
+    .news-meta { color: #006994; font-size: .68rem; font-weight: 700; }
+    .news-title { margin: 6px 0; color: #1a3a5c; font-weight: 800; }
+    .news-text { white-space: pre-line; line-height: 1.65; }
+    .news-actions { position: absolute; top: 14px; right: 14px; }
+    .news-actions button { border: 0; background: none; cursor: pointer; font-size: 1rem; }
+    .news-attachments { display: grid; gap: 8px; margin-top: 12px; }
+    .attachment-link { padding: 9px 12px; border: 1px solid #d9ecff; border-radius: 10px; color: #006994; background: #f3f9ff; text-decoration: none; font-weight: 700; }
+    .attachment-preview { overflow: hidden; border: 1px solid #d9ecff; border-radius: 10px; }
+    .attachment-preview img { display: block; max-width: 100%; max-height: 360px; margin: auto; }
+    .modal-overlay { display: none; position: fixed; inset: 0; z-index: 10; align-items: center; justify-content: center; background: #0008; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: white; border-radius: 20px; padding: 28px 24px;
-      max-width: 300px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
-    }
-    .modal h3 { font-size: 1rem; font-weight: 800; color: #006994; margin-bottom: 8px; }
-    .modal p { font-size: 0.78rem; color: #607d8b; margin-bottom: 16px; }
-    .modal input {
-      width: 100%; border: 2px solid #b3d9f7; border-radius: 10px;
-      padding: 11px 40px 11px 14px; font-size: 1rem; text-align: center;
-      letter-spacing: 2px; outline: none; font-family: inherit;
-    }
-    .modal input:focus { border-color: #006994; }
-    .pin-input-wrap { position: relative; }
-    .pin-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 2px; line-height: 1; }
+    .modal { width: 90%; max-width: 320px; padding: 24px; border-radius: 20px; background: white; text-align: center; }
+    .modal input { width: 100%; padding: 11px; border: 2px solid #b3d9f7; border-radius: 10px; }
     .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
-    .modal-btn { flex: 1; padding: 11px; border: none; border-radius: 10px;
-      font-size: 0.86rem; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .modal-btn.primary { background: linear-gradient(135deg, #006994, #00b4d8); color: white; }
-    .modal-btn.secondary { background: #eceff1; color: #607d8b; }
-    .modal-error { font-size: 0.75rem; color: #e53935; margin-top: 8px; }
-
-    .toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
-      background: #006994; color: white; padding: 10px 22px; border-radius: 24px;
-      font-size: 0.83rem; font-weight: 600; transition: transform 0.3s ease; z-index: 999;
-      box-shadow: 0 6px 24px rgba(0,105,148,0.3); white-space: nowrap;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .page-footer { text-align: center; font-size: 0.7rem; color: #aabbc8; padding: 20px 0; }
+    .modal-btn { flex: 1; padding: 11px; border: 0; border-radius: 10px; cursor: pointer; font-weight: 700; }
+    .modal-btn.primary { color: white; background: #006994; }
+    .modal-btn.secondary { color: #607d8b; background: #eceff1; }
+    .modal-error { margin-top: 8px; color: #e53935; font-size: .75rem; }
+    .toast { position: fixed; bottom: 24px; left: 50%; z-index: 20; transform: translate(-50%, 100px); padding: 10px 22px; border-radius: 24px; color: white; background: #006994; transition: transform .3s; }
+    .toast.show { transform: translate(-50%, 0); }
   </style>
 </head>
 <body>
+  <header class="header">
+    <a class="back-link" href="index.html">← Home</a>
+    <button class="pin-btn" id="pin-btn" type="button">🔒</button>
+    <div style="font-size: 3rem">📰</div>
+    <h1>News Generali</h1>
+    <p>Comunicazioni per tutta la squadra</p>
+  </header>
 
-<div class="header">
-  <a class="back-link" href="index.html">&#8592; Home</a>
-  <button class="pin-btn" id="pin-btn">🔒</button>
-  <span class="icons"><img src ="news-pallanuoto.png" style="height: 2em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--📰--></span>
-  <h1>News Generali</h1>
-  <div class="subtitle">Comunicazioni per tutta la squadra</div>
-  <div class="sync-status">
-    <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label">Connessione in corso…</span>
-  </div>
-</div>
+  <main class="container">
+    <section class="manager-panel" id="manager-panel">
+      <h3 id="manager-panel-title">✏️ Pubblica una comunicazione</h3>
+      <div class="form-group">
+        <label for="news-title">Titolo</label>
+        <input class="form-input" id="news-title" maxlength="100" placeholder="Titolo della comunicazione…">
+      </div>
+      <div class="form-group">
+        <label for="news-text">Testo</label>
+        <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio…"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="news-files">PDF / immagini</label>
+        <input class="form-input" id="news-files" type="file" accept="application/pdf,image/*" multiple>
+        <div class="hint">I file vengono caricati direttamente nella cartella <b>allegati/</b> del repository. Non viene usato Firebase Storage.</div>
+      </div>
+      <div class="form-group">
+        <label for="news-attachments-titles">Titoli allegati (uno per riga, opzionale)</label>
+        <textarea class="form-input" id="news-attachments-titles" placeholder="Lascia vuoto per usare il nome file"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="github-token">Token GitHub</label>
+        <input class="form-input" id="github-token" type="password" autocomplete="off" placeholder="Token fine-grained">
+        <div class="hint">Il token viene usato solo nel browser e non viene salvato.</div>
+      </div>
+      <button class="pub-btn" id="pub-btn" type="button">📤 Pubblica comunicazione</button>
+      <button class="cancel-edit-btn" id="cancel-edit-btn" type="button">❌ Annulla modifica</button>
+    </section>
 
-<div class="wave-divider">
-  <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,36 C180,72 360,0 540,36 C720,72 900,0 1080,36 C1260,72 1380,12 1440,36 L1440,72 L0,72 Z" fill="#e8f4fd"/>
-  </svg>
-</div>
+    <div class="section-title">📢 Comunicazioni e avvisi</div>
+    <div id="news-container"></div>
+  </main>
 
-<div class="container">
-
-  <div class="manager-panel" id="manager-panel">
-    <h3 id="manager-panel-title">✏️ Pubblica una comunicazione</h3>
-    <div class="form-group">
-      <label>Titolo</label>
-      <input type="text" class="form-input" id="news-title" placeholder="Titolo della comunicazione…" maxlength="100"/>
-    </div>
-    <div class="form-group">
-      <label>Testo</label>
-      <textarea class="form-input" id="news-text" placeholder="Scrivi il messaggio…"></textarea>
-    </div>
-    <button class="pub-btn" id="pub-btn">📤 Pubblica comunicazione</button>
-    <button class="cancel-edit-btn" id="cancel-edit-btn" type="button">❌ Annulla modifica</button>
-  </div>
-
-  <div class="section-title">📢 Comunicazioni e Avvisi</div>
-  <div id="news-container"></div>
-
-</div>
-
-<div class="page-footer">📰 News · Nekton Pallanuoto</div>
-<div class="toast" id="toast"></div>
-
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h3>🔑 Accesso Gestore</h3>
-    <p>Inserisci il PIN per pubblicare comunicazioni</p>
-    <div class="pin-input-wrap">
-      <input type="password" id="pin-input" placeholder="••••••••" maxlength="20" autocomplete="off"/>
-      <button class="pin-toggle" id="pin-toggle" type="button" title="Mostra/Nascondi PIN">👁️</button>
-    </div>
-    <div class="modal-error" id="modal-error"></div>
-    <div class="modal-btns">
-      <button class="modal-btn secondary" id="modal-cancel">Annulla</button>
-      <button class="modal-btn primary" id="modal-confirm">Accedi</button>
+  <div class="toast" id="toast"></div>
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3>🔑 Accesso Gestore</h3>
+      <p>Inserisci il PIN per pubblicare comunicazioni</p>
+      <input id="pin-input" type="password" placeholder="••••••••" autocomplete="off">
+      <div class="modal-error" id="modal-error"></div>
+      <div class="modal-btns">
+        <button class="modal-btn secondary" id="modal-cancel" type="button">Annulla</button>
+        <button class="modal-btn primary" id="modal-confirm" type="button">Accedi</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script>
-firebase.initializeApp({
-  apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
-  authDomain: "lista-spesa-b9eb1.firebaseapp.com",
-  databaseURL: "https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "lista-spesa-b9eb1",
-  storageBucket: "lista-spesa-b9eb1.firebasestorage.app",
-  messagingSenderId: "468690890938",
-  appId: "1:468690890938:web:048be7f27779d8862d9283"
-});
-const db = firebase.database();
-
-const GROUPS = {
-  generale: { ref: db.ref('nekton/news/generale'), label: 'Generale', icon: '📰', badgeClass: 'badge-generale' }
-};
-
-let allData = { generale: {} };
-let editingNewsId = null;
-
-function isManager() { return localStorage.getItem('nektonManager') === '1'; }
-function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2600);
-}
-
-function normalizeAttachments(raw) {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw.filter(Boolean);
-  if (typeof raw === 'object') return Object.values(raw).filter(Boolean);
-  return [];
-}
-function inferAttachmentType(filePath = '') {
-  const f = String(filePath).toLowerCase();
-  if (/\.(png|jpe?g|gif|webp|svg)$/.test(f)) return 'img';
-  if (/\.pdf$/.test(f)) return 'pdf';
-  return 'file';
-}
-function renderAttachments(attachments) {
-  const list = normalizeAttachments(attachments);
-  if (!list.length) return '';
-
-  const rows = list.map(att => {
-    const file = String(att.file || '').trim();
-    if (!file) return '';
-
-    const type = (att.tipo || inferAttachmentType(file)).toLowerCase();
-    const title = esc(att.titolo || file.split('/').pop() || 'Allegato');
-    const safeFile = esc(file);
-
-    if (type === 'img') {
-      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">🖼️ ${title}</a>
-              <div class="attachment-preview"><img src="${safeFile}" alt="${title}" loading="lazy"></div>`;
-    }
-    if (type === 'pdf') {
-      return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📄 ${title}</a>`;
-    }
-    return `<a class="attachment-link" href="${safeFile}" target="_blank" rel="noopener">📎 ${title}</a>`;
-  }).filter(Boolean).join('');
-
-  if (!rows) return '';
-  return `<div class="news-attachments">${rows}</div>`;
-}
-
-function resetNewsForm() {
-  editingNewsId = null;
-  document.getElementById('news-title').value = '';
-  document.getElementById('news-text').value = '';
-  const f = document.getElementById('news-attachments');
-  const t = document.getElementById('news-attachments-titles');
-  if (f) f.value = '';
-  if (t) t.value = '';
-  document.getElementById('pub-btn').textContent = '📤 Pubblica comunicazione';
-  document.getElementById('manager-panel-title').textContent = '✏️ Pubblica una comunicazione';
-  document.getElementById('cancel-edit-btn').classList.remove('visible');
-}
-
-function fillNewsForm(item) {
-  if (!item) return resetNewsForm();
-  document.getElementById('news-title').value = item.titolo || '';
-  document.getElementById('news-text').value = item.testo || '';
-
-  const attachments = normalizeAttachments(item.allegati);
-  const files = attachments.map(a => typeof a === 'string' ? a : (a.file || '')).filter(Boolean).join('\n');
-  const titles = attachments.map(a => typeof a === 'string' ? '' : (a.titolo || (a.file || '').split('/').pop() || '')).join('\n');
-
-  const attachmentsField = document.getElementById('news-attachments');
-  const titlesField = document.getElementById('news-attachments-titles');
-  if (attachmentsField) attachmentsField.value = files;
-  if (titlesField) titlesField.value = titles;
-
-  document.getElementById('pub-btn').textContent = '💾 Salva modifiche';
-  document.getElementById('manager-panel-title').textContent = '✏️ Modifica comunicazione';
-  document.getElementById('cancel-edit-btn').classList.add('visible');
-}
-
-/* campi allegati nel pannello gestore */
-(function injectAttachmentFields() {
-  const panel = document.getElementById('manager-panel');
-  const pubBtn = document.getElementById('pub-btn');
-  if (!panel || !pubBtn) return;
-
-  const wrap = document.createElement('div');
-  wrap.innerHTML = `
-    <div class="form-group">
-      <label>Allegati (opzionali, uno per riga)</label>
-      <textarea class="form-input" id="news-attachments" placeholder="Esempi:
-allegati/locandina.jpg
-allegati/convocazione.pdf"></textarea>
-    </div>
-    <div class="form-group">
-      <label>Titoli allegati (opzionali, uno per riga, stesso ordine)</label>
-      <textarea class="form-input" id="news-attachments-titles" placeholder="Esempi:
-Locandina Open Day
-Convocazione Torneo"></textarea>
-    </div>
-  `;
-  panel.insertBefore(wrap, pubBtn);
-})();
-
-const cancelEditBtn = document.getElementById('cancel-edit-btn');
-cancelEditBtn.addEventListener('click', resetNewsForm);
-
-db.ref('.info/connected').on('value', snap => {
-  const dot = document.getElementById('sync-dot'); const lbl = document.getElementById('sync-label');
-  if (snap.val()) { dot.className = 'sync-dot connected'; lbl.textContent = '✅ Sincronizzato in tempo reale'; }
-  else { dot.className = 'sync-dot error'; lbl.textContent = '❌ Offline – riconnessione…'; }
-});
-
-GROUPS.generale.ref.orderByChild('data').on('value', snap => {
-  allData.generale = snap.val() || {};
-  renderNews();
-});
-
-function renderNews() {
-  const container = document.getElementById('news-container');
-  const entries = Object.entries(allData.generale).map(([id, item]) => ({ id, item }));
-  entries.sort((a, b) => (b.item.data || '').localeCompare(a.item.data || ''));
-
-  if (entries.length === 0) {
-    container.innerHTML = '<div class="no-news">Nessuna comunicazione al momento. 💤</div>';
-    return;
-  }
-
-  container.innerHTML = '';
-  entries.forEach(({ id, item }) => {
-    const d = new Date(item.data);
-    const dateStr = isNaN(d) ? item.data : d.toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
-    const card = document.createElement('div');
-    card.className = 'news-card';
-    card.dataset.id = id;
-    card.innerHTML = `<div class="news-meta">📅 ${esc(dateStr)}</div>
-      <div class="news-title">${esc(item.titolo)}</div>
-      <div class="news-text">${esc(item.testo)}</div>
-      ${renderAttachments(item.allegati)}
-      ${isManager() ? `<div class="news-actions"><button class="news-edit-btn" title="Modifica">✏️</button><button class="news-del-btn" title="Elimina">🗑️</button></div>` : ''}`;
-    container.appendChild(card);
-  });
-
-  if (isManager()) {
-    document.querySelectorAll('.news-edit-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const cardEl = btn.closest('.news-card');
-        const itemId = cardEl.dataset.id;
-        const item = allData.generale[itemId];
-        editingNewsId = itemId;
-        fillNewsForm(item);
-        document.getElementById('manager-panel').classList.add('visible');
-        document.getElementById('news-title').focus();
-      });
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: 'AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU',
+      authDomain: 'lista-spesa-b9eb1.firebaseapp.com',
+      databaseURL: 'https://lista-spesa-b9eb1-default-rtdb.europe-west1.firebasedatabase.app',
+      projectId: 'lista-spesa-b9eb1',
+      storageBucket: 'lista-spesa-b9eb1.firebasestorage.app',
+      messagingSenderId: '468690890938',
+      appId: '1:468690890938:web:048be7f27779d8862d9283'
     });
 
-    document.querySelectorAll('.news-del-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const cardEl = btn.closest('.news-card');
-        const itemId = cardEl.dataset.id;
-        if (confirm('Eliminare questa comunicazione?')) {
-          GROUPS.generale.ref.child(itemId).remove();
-          if (editingNewsId === itemId) resetNewsForm();
-          showToast('✅ Comunicazione eliminata');
+    const newsRef = firebase.database().ref('nekton/news/generale');
+    const GITHUB_API = 'https://bccsi.ghe.com/api/v3';
+    const REPOSITORY = 'mscamuzzi/nekton-waterpolo';
+    let editingId = null;
+
+    const $ = id => document.getElementById(id);
+    const isManager = () => localStorage.getItem('nektonManager') === '1';
+    const setManager = value => localStorage.setItem('nektonManager', value ? '1' : '0');
+    const escapeHtml = value => String(value || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    function showToast(message) {
+      $('toast').textContent = message;
+      $('toast').classList.add('show');
+      setTimeout(() => $('toast').classList.remove('show'), 3000);
+    }
+
+    function attachmentType(file) {
+      if (/\.(png|jpe?g|gif|webp|svg)$/i.test(file)) return 'img';
+      if (/\.pdf$/i.test(file)) return 'pdf';
+      return 'file';
+    }
+
+    function renderAttachments(attachments = []) {
+      return (Array.isArray(attachments) ? attachments : []).map(attachment => {
+        const file = String(attachment.file || '');
+        if (!file) return '';
+        const title = escapeHtml(attachment.titolo || file.split('/').pop());
+        const url = escapeHtml(file);
+        const type = attachmentType(file);
+
+        if (type === 'img') {
+          return `<a class="attachment-link" href="${url}" target="_blank" rel="noopener">🖼️ ${title}</a>
+            <div class="attachment-preview"><img src="${url}" alt="${title}" loading="lazy"></div>`;
         }
+
+        return `<a class="attachment-link" href="${url}" target="_blank" rel="noopener">${type === 'pdf' ? '📄' : '📎'} ${title}</a>`;
+      }).join('');
+    }
+
+    function renderNews(data) {
+      const entries = Object.entries(data || {})
+        .sort((a, b) => (b[1].data || '').localeCompare(a[1].data || ''));
+
+      $('news-container').innerHTML = entries.length
+        ? entries.map(([id, news]) => `
+          <article class="news-card" data-id="${escapeHtml(id)}">
+            <div class="news-meta">📅 ${escapeHtml(news.data)}</div>
+            <div class="news-title">${escapeHtml(news.titolo)}</div>
+            <div class="news-text">${escapeHtml(news.testo)}</div>
+            <div class="news-attachments">${renderAttachments(news.allegati)}</div>
+            ${isManager() ? `<div class="news-actions">
+              <button data-edit="${escapeHtml(id)}" title="Modifica">✏️</button>
+              <button data-delete="${escapeHtml(id)}" title="Elimina">🗑️</button>
+            </div>` : ''}
+          </article>`).join('')
+        : '<div class="news-card">Nessuna comunicazione al momento. 💤</div>';
+
+      document.querySelectorAll('[data-delete]').forEach(button => {
+        button.onclick = () => {
+          if (confirm('Eliminare questa comunicazione?')) newsRef.child(button.dataset.delete).remove();
+        };
       });
-    });
-  }
-}
+      document.querySelectorAll('[data-edit]').forEach(button => {
+        button.onclick = () => startEdit(data[button.dataset.edit], button.dataset.edit);
+      });
+    }
 
-function buildAttachmentsFromForm() {
-  const filesRaw = (document.getElementById('news-attachments')?.value || '').trim();
-  const titlesRaw = (document.getElementById('news-attachments-titles')?.value || '').trim();
+    newsRef.orderByChild('data').on('value', snapshot => renderNews(snapshot.val() || {}));
 
-  const files = filesRaw ? filesRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
-  const titles = titlesRaw ? titlesRaw.split('\n').map(s => s.trim()) : [];
+    function startEdit(news, id) {
+      editingId = id;
+      $('news-title').value = news.titolo || '';
+      $('news-text').value = news.testo || '';
+      $('news-attachments-titles').value = (news.allegati || [])
+        .map(attachment => attachment.titolo || '').join('\n');
+      $('manager-panel-title').textContent = '✏️ Modifica comunicazione';
+      $('pub-btn').textContent = '💾 Salva modifiche';
+      $('cancel-edit-btn').classList.add('visible');
+      $('manager-panel').classList.add('visible');
+    }
 
-  return files.map((file, i) => ({
-    file,
-    titolo: titles[i] || file.split('/').pop() || `Allegato ${i+1}`,
-    tipo: inferAttachmentType(file)
-  }));
-}
+    function resetForm() {
+      editingId = null;
+      $('news-title').value = '';
+      $('news-text').value = '';
+      $('news-files').value = '';
+      $('news-attachments-titles').value = '';
+      $('pub-btn').textContent = '📤 Pubblica comunicazione';
+      $('manager-panel-title').textContent = '✏️ Pubblica una comunicazione';
+      $('cancel-edit-btn').classList.remove('visible');
+    }
 
-document.getElementById('pub-btn').addEventListener('click', () => {
-  const titolo = document.getElementById('news-title').value.trim();
-  const testo  = document.getElementById('news-text').value.trim();
+    async function uploadToRepository(file, token) {
+      if (file.size > 10 * 1024 * 1024) throw new Error(`${file.name}: massimo 10 MB`);
 
-  if (!titolo) { showToast('⚠️ Inserisci un titolo!'); return; }
-  if (!testo)  { showToast('⚠️ Inserisci il testo!'); return; }
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-  const allegati = buildAttachmentsFromForm();
+      const path = `allegati/${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
+      const existing = await fetch(`${GITHUB_API}/repos/${REPOSITORY}/contents/${encodeURIComponent(path)}`, { headers });
+      const sha = existing.ok ? (await existing.json()).sha : null;
+      const response = await fetch(`${GITHUB_API}/repos/${REPOSITORY}/contents/${encodeURIComponent(path)}`, {
+        method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Aggiungi allegato ${file.name}`, content: base64, branch: 'main', ...(sha ? { sha } : {}) })
+      });
 
-  if (editingNewsId) {
-    const original = allData.generale[editingNewsId] || {};
-    const payload = {
-      titolo,
-      testo,
-      data: original.data || new Date().toISOString().slice(0,10),
-      allegati: allegati.length ? allegati : []
+      if (!response.ok) throw new Error(`Caricamento di ${file.name} fallito (${response.status})`);
+      return path;
+    }
+
+    $('pub-btn').onclick = async () => {
+      const title = $('news-title').value.trim();
+      const text = $('news-text').value.trim();
+      const files = [...$('news-files').files];
+      const token = $('github-token').value.trim();
+
+      if (!title || !text) return showToast('⚠️ Inserisci titolo e testo!');
+
+      try {
+        const paths = [];
+        for (const file of files) {
+          showToast(`⏳ Caricamento ${file.name}…`);
+          paths.push(await uploadToRepository(file, token));
+        }
+
+        const titles = $('news-attachments-titles').value.split('\n').map(value => value.trim());
+        const previous = editingId ? (await newsRef.child(editingId).get()).val() || {} : {};
+        const attachments = paths.map((path, index) => ({
+          file: path,
+          titolo: titles[index] || path.split('/').pop(),
+          tipo: attachmentType(path)
+        }));
+        const payload = {
+          titolo: title,
+          testo: text,
+          data: previous.data || new Date().toISOString().slice(0, 10),
+          allegati: attachments.length ? attachments : (previous.allegati || [])
+        };
+
+        if (editingId) await newsRef.child(editingId).set(payload);
+        else await newsRef.push(payload);
+        resetForm();
+        showToast('✅ Comunicazione pubblicata!');
+      } catch (error) {
+        showToast(`❌ ${error.message}`);
+      }
     };
 
-    GROUPS.generale.ref.child(editingNewsId).update(payload).then(() => {
-      resetNewsForm();
-      showToast('✅ Comunicazione modificata!');
-    }).catch(() => showToast('❌ Errore nel salvataggio'));
-    return;
-  }
+    $('cancel-edit-btn').onclick = resetForm;
+    $('pin-btn').onclick = () => {
+      if (isManager()) {
+        setManager(false);
+        $('manager-panel').classList.remove('visible');
+        resetForm();
+        return renderNews({});
+      }
+      $('modal-overlay').classList.add('open');
+      $('pin-input').focus();
+    };
 
-  const payload = {
-    titolo,
-    testo,
-    data: new Date().toISOString().slice(0,10)
-  };
-  if (allegati.length) payload.allegati = allegati;
+    $('modal-cancel').onclick = () => $('modal-overlay').classList.remove('open');
+    $('modal-confirm').onclick = () => {
+      if ($('pin-input').value === 'nekton2026') {
+        setManager(true);
+        $('modal-overlay').classList.remove('open');
+        $('manager-panel').classList.add('visible');
+        renderNews({});
+      } else {
+        $('modal-error').textContent = '❌ PIN non corretto';
+      }
+    };
 
-  GROUPS.generale.ref.push(payload).then(() => {
-    resetNewsForm();
-    showToast('✅ Comunicazione pubblicata!');
-  }).catch(() => showToast('❌ Errore nel salvataggio'));
-});
-
-const pinBtn = document.getElementById('pin-btn');
-const overlay = document.getElementById('modal-overlay');
-function updatePinBtn() { pinBtn.textContent = isManager() ? '🔐' : '🔒'; }
-updatePinBtn();
-if (isManager()) document.getElementById('manager-panel').classList.add('visible');
-
-pinBtn.addEventListener('click', () => {
-  if (isManager()) {
-    setManager(false); document.getElementById('manager-panel').classList.remove('visible');
-    resetNewsForm();
-    updatePinBtn(); renderNews();
-    showToast('👋 Logout gestore effettuato');
-  } else {
-    document.getElementById('modal-error').textContent = '';
-    document.getElementById('pin-input').value = '';
-    document.getElementById('pin-input').type = 'password';
-    document.getElementById('pin-toggle').textContent = '👁️';
-    overlay.classList.add('open');
-    setTimeout(() => document.getElementById('pin-input').focus(), 100);
-  }
-});
-document.getElementById('modal-cancel').addEventListener('click', () => overlay.classList.remove('open'));
-overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
-document.getElementById('modal-confirm').addEventListener('click', checkPin);
-document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
-document.getElementById('pin-toggle').addEventListener('click', () => {
-  const inp = document.getElementById('pin-input');
-  const tog = document.getElementById('pin-toggle');
-  if (inp.type === 'password') { inp.type = 'text'; tog.textContent = '🙈'; }
-  else { inp.type = 'password'; tog.textContent = '👁️'; }
-});
-
-function checkPin() {
-  if (document.getElementById('pin-input').value === 'nekton2026') {
-    setManager(true); overlay.classList.remove('open');
-    document.getElementById('manager-panel').classList.add('visible'); updatePinBtn();
-    resetNewsForm();
-    renderNews();
-    showToast('✅ Modalità gestore attiva');
-  } else { document.getElementById('modal-error').textContent = '❌ PIN non corretto'; }
-}
-</script>
+    if (isManager()) $('manager-panel').classList.add('visible');
+  </script>
 </body>
 </html>
