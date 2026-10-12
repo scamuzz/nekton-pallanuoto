@@ -181,4 +181,139 @@ export async function onRequestPost({ request, env }) {
       500
     );
   }
+  /* **************************** */
+
+  export async function onRequestDelete({ request, env }) {
+  try {
+    const body = await request.json();
+    const { files, pin } = body || {};
+
+    if (!pin || pin !== env.ADMIN_PIN) {
+      return jsonResponse(
+        { error: "PIN non autorizzato" },
+        401
+      );
+    }
+
+    if (!Array.isArray(files)) {
+      return jsonResponse(
+        { error: "Elenco file non valido" },
+        400
+      );
+    }
+
+    const repository = env.GITHUB_REPOSITORY;
+    const branch = env.GITHUB_BRANCH || "main";
+    const githubToken = env.GITHUB_TOKEN;
+
+    if (!repository || !githubToken) {
+      return jsonResponse(
+        { error: "Configurazione GitHub mancante" },
+        500
+      );
+    }
+
+    const githubHeaders = {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${githubToken}`,
+      "User-Agent": "nekton-pallanuoto-pages",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+
+    const deleted = [];
+    const skipped = [];
+
+    for (const file of files) {
+      const filePath = String(file || "").trim();
+
+      /*
+       * Per sicurezza si possono eliminare soltanto file dentro allegati/.
+       */
+      if (!filePath.startsWith("allegati/")) {
+        skipped.push({
+          file: filePath,
+          reason: "Percorso non consentito"
+        });
+        continue;
+      }
+
+      const encodedPath = filePath
+        .split("/")
+        .map(encodeURIComponent)
+        .join("/");
+
+      const githubUrl =
+        `https://api.github.com/repos/${repository}/contents/${encodedPath}`;
+
+      const existingResponse = await fetch(githubUrl, {
+        method: "GET",
+        headers: githubHeaders
+      });
+
+      if (existingResponse.status === 404) {
+        skipped.push({
+          file: filePath,
+          reason: "File non trovato"
+        });
+        continue;
+      }
+
+      if (!existingResponse.ok) {
+        const details = await existingResponse.text();
+
+        return jsonResponse(
+          {
+            error: `Impossibile leggere ${filePath} su GitHub`,
+            details
+          },
+          existingResponse.status
+        );
+      }
+
+      const existingFile = await existingResponse.json();
+
+      const deleteResponse = await fetch(githubUrl, {
+        method: "DELETE",
+        headers: {
+          ...githubHeaders,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: `Elimina allegato ${filePath}`,
+          sha: existingFile.sha,
+          branch
+        })
+      });
+
+      if (!deleteResponse.ok) {
+        const details = await deleteResponse.text();
+
+        return jsonResponse(
+          {
+            error: `Impossibile eliminare ${filePath} da GitHub`,
+            details
+          },
+          deleteResponse.status
+        );
+      }
+
+      deleted.push(filePath);
+    }
+
+    return jsonResponse({
+      success: true,
+      deleted,
+      skipped
+    });
+  } catch (error) {
+    return jsonResponse(
+      {
+        error: "Errore interno durante la cancellazione",
+        details: error.message
+      },
+      500
+    );
+  }
+}
+  
 }
