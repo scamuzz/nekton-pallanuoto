@@ -2,18 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-
-  <link
-    rel="icon"
-    href="nekton-img.jpg"
-    type="image/jpeg"
-  >
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📰 News · Nekton</title>
 
   <style>
@@ -23,172 +12,67 @@
       padding: 0;
     }
 
-    html,
-    body {
-      width: 100%;
-      overflow-x: hidden;
-    }
-
     body {
       min-height: 100vh;
+      overflow-x: hidden;
       font-family: "Segoe UI", sans-serif;
       background: #e8f4fd;
+      color: #455a64;
     }
 
     button,
     input,
     textarea {
-      font-family: inherit;
+      font: inherit;
     }
-
-    /* Header */
 
     .header {
       position: relative;
-      overflow: hidden;
       padding: 36px 20px 24px;
       color: white;
       text-align: center;
-      background:
-        linear-gradient(
-          160deg,
-          #012afe 0%,
-          #0055cc 40%,
-          #00b4d8 100%
-        );
-    }
-
-    .header::before {
-      position: absolute;
-      inset: 0;
-      content: "";
-      background:
-        radial-gradient(
-          ellipse 60% 40% at 20% 30%,
-          rgba(255, 255, 255, 0.10),
-          transparent
-        );
-    }
-
-    .back-link {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      z-index: 2;
-      padding: 7px 15px;
-      color: white;
-      font-size: 0.76rem;
-      font-weight: 700;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-    }
-
-    .back-link:hover {
-      background: rgba(255, 255, 255, 0.40);
-    }
-
-    .pin-btn {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 2;
-      width: 40px;
-      height: 40px;
-      color: white;
-      font-size: 1.3rem;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.25);
-      border: 0;
-      border-radius: 50%;
-      backdrop-filter: blur(4px);
-      transition: background 0.2s;
-    }
-
-    .pin-btn:hover {
-      background: rgba(255, 255, 255, 0.40);
-    }
-
-    .header .icons {
-      position: relative;
-      display: block;
-      margin-bottom: 10px;
-      font-size: 3rem;
-    }
-
-    .header .icons img {
-      display: inline-block;
-      width: auto;
-      height: 2em;
-      vertical-align: -0.15em;
+      background: linear-gradient(160deg, #012afe, #0055cc 40%, #00b4d8);
     }
 
     .header h1 {
-      position: relative;
+      margin: 8px 0;
       font-size: 1.6rem;
-      font-weight: 800;
     }
 
-    .header .subtitle {
-      position: relative;
-      margin-top: 6px;
+    .subtitle {
       font-size: 0.82rem;
-      opacity: 0.9;
     }
 
-    .sync-status {
-      position: relative;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-      margin-top: 10px;
-      font-size: 0.7rem;
-      opacity: 0.95;
+    .back-link,
+    .pin-btn {
+      position: absolute;
+      top: 14px;
+      color: white;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.25);
+      border: 0;
     }
 
-    .sync-dot {
-      width: 8px;
-      height: 8px;
-      flex-shrink: 0;
-      background: white;
+    .back-link {
+      left: 14px;
+      padding: 7px 15px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .pin-btn {
+      right: 14px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      animation: blink 1.5s infinite;
-    }
-
-    .sync-dot.connected {
-      background: #69f0ae;
-      animation: none;
-    }
-
-    .sync-dot.error {
-      background: #ff5252;
-      animation: none;
-    }
-
-    @keyframes blink {
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.25;
-      }
+      font-size: 1.2rem;
     }
 
     .wave-divider {
-      display: block;
-      overflow: hidden;
       line-height: 0;
-      background:
-        linear-gradient(
-          160deg,
-          #012afe 0%,
-          #0055cc 40%,
-          #00b4d8 100%
-        );
+      background: linear-gradient(160deg, #012afe, #0055cc 40%, #00b4d8);
     }
 
     .wave-divider svg {
@@ -196,47 +80,25 @@
       width: 100%;
     }
 
-    /* Contenuto */
-
     .container {
-      max-width: 540px;
-      margin: 0 auto;
-      padding: 16px 12px 64px;
+      max-width: 600px;
+      margin: auto;
+      padding: 18px 12px 64px;
     }
 
-    .section-title {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      margin: 20px 0 14px 2px;
-      color: #006994;
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .manager-panel,
+    .news-card {
+      padding: 18px;
+      margin-bottom: 14px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(0, 105, 148, 0.08);
     }
-
-    .section-title::after {
-      height: 2px;
-      flex: 1;
-      content: "";
-      background:
-        linear-gradient(
-          90deg,
-          #b3d9f7 0%,
-          transparent 100%
-        );
-    }
-
-    /* Pannello amministratore */
 
     .manager-panel {
       display: none;
-      padding: 18px;
-      margin-bottom: 18px;
       background: #fff8e1;
       border: 2px solid #ffe082;
-      border-radius: 18px;
     }
 
     .manager-panel.visible {
@@ -244,12 +106,10 @@
     }
 
     .manager-panel h3 {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: #f57f17;
-      font-size: 0.76rem;
-      font-weight: 800;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      letter-spacing: 0.9px;
     }
 
     .form-group {
@@ -258,25 +118,20 @@
 
     .form-group label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       color: #555;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       font-weight: 700;
     }
 
     .form-input {
       width: 100%;
-      padding: 9px 12px;
+      padding: 10px 12px;
       color: #333;
-      font-size: 0.88rem;
       background: white;
       border: 1.5px solid #ffe082;
       border-radius: 10px;
       outline: none;
-    }
-
-    .form-input:focus {
-      border-color: #ffb300;
     }
 
     textarea.form-input {
@@ -284,13 +139,8 @@
       resize: vertical;
     }
 
-    input[type="file"].form-input {
-      padding: 8px;
-      cursor: pointer;
-    }
-
     .form-hint {
-      margin-top: 6px;
+      margin-top: 5px;
       color: #777;
       font-size: 0.7rem;
       line-height: 1.4;
@@ -319,7 +169,7 @@
       color: #546e7a;
       font-size: 0.75rem;
       line-height: 1.5;
-      background: #fff;
+      background: white;
       border: 1px solid #ffe082;
       border-radius: 10px;
     }
@@ -330,29 +180,22 @@
 
     .existing-attachments ul {
       padding-left: 20px;
-      margin-top: 5px;
+      margin: 5px 0;
+    }
+
+    .pub-btn,
+    .cancel-edit-btn {
+      width: 100%;
+      padding: 11px;
+      border: 0;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     .pub-btn {
-      width: 100%;
-      padding: 11px;
-      margin-top: 6px;
       color: white;
-      font-size: 0.86rem;
-      font-weight: 700;
-      cursor: pointer;
-      background:
-        linear-gradient(
-          135deg,
-          #006994,
-          #00b4d8
-        );
-      border: 0;
-      border-radius: 10px;
-    }
-
-    .pub-btn:hover {
-      opacity: 0.9;
+      background: linear-gradient(135deg, #006994, #00b4d8);
     }
 
     .pub-btn:disabled {
@@ -362,33 +205,26 @@
 
     .cancel-edit-btn {
       display: none;
-      width: 100%;
-      padding: 10px;
       margin-top: 8px;
       color: #607d8b;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
       background: #eceff1;
-      border: 0;
-      border-radius: 10px;
     }
 
     .cancel-edit-btn.visible {
       display: block;
     }
 
-    /* News */
+    .section-title {
+      margin: 20px 2px 14px;
+      color: #006994;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
 
     .news-card {
       position: relative;
-      padding: 18px;
-      margin-bottom: 14px;
-      background: white;
-      border: 2px solid #ddeeff;
       border-left: 5px solid #006994;
-      border-radius: 18px;
-      box-shadow: 0 4px 18px rgba(0, 105, 148, 0.08);
     }
 
     .news-meta {
@@ -399,7 +235,7 @@
     }
 
     .news-title {
-      padding-right: 64px;
+      padding-right: 70px;
       margin-bottom: 8px;
       color: #1a3a5c;
       font-size: 1rem;
@@ -407,10 +243,9 @@
     }
 
     .news-text {
-      color: #455a64;
-      font-size: 0.85rem;
-      line-height: 1.65;
       white-space: pre-line;
+      font-size: 0.86rem;
+      line-height: 1.65;
     }
 
     .news-actions {
@@ -419,52 +254,32 @@
       right: 14px;
       display: flex;
       gap: 8px;
-      align-items: center;
     }
 
-    .news-del-btn,
-    .news-edit-btn {
-      padding: 2px;
-      color: #b3d9f7;
-      font-size: 1rem;
+    .news-actions button {
+      color: #90b9d8;
       cursor: pointer;
       background: none;
       border: 0;
-      transition: color 0.2s;
+      font-size: 1rem;
     }
 
-    .news-edit-btn:hover {
+    .news-actions button:hover {
       color: #006994;
     }
 
-    .news-del-btn:hover {
+    .news-actions .delete-button:hover {
       color: #e53935;
     }
 
-    .no-news {
-      padding: 30px 10px;
-      margin-bottom: 16px;
-      color: #90a4ae;
-      font-size: 0.88rem;
-      font-style: italic;
-      text-align: center;
-      background: white;
-      border: 2px dashed #ddeeff;
-      border-radius: 16px;
-    }
-
-    /* Allegati */
-
     .news-attachments {
       display: grid;
-      gap: 10px;
+      gap: 9px;
       margin-top: 12px;
     }
 
     .attachment-link {
       display: inline-flex;
-      gap: 8px;
-      align-items: center;
       width: fit-content;
       max-width: 100%;
       padding: 9px 12px;
@@ -478,33 +293,34 @@
       border-radius: 10px;
     }
 
-    .attachment-link:hover {
-      background: #e8f4ff;
-    }
-
     .attachment-preview {
-      width: 100%;
       overflow: hidden;
-      background: #f8fcff;
       border: 1px solid #d9ecff;
       border-radius: 10px;
     }
 
     .attachment-preview img {
       display: block;
-      width: 100%;
-      height: auto;
+      max-width: 100%;
       max-height: 360px;
-      object-fit: contain;
-      background: white;
+      margin: auto;
     }
 
-    /* Finestra PIN */
+    .no-news {
+      padding: 30px 10px;
+      color: #90a4ae;
+      font-size: 0.88rem;
+      font-style: italic;
+      text-align: center;
+      background: white;
+      border: 2px dashed #ddeeff;
+      border-radius: 16px;
+    }
 
     .modal-overlay {
       position: fixed;
       inset: 0;
-      z-index: 100;
+      z-index: 10;
       display: none;
       align-items: center;
       justify-content: center;
@@ -517,25 +333,22 @@
 
     .modal {
       width: 90%;
-      max-width: 300px;
-      padding: 28px 24px;
+      max-width: 320px;
+      padding: 24px;
       text-align: center;
       background: white;
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
     .modal h3 {
       margin-bottom: 8px;
       color: #006994;
-      font-size: 1rem;
-      font-weight: 800;
     }
 
     .modal p {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       color: #607d8b;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
     }
 
     .pin-input-wrap {
@@ -544,96 +357,75 @@
 
     .modal input {
       width: 100%;
-      padding: 11px 40px 11px 14px;
-      font-size: 1rem;
+      padding: 11px 42px 11px 14px;
       text-align: center;
-      letter-spacing: 2px;
       border: 2px solid #b3d9f7;
       border-radius: 10px;
-      outline: none;
-    }
-
-    .modal input:focus {
-      border-color: #006994;
     }
 
     .pin-toggle {
       position: absolute;
       top: 50%;
       right: 10px;
-      padding: 2px;
-      font-size: 1.1rem;
-      line-height: 1;
-      cursor: pointer;
-      background: none;
       border: 0;
+      background: none;
+      cursor: pointer;
       transform: translateY(-50%);
     }
 
-    .modal-btns {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .modal-btn {
-      flex: 1;
-      padding: 11px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      cursor: pointer;
-      border: 0;
-      border-radius: 10px;
-    }
-
-    .modal-btn.primary {
-      color: white;
-      background:
-        linear-gradient(
-          135deg,
-          #006994,
-          #00b4d8
-        );
-    }
-
-    .modal-btn.secondary {
-      color: #607d8b;
-      background: #eceff1;
-    }
-
     .modal-error {
+      min-height: 18px;
       margin-top: 8px;
       color: #e53935;
       font-size: 0.75rem;
     }
 
-    /* Toast */
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .modal-button {
+      flex: 1;
+      padding: 11px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .modal-button.primary {
+      color: white;
+      background: #006994;
+    }
+
+    .modal-button.secondary {
+      color: #607d8b;
+      background: #eceff1;
+    }
 
     .toast {
       position: fixed;
       bottom: 24px;
       left: 50%;
-      z-index: 999;
+      z-index: 20;
       max-width: calc(100% - 30px);
-      padding: 10px 22px;
+      padding: 10px 20px;
       color: white;
-      font-size: 0.83rem;
-      font-weight: 600;
       text-align: center;
-      white-space: normal;
       background: #006994;
       border-radius: 24px;
-      box-shadow: 0 6px 24px rgba(0, 105, 148, 0.3);
-      transform: translateX(-50%) translateY(120px);
-      transition: transform 0.3s ease;
+      transform: translate(-50%, 120px);
+      transition: transform 0.3s;
     }
 
     .toast.show {
-      transform: translateX(-50%) translateY(0);
+      transform: translate(-50%, 0);
     }
 
     .page-footer {
-      padding: 20px 0;
+      padding: 20px;
       color: #aabbc8;
       font-size: 0.7rem;
       text-align: center;
@@ -643,41 +435,24 @@
 
 <body>
   <header class="header">
-    <a class="back-link" href="index.html">
-      &#8592; Home
-    </a>
+    <a class="back-link" href="index.html">← Home</a>
 
     <button
       class="pin-btn"
-      id="pin-btn"
+      id="pin-button"
       type="button"
       title="Accesso gestore"
     >
       🔒
     </button>
 
-    <span class="icons">
-      <img
-        src="news-pallanuoto.png"
-        alt="News"
-      >
-    </span>
-
+    <div style="font-size: 3rem;">📰</div>
     <h1>News Generali</h1>
-
-    <div class="subtitle">
-      Comunicazioni per tutta la squadra
-    </div>
+    <div class="subtitle">Comunicazioni per tutta la squadra</div>
 
     <div class="sync-status">
-      <div
-        class="sync-dot"
-        id="sync-dot"
-      ></div>
-
-      <span id="sync-label">
-        Connessione in corso…
-      </span>
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">Connessione in corso…</span>
     </div>
   </header>
 
@@ -695,33 +470,24 @@
   </div>
 
   <main class="container">
-    <section
-      class="manager-panel"
-      id="manager-panel"
-    >
+    <section class="manager-panel" id="manager-panel">
       <h3 id="manager-panel-title">
         ✏️ Pubblica una comunicazione
       </h3>
 
       <div class="form-group">
-        <label for="news-title">
-          Titolo
-        </label>
-
+        <label for="news-title">Titolo</label>
         <input
-          type="text"
           class="form-input"
           id="news-title"
-          placeholder="Titolo della comunicazione…"
           maxlength="100"
+          placeholder="Titolo della comunicazione…"
+          type="text"
         >
       </div>
 
       <div class="form-group">
-        <label for="news-text">
-          Testo
-        </label>
-
+        <label for="news-text">Testo</label>
         <textarea
           class="form-input"
           id="news-text"
@@ -735,22 +501,18 @@
       ></div>
 
       <div class="form-group">
-        <label for="news-files">
-          PDF / immagini da allegare
-        </label>
-
+        <label for="news-files">PDF / immagini da allegare</label>
         <input
-          type="file"
           class="form-input"
           id="news-files"
+          type="file"
           accept="application/pdf,image/*"
           multiple
         >
 
         <div class="form-hint">
-          Puoi selezionare più file. Sono consentiti PDF e immagini,
-          fino a 10 MB per file. I file saranno salvati nella cartella
-          <strong>allegati/</strong>.
+          Sono consentiti PDF e immagini fino a 10 MB per file.
+          I file vengono salvati nella cartella <b>allegati/</b>.
         </div>
 
         <div
@@ -767,17 +529,17 @@
         <textarea
           class="form-input"
           id="news-attachments-titles"
-          placeholder="Un titolo per riga, nello stesso ordine dei file selezionati"
+          placeholder="Un titolo per riga, nello stesso ordine dei file"
         ></textarea>
 
         <div class="form-hint">
-          Campo opzionale. Se lasciato vuoto verrà usato il nome del file.
+          Campo opzionale. Se vuoto viene usato il nome del file.
         </div>
       </div>
 
       <button
         class="pub-btn"
-        id="pub-btn"
+        id="publish-button"
         type="button"
       >
         📤 Pubblica comunicazione
@@ -785,7 +547,7 @@
 
       <button
         class="cancel-edit-btn"
-        id="cancel-edit-btn"
+        id="cancel-edit-button"
         type="button"
       >
         ❌ Annulla modifica
@@ -803,36 +565,29 @@
     📰 News · Nekton Pallanuoto
   </footer>
 
-  <div
-    class="toast"
-    id="toast"
-  ></div>
+  <div class="toast" id="toast"></div>
 
   <div
     class="modal-overlay"
-    id="modal-overlay"
+    id="login-modal"
   >
     <div class="modal">
       <h3>🔑 Accesso Gestore</h3>
-
-      <p>
-        Inserisci il PIN per pubblicare comunicazioni
-      </p>
+      <p>Inserisci il PIN per pubblicare comunicazioni</p>
 
       <div class="pin-input-wrap">
         <input
-          type="password"
           id="pin-input"
-          placeholder="••••••••"
+          type="password"
           maxlength="50"
           autocomplete="off"
+          placeholder="••••••••"
         >
 
         <button
           class="pin-toggle"
           id="pin-toggle"
           type="button"
-          title="Mostra o nascondi il PIN"
         >
           👁️
         </button>
@@ -843,18 +598,18 @@
         id="modal-error"
       ></div>
 
-      <div class="modal-btns">
+      <div class="modal-buttons">
         <button
-          class="modal-btn secondary"
-          id="modal-cancel"
+          class="modal-button secondary"
+          id="cancel-login-button"
           type="button"
         >
           Annulla
         </button>
 
         <button
-          class="modal-btn primary"
-          id="modal-confirm"
+          class="modal-button primary"
+          id="confirm-login-button"
           type="button"
         >
           Accedi
@@ -867,12 +622,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    /*
-     * Configurazione Firebase Realtime Database.
-     * Firebase viene utilizzato solo per salvare le comunicazioni.
-     * Gli allegati vengono salvati nel repository GitHub tramite
-     * la Cloudflare Pages Function /api/upload.
-     */
     firebase.initializeApp({
       apiKey: "AIzaSyAfOMeAkXUIandLUhCR8nfyELOPVRyD3WU",
       authDomain: "lista-spesa-b9eb1.firebaseapp.com",
@@ -884,22 +633,16 @@
       appId: "1:468690890938:web:048be7f27779d8862d9283"
     });
 
-    const db = firebase.database();
-
-    const newsRef = db.ref("nekton/news/generale");
+    const database = firebase.database();
+    const newsReference = database.ref("nekton/news/generale");
 
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     let allNews = {};
     let editingNewsId = null;
-
-    /*
-     * Il PIN viene mantenuto esclusivamente in memoria.
-     * Non viene salvato in localStorage, Firebase o nel repository.
-     */
     let currentManagerPin = "";
 
-    function element(id) {
+    function byId(id) {
       return document.getElementById(id);
     }
 
@@ -925,81 +668,93 @@
     }
 
     function showToast(message) {
-      const toast = element("toast");
+      const toast = byId("toast");
 
       toast.textContent = message;
       toast.classList.add("show");
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         toast.classList.remove("show");
       }, 3500);
     }
 
-    function normalizeAttachments(rawAttachments) {
-      if (!rawAttachments) {
+    function normalizeAttachments(value) {
+      if (!value) {
         return [];
       }
 
-      if (Array.isArray(rawAttachments)) {
-        return rawAttachments.filter(Boolean);
+      if (Array.isArray(value)) {
+        return value.filter(Boolean);
       }
 
-      if (typeof rawAttachments === "object") {
-        return Object.values(rawAttachments).filter(Boolean);
+      if (typeof value === "object") {
+        return Object.values(value).filter(Boolean);
       }
 
       return [];
     }
 
-    function inferAttachmentType(filePath = "") {
-      const normalizedPath = String(filePath).toLowerCase();
+    function getAttachmentFile(attachment) {
+      if (typeof attachment === "string") {
+        return attachment;
+      }
 
-      if (/\.(png|jpe?g|gif|webp|svg)$/.test(normalizedPath)) {
+      return attachment && attachment.file
+        ? String(attachment.file)
+        : "";
+    }
+
+    function getAttachmentType(filePath) {
+      const file = String(filePath || "").toLowerCase();
+
+      if (/\.(png|jpe?g|gif|webp|svg)$/.test(file)) {
         return "img";
       }
 
-      if (/\.pdf$/.test(normalizedPath)) {
+      if (/\.pdf$/.test(file)) {
         return "pdf";
       }
 
       return "file";
     }
 
-    function renderAttachments(rawAttachments) {
-      const attachments = normalizeAttachments(rawAttachments);
+    function formatDate(value) {
+      const date = new Date(value);
 
-      if (attachments.length === 0) {
-        return "";
+      if (Number.isNaN(date.getTime())) {
+        return String(value || "");
       }
+
+      return date.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function renderAttachments(value) {
+      const attachments = normalizeAttachments(value);
 
       const rows = attachments
         .map(attachment => {
-          /*
-           * Compatibilità con eventuali vecchi allegati
-           * salvati come semplice stringa.
-           */
-          const item =
-            typeof attachment === "string"
-              ? { file: attachment }
-              : attachment;
-
-          const file = String(item.file || "").trim();
+          const file = getAttachmentFile(attachment);
 
           if (!file) {
             return "";
           }
 
-          const type = String(
-            item.tipo || inferAttachmentType(file)
-          ).toLowerCase();
+          const title =
+            typeof attachment === "object" && attachment.titolo
+              ? attachment.titolo
+              : file.split("/").pop();
 
-          const title = escapeHtml(
-            item.titolo ||
-            file.split("/").pop() ||
-            "Allegato"
-          );
+          const type =
+            typeof attachment === "object" && attachment.tipo
+              ? attachment.tipo
+              : getAttachmentType(file);
 
           const safeFile = escapeHtml(file);
+          const safeTitle = escapeHtml(title || "Allegato");
 
           if (type === "img") {
             return `
@@ -1009,29 +764,16 @@
                 target="_blank"
                 rel="noopener"
               >
-                🖼️ ${title}
+                🖼️ ${safeTitle}
               </a>
 
               <div class="attachment-preview">
                 <img
                   src="${safeFile}"
-                  alt="${title}"
+                  alt="${safeTitle}"
                   loading="lazy"
                 >
               </div>
-            `;
-          }
-
-          if (type === "pdf") {
-            return `
-              <a
-                class="attachment-link"
-                href="${safeFile}"
-                target="_blank"
-                rel="noopener"
-              >
-                📄 ${title}
-              </a>
             `;
           }
 
@@ -1042,55 +784,30 @@
               target="_blank"
               rel="noopener"
             >
-              📎 ${title}
+              ${type === "pdf" ? "📄" : "📎"} ${safeTitle}
             </a>
           `;
         })
         .filter(Boolean)
         .join("");
 
-      if (!rows) {
-        return "";
-      }
-
-      return `
-        <div class="news-attachments">
-          ${rows}
-        </div>
-      `;
-    }
-
-    function formatDate(dateValue) {
-      if (!dateValue) {
-        return "";
-      }
-
-      const date = new Date(dateValue);
-
-      if (Number.isNaN(date.getTime())) {
-        return String(dateValue);
-      }
-
-      return date.toLocaleDateString("it-IT", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-      });
+      return rows
+        ? `<div class="news-attachments">${rows}</div>`
+        : "";
     }
 
     function renderNews() {
-      const container = element("news-container");
+      const container = byId("news-container");
 
-      const entries = Object
-        .entries(allNews)
-        .map(([id, item]) => ({ id, item }))
-        .sort((first, second) => {
-          return String(second.item.data || "").localeCompare(
-            String(first.item.data || "")
+      const entries = Object.entries(allNews)
+        .map(([id, news]) => ({ id, news }))
+        .sort((a, b) => {
+          return String(b.news.data || "").localeCompare(
+            String(a.news.data || "")
           );
         });
 
-      if (entries.length === 0) {
+      if (!entries.length) {
         container.innerHTML = `
           <div class="no-news">
             Nessuna comunicazione al momento. 💤
@@ -1100,169 +817,119 @@
         return;
       }
 
-      container.innerHTML = "";
+      container.innerHTML = entries
+        .map(({ id, news }) => {
+          return `
+            <article
+              class="news-card"
+              data-id="${escapeHtml(id)}"
+            >
+              <div class="news-meta">
+                📅 ${escapeHtml(formatDate(news.data))}
+              </div>
 
-      entries.forEach(({ id, item }) => {
-        const card = document.createElement("article");
+              <div class="news-title">
+                ${escapeHtml(news.titolo)}
+              </div>
 
-        card.className = "news-card";
-        card.dataset.id = id;
+              <div class="news-text">
+                ${escapeHtml(news.testo)}
+              </div>
 
-        card.innerHTML = `
-          <div class="news-meta">
-            📅 ${escapeHtml(formatDate(item.data))}
-          </div>
+              ${renderAttachments(news.allegati)}
 
-          <div class="news-title">
-            ${escapeHtml(item.titolo)}
-          </div>
+              ${
+                isManager()
+                  ? `
+                    <div class="news-actions">
+                      <button
+                        class="edit-button"
+                        type="button"
+                        data-id="${escapeHtml(id)}"
+                        title="Modifica"
+                      >
+                        ✏️
+                      </button>
 
-          <div class="news-text">
-            ${escapeHtml(item.testo)}
-          </div>
-
-          ${renderAttachments(item.allegati)}
-
-          ${
-            isManager()
-              ? `
-                <div class="news-actions">
-                  <button
-                    class="news-edit-btn"
-                    type="button"
-                    title="Modifica"
-                  >
-                    ✏️
-                  </button>
-
-                  <button
-                    class="news-del-btn"
-                    type="button"
-                    title="Elimina"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              `
-              : ""
-          }
-        `;
-
-        container.appendChild(card);
-      });
-
-      bindNewsActionButtons();
-    }
-
-    function bindNewsActionButtons() {
-      if (!isManager()) {
-        return;
-      }
-
-      document
-        .querySelectorAll(".news-edit-btn")
-        .forEach(button => {
-          button.addEventListener("click", () => {
-            const card = button.closest(".news-card");
-            const newsId = card.dataset.id;
-            const news = allNews[newsId];
-
-            startEditingNews(newsId, news);
-          });
-        });
-
-      document
-        .querySelectorAll(".news-del-btn")
-        .forEach(button => {
-          button.addEventListener("click", async () => {
-            const card = button.closest(".news-card");
-            const newsId = card.dataset.id;
-
-            const confirmed = window.confirm(
-              "Eliminare questa comunicazione?\n\n" +
-              "Gli eventuali file già presenti nella cartella allegati/ " +
-              "non verranno eliminati automaticamente."
-            );
-
-            if (!confirmed) {
-              return;
-            }
-
-            try {
-              await newsRef.child(newsId).remove();
-
-              if (editingNewsId === newsId) {
-                resetNewsForm();
+                      <button
+                        class="delete-button"
+                        type="button"
+                        data-id="${escapeHtml(id)}"
+                        title="Elimina"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  `
+                  : ""
               }
-
-              showToast("✅ Comunicazione eliminata");
-            } catch (error) {
-              console.error(error);
-              showToast("❌ Errore durante l'eliminazione");
-            }
-          });
-        });
-    }
-
-    function showExistingAttachments(attachments) {
-      const container = element("existing-attachments");
-      const normalized = normalizeAttachments(attachments);
-
-      if (normalized.length === 0) {
-        container.innerHTML = "";
-        container.classList.remove("visible");
-        return;
-      }
-
-      const items = normalized
-        .map(attachment => {
-          const item =
-            typeof attachment === "string"
-              ? { file: attachment }
-              : attachment;
-
-          const fileName =
-            item.titolo ||
-            String(item.file || "").split("/").pop() ||
-            "Allegato";
-
-          return `<li>${escapeHtml(fileName)}</li>`;
+            </article>
+          `;
         })
         .join("");
 
-      container.innerHTML = `
-        <strong>Allegati già presenti:</strong>
-        <ul>${items}</ul>
-        <div>
-          Se non selezioni nuovi file, questi allegati verranno mantenuti.
-          Se selezioni nuovi file, verranno aggiunti a quelli esistenti.
-        </div>
-      `;
+      document.querySelectorAll(".edit-button").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.id;
+          startEdit(id);
+        });
+      });
 
-      container.classList.add("visible");
+      document.querySelectorAll(".delete-button").forEach(button => {
+        button.addEventListener("click", () => {
+          deleteNews(button.dataset.id);
+        });
+      });
     }
 
-    function startEditingNews(newsId, news) {
+    function startEdit(newsId) {
+      const news = allNews[newsId];
+
       if (!news) {
         return;
       }
 
       editingNewsId = newsId;
 
-      element("news-title").value = news.titolo || "";
-      element("news-text").value = news.testo || "";
+      byId("news-title").value = news.titolo || "";
+      byId("news-text").value = news.testo || "";
 
-      showExistingAttachments(news.allegati);
+      const attachments = normalizeAttachments(news.allegati);
 
-      element("manager-panel-title").textContent =
+      if (attachments.length) {
+        byId("existing-attachments").innerHTML = `
+          <b>Allegati esistenti:</b>
+          <ul>
+            ${attachments.map(attachment => {
+              const file = getAttachmentFile(attachment);
+              const title =
+                typeof attachment === "object" && attachment.titolo
+                  ? attachment.titolo
+                  : file.split("/").pop();
+
+              return `<li>${escapeHtml(title)}</li>`;
+            }).join("")}
+          </ul>
+          <div>
+            I nuovi allegati verranno aggiunti a quelli già presenti.
+          </div>
+        `;
+
+        byId("existing-attachments")
+          .classList.add("visible");
+      }
+
+      byId("manager-panel-title").textContent =
         "✏️ Modifica comunicazione";
 
-      element("pub-btn").textContent =
+      byId("publish-button").textContent =
         "💾 Salva modifiche";
 
-      element("cancel-edit-btn").classList.add("visible");
-      element("manager-panel").classList.add("visible");
-      element("news-title").focus();
+      byId("cancel-edit-button")
+        .classList.add("visible");
+
+      byId("manager-panel")
+        .classList.add("visible");
 
       window.scrollTo({
         top: 0,
@@ -1270,37 +937,38 @@
       });
     }
 
-    function resetNewsForm() {
+    function resetForm() {
       editingNewsId = null;
 
-      element("news-title").value = "";
-      element("news-text").value = "";
-      element("news-files").value = "";
-      element("news-attachments-titles").value = "";
-      element("selected-files").innerHTML = "";
+      byId("news-title").value = "";
+      byId("news-text").value = "";
+      byId("news-files").value = "";
+      byId("news-attachments-titles").value = "";
+      byId("selected-files").innerHTML = "";
 
-      element("existing-attachments").innerHTML = "";
-      element("existing-attachments").classList.remove("visible");
+      byId("existing-attachments").innerHTML = "";
+      byId("existing-attachments")
+        .classList.remove("visible");
 
-      element("pub-btn").disabled = false;
-      element("pub-btn").textContent =
-        "📤 Pubblica comunicazione";
-
-      element("manager-panel-title").textContent =
+      byId("manager-panel-title").textContent =
         "✏️ Pubblica una comunicazione";
 
-      element("cancel-edit-btn").classList.remove("visible");
+      byId("publish-button").textContent =
+        "📤 Pubblica comunicazione";
+
+      byId("cancel-edit-button")
+        .classList.remove("visible");
     }
 
-    function validateSelectedFile(file) {
-      const allowedExtension =
+    function validateFile(file) {
+      const validExtension =
         /\.(pdf|png|jpe?g|gif|webp|svg)$/i.test(file.name);
 
-      const allowedMimeType =
+      const validMimeType =
         file.type === "application/pdf" ||
         String(file.type).startsWith("image/");
 
-      if (!allowedExtension || !allowedMimeType) {
+      if (!validExtension || !validMimeType) {
         throw new Error(
           `${file.name}: sono consentiti solo PDF e immagini`
         );
@@ -1319,102 +987,163 @@
 
         reader.onload = () => {
           const result = String(reader.result || "");
-          const separatorIndex = result.indexOf(",");
+          const commaIndex = result.indexOf(",");
 
-          if (separatorIndex === -1) {
-            reject(
-              new Error(`Impossibile leggere ${file.name}`)
-            );
-
+          if (commaIndex < 0) {
+            reject(new Error(`Impossibile leggere ${file.name}`));
             return;
           }
 
-          resolve(result.slice(separatorIndex + 1));
+          resolve(result.slice(commaIndex + 1));
         };
 
         reader.onerror = () => {
-          reject(
-            new Error(`Errore nella lettura di ${file.name}`)
-          );
+          reject(new Error(`Errore nella lettura di ${file.name}`));
         };
 
         reader.readAsDataURL(file);
       });
     }
 
-    /*
-     * Invia il file alla Cloudflare Pages Function.
-     *
-     * Il browser non contatta direttamente GitHub e non conosce
-     * il token GitHub. Il token è conservato nei secret Cloudflare.
-     */
-    async function uploadAttachment(file) {
-      validateSelectedFile(file);
-
-      if (!currentManagerPin) {
-        throw new Error(
-          "Sessione gestore non valida. Effettua nuovamente l'accesso."
-        );
-      }
-
-      const contentBase64 = await fileToBase64(file);
-
+    async function callUploadApi(body) {
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          fileName: file.name,
-          mimeType: file.type,
-          contentBase64,
-          pin: currentManagerPin
-        })
+        body: JSON.stringify(body)
       });
 
-      const responseText = await response.text();
+      const text = await response.text();
 
-      let responseData;
+      let data;
 
       try {
-        responseData = JSON.parse(responseText);
+        data = JSON.parse(text);
       } catch {
-        responseData = {
-          error:
-            responseText ||
-            "La funzione di caricamento ha restituito una risposta non valida"
+        data = {
+          error: text || "Risposta non valida dal server"
         };
       }
 
       if (!response.ok) {
-        const details = responseData.details
-          ? `: ${responseData.details}`
-          : "";
-
         throw new Error(
-          (responseData.error || `Errore HTTP ${response.status}`) +
-          details
+          data.error || `Errore HTTP ${response.status}`
         );
       }
 
-      if (!responseData.path) {
+      return data;
+    }
+
+    async function uploadAttachment(file) {
+      validateFile(file);
+
+      const contentBase64 = await fileToBase64(file);
+
+      const result = await callUploadApi({
+        action: "upload",
+        fileName: file.name,
+        mimeType: file.type,
+        contentBase64,
+        pin: currentManagerPin
+      });
+
+      if (!result.path) {
         throw new Error(
-          "La funzione non ha restituito il percorso del file"
+          "Il server non ha restituito il percorso dell'allegato"
         );
       }
 
-      return responseData.path;
+      return result.path;
+    }
+
+    async function deleteAttachments(files) {
+      if (!files.length) {
+        return;
+      }
+
+      return callUploadApi({
+        action: "delete",
+        files,
+        pin: currentManagerPin
+      });
+    }
+
+    function getFilesUsedByOtherNews(newsId) {
+      const usedFiles = new Set();
+
+      Object.entries(allNews).forEach(([id, news]) => {
+        if (id === newsId) {
+          return;
+        }
+
+        normalizeAttachments(news.allegati)
+          .map(getAttachmentFile)
+          .filter(Boolean)
+          .forEach(file => {
+            usedFiles.add(file.replace(/^\/+/, ""));
+          });
+      });
+
+      return usedFiles;
+    }
+
+    async function deleteNews(newsId) {
+      const news = allNews[newsId];
+
+      if (!news) {
+        return;
+      }
+
+      if (!confirm(
+        "Eliminare questa comunicazione e i relativi allegati?"
+      )) {
+        return;
+      }
+
+      const attachments = normalizeAttachments(news.allegati);
+
+      const files = attachments
+        .map(getAttachmentFile)
+        .map(file => file.replace(/^\/+/, ""))
+        .filter(file => file.startsWith("allegati/"));
+
+      const usedElsewhere = getFilesUsedByOtherNews(newsId);
+
+      const filesToDelete = [
+        ...new Set(
+          files.filter(file => !usedElsewhere.has(file))
+        )
+      ];
+
+      try {
+        showToast("⏳ Eliminazione in corso…");
+
+        if (filesToDelete.length) {
+          await deleteAttachments(filesToDelete);
+        }
+
+        await newsReference.child(newsId).remove();
+
+        if (editingNewsId === newsId) {
+          resetForm();
+        }
+
+        showToast("✅ Comunicazione e allegati eliminati");
+      } catch (error) {
+        console.error(error);
+        showToast(`❌ ${error.message}`);
+      }
     }
 
     async function publishNews() {
-      const title = element("news-title").value.trim();
-      const text = element("news-text").value.trim();
-
+      const title = byId("news-title").value.trim();
+      const text = byId("news-text").value.trim();
       const files = Array.from(
-        element("news-files").files || []
+        byId("news-files").files || []
       );
 
-      const attachmentTitles = element("news-attachments-titles")
+      const titles = byId("news-attachments-titles")
         .value
         .split("\n")
         .map(value => value.trim());
@@ -1429,24 +1158,9 @@
         return;
       }
 
-      /*
-       * Il PIN è necessario alla funzione server solo quando
-       * vengono caricati nuovi file.
-       */
-      if (files.length > 0 && !currentManagerPin) {
-        showToast(
-          "⚠️ Effettua nuovamente l'accesso gestore prima di caricare file"
-        );
-
-        openManagerModal();
-        return;
-      }
-
-      const publishButton = element("pub-btn");
-      const originalButtonText = publishButton.textContent;
-
-      publishButton.disabled = true;
-      publishButton.textContent = "⏳ Pubblicazione…";
+      const button = byId("publish-button");
+      button.disabled = true;
+      button.textContent = "⏳ Pubblicazione…";
 
       try {
         const newAttachments = [];
@@ -1458,267 +1172,188 @@
             `⏳ Caricamento ${index + 1}/${files.length}: ${file.name}`
           );
 
-          const filePath = await uploadAttachment(file);
+          const path = await uploadAttachment(file);
 
           newAttachments.push({
-            file: filePath,
-            titolo:
-              attachmentTitles[index] ||
-              file.name,
-            tipo: inferAttachmentType(filePath)
+            file: path,
+            titolo: titles[index] || file.name,
+            tipo: getAttachmentType(path)
           });
         }
 
-        const existingNews = editingNewsId
+        const oldNews = editingNewsId
           ? allNews[editingNewsId] || {}
           : {};
 
         const existingAttachments = normalizeAttachments(
-          existingNews.allegati
+          oldNews.allegati
         );
-
-        const payload = {
-          titolo: title,
-          testo: text,
-          data:
-            existingNews.data ||
-            new Date().toISOString().slice(0, 10)
-        };
 
         const allAttachments = [
           ...existingAttachments,
           ...newAttachments
         ];
 
-        if (allAttachments.length > 0) {
+        const payload = {
+          titolo: title,
+          testo: text,
+          data: oldNews.data ||
+            new Date().toISOString().slice(0, 10)
+        };
+
+        if (allAttachments.length) {
           payload.allegati = allAttachments;
         }
 
         if (editingNewsId) {
-          await newsRef.child(editingNewsId).set(payload);
+          await newsReference
+            .child(editingNewsId)
+            .set(payload);
+
           showToast("✅ Comunicazione modificata!");
         } else {
-          await newsRef.push(payload);
+          await newsReference.push(payload);
           showToast("✅ Comunicazione pubblicata!");
         }
 
-        resetNewsForm();
+        resetForm();
       } catch (error) {
-        console.error("Errore pubblicazione:", error);
-
-        showToast(
-          `❌ ${error.message || "Errore durante la pubblicazione"}`
-        );
+        console.error(error);
+        showToast(`❌ ${error.message}`);
       } finally {
-        publishButton.disabled = false;
-
-        if (editingNewsId) {
-          publishButton.textContent = originalButtonText;
-        } else {
-          publishButton.textContent =
-            "📤 Pubblica comunicazione";
-        }
+        button.disabled = false;
+        button.textContent = editingNewsId
+          ? "💾 Salva modifiche"
+          : "📤 Pubblica comunicazione";
       }
     }
 
     function updateSelectedFiles() {
       const files = Array.from(
-        element("news-files").files || []
+        byId("news-files").files || []
       );
 
-      const container = element("selected-files");
-
-      if (files.length === 0) {
-        container.innerHTML = "";
-        return;
-      }
-
-      container.innerHTML = files
+      byId("selected-files").innerHTML = files
         .map(file => {
-          const sizeInMb = (
-            file.size /
-            1024 /
-            1024
+          const size = (
+            file.size / 1024 / 1024
           ).toFixed(2);
+
+          const icon =
+            getAttachmentType(file.name) === "pdf"
+              ? "📄"
+              : "🖼️";
 
           return `
             <div class="selected-file">
-              ${inferAttachmentType(file.name) === "pdf" ? "📄" : "🖼️"}
-              ${escapeHtml(file.name)}
-              — ${sizeInMb} MB
+              ${icon} ${escapeHtml(file.name)}
+              — ${size} MB
             </div>
           `;
         })
         .join("");
     }
 
-    function updatePinButton() {
-      element("pin-btn").textContent =
-        isManager() ? "🔐" : "🔒";
+    function openLoginModal() {
+      byId("modal-error").textContent = "";
+      byId("pin-input").value = "";
+      byId("pin-input").type = "password";
+      byId("login-modal").classList.add("open");
+      byId("pin-input").focus();
     }
 
-    function openManagerModal() {
-      element("modal-error").textContent = "";
-      element("pin-input").value = "";
-      element("pin-input").type = "password";
-      element("pin-toggle").textContent = "👁️";
-      element("modal-overlay").classList.add("open");
-
-      window.setTimeout(() => {
-        element("pin-input").focus();
-      }, 100);
+    function closeLoginModal() {
+      byId("login-modal").classList.remove("open");
     }
 
-    function closeManagerModal() {
-      element("modal-overlay").classList.remove("open");
-    }
+    function confirmLogin() {
+      const pin = byId("pin-input").value;
 
-    function checkPin() {
-      const pin = element("pin-input").value;
-
-      /*
-       * Questo controllo abilita soltanto l'interfaccia.
-       * La Cloudflare Function verifica nuovamente il PIN
-       * usando il secret ADMIN_PIN.
-       */
-      if (pin === "nekton2026") {
-        currentManagerPin = pin;
-        setManager(true);
-        closeManagerModal();
-
-        element("manager-panel").classList.add("visible");
-
-        updatePinButton();
-        resetNewsForm();
-        renderNews();
-
-        showToast("✅ Modalità gestore attiva");
+      if (pin !== "nekton2026") {
+        byId("modal-error").textContent =
+          "❌ PIN non corretto";
         return;
       }
 
-      element("modal-error").textContent =
-        "❌ PIN non corretto";
+      currentManagerPin = pin;
+      setManager(true);
+      closeLoginModal();
+      byId("manager-panel").classList.add("visible");
+      byId("pin-button").textContent = "🔐";
+      renderNews();
+
+      showToast("✅ Modalità gestore attiva");
     }
 
-    /*
-     * Stato della connessione Firebase.
-     */
-    db.ref(".info/connected").on("value", snapshot => {
-      const dot = element("sync-dot");
-      const label = element("sync-label");
+    database.ref(".info/connected").on("value", snapshot => {
+      const dot = byId("sync-dot");
+      const label = byId("sync-label");
 
       if (snapshot.val()) {
         dot.className = "sync-dot connected";
-        label.textContent =
-          "✅ Sincronizzato in tempo reale";
+        label.textContent = "✅ Sincronizzato in tempo reale";
       } else {
         dot.className = "sync-dot error";
-        label.textContent =
-          "❌ Offline – riconnessione…";
+        label.textContent = "❌ Offline – riconnessione…";
       }
     });
 
-    /*
-     * Aggiornamento in tempo reale delle comunicazioni.
-     */
-    newsRef
+    newsReference
       .orderByChild("data")
       .on("value", snapshot => {
         allNews = snapshot.val() || {};
         renderNews();
       });
 
-    /*
-     * Eventi del pannello amministratore.
-     */
-    element("pub-btn").addEventListener(
-      "click",
-      publishNews
-    );
+    byId("publish-button")
+      .addEventListener("click", publishNews);
 
-    element("cancel-edit-btn").addEventListener(
-      "click",
-      resetNewsForm
-    );
+    byId("cancel-edit-button")
+      .addEventListener("click", resetForm);
 
-    element("news-files").addEventListener(
-      "change",
-      updateSelectedFiles
-    );
+    byId("news-files")
+      .addEventListener("change", updateSelectedFiles);
 
-    /*
-     * Login e logout gestore.
-     */
-    element("pin-btn").addEventListener("click", () => {
+    byId("pin-button").addEventListener("click", () => {
       if (isManager()) {
         setManager(false);
         currentManagerPin = "";
-
-        element("manager-panel").classList.remove("visible");
-
-        resetNewsForm();
-        updatePinButton();
+        byId("manager-panel").classList.remove("visible");
+        resetForm();
         renderNews();
-
         showToast("👋 Logout gestore effettuato");
-        return;
+      } else {
+        openLoginModal();
       }
-
-      openManagerModal();
     });
 
-    element("modal-cancel").addEventListener(
-      "click",
-      closeManagerModal
-    );
+    byId("cancel-login-button")
+      .addEventListener("click", closeLoginModal);
 
-    element("modal-confirm").addEventListener(
-      "click",
-      checkPin
-    );
+    byId("confirm-login-button")
+      .addEventListener("click", confirmLogin);
 
-    element("modal-overlay").addEventListener(
-      "click",
-      event => {
-        if (event.target === element("modal-overlay")) {
-          closeManagerModal();
-        }
+    byId("pin-input").addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        confirmLogin();
       }
-    );
+    });
 
-    element("pin-input").addEventListener(
-      "keydown",
-      event => {
-        if (event.key === "Enter") {
-          checkPin();
-        }
+    byId("pin-toggle").addEventListener("click", () => {
+      const input = byId("pin-input");
+      const toggle = byId("pin-toggle");
+
+      if (input.type === "password") {
+        input.type = "text";
+        toggle.textContent = "🙈";
+      } else {
+        input.type = "password";
+        toggle.textContent = "👁️";
       }
-    );
+    });
 
-    element("pin-toggle").addEventListener(
-      "click",
-      () => {
-        const input = element("pin-input");
-        const toggle = element("pin-toggle");
-
-        if (input.type === "password") {
-          input.type = "text";
-          toggle.textContent = "🙈";
-        } else {
-          input.type = "password";
-          toggle.textContent = "👁️";
-        }
-      }
-    );
-
-    /*
-     * Un PIN precedente non viene recuperato dal browser.
-     * Di conseguenza, dopo un aggiornamento della pagina,
-     * l'amministratore deve effettuare nuovamente l'accesso.
-     */
     setManager(false);
     currentManagerPin = "";
-    updatePinButton();
   </script>
 </body>
 </html>
