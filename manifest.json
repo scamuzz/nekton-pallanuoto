@@ -2,7 +2,7 @@
   "name": "Nekton Waterpolo",
   "short_name": "Nekton WP",
   "description": "App per la gestione della squadra Nekton Pallanuoto",
-  "start_url": "/",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
