@@ -1,7 +1,6 @@
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-const ALLOWED_EXTENSIONS =
-  /\.(pdf|png|jpe?g|gif|webp|svg)$/i;
+const ALLOWED_EXTENSIONS = /\.(pdf|png|jpe?g|gif|webp|svg)$/i;
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -28,10 +27,7 @@ function getGithubUrl(repository, filePath) {
     .map(encodeURIComponent)
     .join("/");
 
-  return (
-    `https://api.github.com/repos/${repository}/contents/` +
-    encodedPath
-  );
+  return `https://api.github.com/repos/${repository}/contents/${encodedPath}`;
 }
 
 function sanitizeFileName(fileName) {
@@ -47,18 +43,17 @@ function normalizeAttachmentPath(filePath) {
     return "";
   }
 
-  const index = path.indexOf("allegati/");
+  const attachmentIndex = path.indexOf("allegati/");
 
-  if (index >= 0) {
-    path = path.slice(index);
+  if (attachmentIndex >= 0) {
+    path = path.slice(attachmentIndex);
   }
 
   return path.replace(/^\/+/, "");
 }
 
 function isAllowedFile(fileName, mimeType) {
-  const validExtension =
-    ALLOWED_EXTENSIONS.test(fileName);
+  const validExtension = ALLOWED_EXTENSIONS.test(fileName);
 
   const validMimeType =
     mimeType === "application/pdf" ||
@@ -78,8 +73,7 @@ function isAllowedAttachmentPath(filePath) {
 }
 
 function getBase64Size(content) {
-  const normalized = String(content || "")
-    .replace(/\s/g, "");
+  const normalized = String(content || "").replace(/\s/g, "");
 
   if (!normalized) {
     return 0;
@@ -91,9 +85,7 @@ function getBase64Size(content) {
       ? 1
       : 0;
 
-  return Math.floor(
-    normalized.length * 3 / 4
-  ) - padding;
+  return Math.floor((normalized.length * 3) / 4) - padding;
 }
 
 async function parseJsonRequest(request) {
@@ -121,18 +113,10 @@ function validateEnvironment(env) {
 }
 
 async function uploadFile(body, env) {
-  const {
-    fileName,
-    mimeType,
-    contentBase64,
-    pin
-  } = body;
+  const { fileName, mimeType, contentBase64, pin } = body;
 
   if (pin !== env.ADMIN_PIN) {
-    return jsonResponse(
-      { error: "PIN non autorizzato" },
-      401
-    );
+    return jsonResponse({ error: "PIN non autorizzato" }, 401);
   }
 
   if (!fileName || !contentBase64) {
@@ -144,23 +128,22 @@ async function uploadFile(body, env) {
 
   const safeFileName = sanitizeFileName(fileName);
 
-  if (!safeFileName || !isAllowedFile(safeFileName, mimeType)) {
+  if (!safeFileName) {
+    return jsonResponse({ error: "Nome file non valido" }, 400);
+  }
+
+  if (!isAllowedFile(safeFileName, mimeType)) {
     return jsonResponse(
       { error: "Sono consentiti soltanto PDF e immagini" },
       400
     );
   }
 
-  const normalizedContent = String(contentBase64)
-    .replace(/\s/g, "");
-
+  const normalizedContent = String(contentBase64).replace(/\s/g, "");
   const fileSize = getBase64Size(normalizedContent);
 
   if (fileSize <= 0) {
-    return jsonResponse(
-      { error: "Il file è vuoto" },
-      400
-    );
+    return jsonResponse({ error: "Il file è vuoto" }, 400);
   }
 
   if (fileSize > MAX_FILE_SIZE) {
@@ -235,23 +218,14 @@ async function uploadFile(body, env) {
 }
 
 async function deleteFiles(body, env) {
-  const {
-    files,
-    pin
-  } = body;
+  const { files, pin } = body;
 
   if (pin !== env.ADMIN_PIN) {
-    return jsonResponse(
-      { error: "PIN non autorizzato" },
-      401
-    );
+    return jsonResponse({ error: "PIN non autorizzato" }, 401);
   }
 
   if (!Array.isArray(files)) {
-    return jsonResponse(
-      { error: "Elenco dei file non valido" },
-      400
-    );
+    return jsonResponse({ error: "Elenco dei file non valido" }, 400);
   }
 
   const repository = env.GITHUB_REPOSITORY;
@@ -259,20 +233,13 @@ async function deleteFiles(body, env) {
   const headers = getGithubHeaders(env.GITHUB_TOKEN);
 
   const uniqueFiles = [
-    ...new Set(
-      files
-        .map(normalizeAttachmentPath)
-        .filter(Boolean)
-    )
+    ...new Set(files.map(normalizeAttachmentPath).filter(Boolean))
   ];
 
   const deleted = [];
   const skipped = [];
 
-  for (const originalPath of uniqueFiles) {
-    const filePath =
-      normalizeAttachmentPath(originalPath);
-
+  for (const filePath of uniqueFiles) {
     if (!isAllowedAttachmentPath(filePath)) {
       skipped.push({
         file: filePath,
@@ -282,8 +249,7 @@ async function deleteFiles(body, env) {
       continue;
     }
 
-    const githubUrl =
-      getGithubUrl(repository, filePath);
+    const githubUrl = getGithubUrl(repository, filePath);
 
     const existingResponse = await fetch(githubUrl, {
       method: "GET",
@@ -309,14 +275,11 @@ async function deleteFiles(body, env) {
       );
     }
 
-    const existingFile =
-      await existingResponse.json();
+    const existingFile = await existingResponse.json();
 
     if (!existingFile.sha) {
       return jsonResponse(
-        {
-          error: `SHA mancante per ${filePath}`
-        },
+        { error: `SHA mancante per ${filePath}` },
         500
       );
     }
@@ -328,4 +291,76 @@ async function deleteFiles(body, env) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: `Elimina allegato ${
+        message: `Elimina allegato ${filePath}`,
+        sha: existingFile.sha,
+        branch
+      })
+    });
+
+    if (!deleteResponse.ok) {
+      return jsonResponse(
+        {
+          error: `Impossibile eliminare ${filePath}`,
+          details: await deleteResponse.text()
+        },
+        deleteResponse.status
+      );
+    }
+
+    deleted.push(filePath);
+  }
+
+  return jsonResponse({
+    success: true,
+    deleted,
+    skipped
+  });
+}
+
+export async function onRequestPost({ request, env }) {
+  try {
+    const environmentError = validateEnvironment(env);
+
+    if (environmentError) {
+      return jsonResponse(
+        {
+          error: "Configurazione Cloudflare incompleta",
+          details: environmentError
+        },
+        500
+      );
+    }
+
+    const body = await parseJsonRequest(request);
+
+    if (!body) {
+      return jsonResponse({ error: "JSON non valido" }, 400);
+    }
+
+    if (body.action === "delete") {
+      return deleteFiles(body, env);
+    }
+
+    return uploadFile(body, env);
+  } catch (error) {
+    return jsonResponse(
+      {
+        error: "Errore interno",
+        details: error.message
+      },
+      500
+    );
+  }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Cache-Control": "no-store"
+    }
+  });
+}
