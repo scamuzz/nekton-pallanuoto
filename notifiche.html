@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔔 Notifiche · Nekton</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      background: #e8f4fd;
+      color: #455a64;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .header {
+      position: relative;
+      padding: 36px 20px 24px;
+      color: white;
+      text-align: center;
+      background: linear-gradient(
+        160deg,
+        #012afe 0%,
+        #0055cc 40%,
+        #00b4d8 100%
+      );
+    }
+
+    .header h1 {
+      margin: 8px 0;
+      font-size: 1.6rem;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 7px 15px;
+      color: white;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 18px 12px 64px;
+    }
+
+    .card {
+      padding: 18px;
+      margin-bottom: 14px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(0, 105, 148, 0.08);
+    }
+
+    .card.locked {
+      display: none;
+    }
+
+    .card.visible {
+      display: block;
+    }
+
+    .card h2 {
+      margin-bottom: 14px;
+      color: #006994;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      color: #333;
+      background: white;
+      border: 1.5px solid #b3d9f7;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    textarea.form-input {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .form-hint {
+      margin-top: 5px;
+      color: #777;
+      font-size: 0.7rem;
+      line-height: 1.4;
+    }
+
+    .primary-button {
+      width: 100%;
+      padding: 12px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #006994, #00b4d8);
+      border: 0;
+      border-radius: 10px;
+    }
+
+    .primary-button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .secondary-button {
+      width: 100%;
+      padding: 11px;
+      margin-top: 8px;
+      color: #607d8b;
+      font-weight: 700;
+      cursor: pointer;
+      background: #eceff1;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    .status-box {
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      background: #f3f9ff;
+      border: 1px solid #d9ecff;
+      border-radius: 10px;
+    }
+
+    .error-text {
+      min-height: 18px;
+      margin-top: 8px;
+      color: #e53935;
+      font-size: 0.78rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      z-index: 20;
+      max-width: calc(100% - 30px);
+      padding: 10px 20px;
+      color: white;
+      text-align: center;
+      background: #006994;
+      border-radius: 24px;
+      transform: translate(-50%, 120px);
+      transition: transform 0.3s;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <a class="back-link" href="index.html">← Home</a>
+    <div style="font-size: 3rem;">🔔</div>
+    <h1>Invio Notifiche</h1>
+    <div>Riservato all'amministratore</div>
+  </header>
+
+  <main class="container">
+    <section class="card" id="login-card">
+      <h2>🔑 Accesso amministratore</h2>
+
+      <div class="form-group">
+        <label for="pin-input">PIN</label>
+        <input
+          class="form-input"
+          id="pin-input"
+          type="password"
+          autocomplete="off"
+          placeholder="••••••••"
+        >
+      </div>
+
+      <button
+        class="primary-button"
+        id="login-button"
+        type="button"
+      >
+        Accedi
+      </button>
+
+      <div class="error-text" id="login-error"></div>
+    </section>
+
+    <section class="card locked" id="notification-card">
+      <h2>📣 Nuova notifica push</h2>
+
+      <div class="status-box" id="subscription-status">
+        Verifica dello stato delle notifiche…
+      </div>
+
+      <div class="form-group">
+        <label for="notification-title">Titolo</label>
+        <input
+          class="form-input"
+          id="notification-title"
+          maxlength="100"
+          type="text"
+          placeholder="Es. Allenamento spostato"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="notification-message">Messaggio</label>
+        <textarea
+          class="form-input"
+          id="notification-message"
+          maxlength="500"
+          placeholder="Testo della notifica…"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="notification-url">Pagina di destinazione</label>
+        <select class="form-input" id="notification-url">
+          <option value="https://nekton-waterpolo.pages.dev/news.html">
+            News
+          </option>
+          <option value="https://nekton-waterpolo.pages.dev/">
+            Home
+          </option>
+          <option value="https://nekton-waterpolo.pages.dev/calendario.html">
+            Calendario
+          </option>
+          <option value="https://nekton-waterpolo.pages.dev/orario.html">
+            Orari
+          </option>
+          <option value="https://nekton-waterpolo.pages.dev/sondaggi.html">
+            Sondaggi
+          </option>
+        </select>
+
+        <div class="form-hint">
+          La notifica verrà inviata a tutti gli utenti iscritti.
+        </div>
+      </div>
+
+      <button
+        class="primary-button"
+        id="send-button"
+        type="button"
+      >
+        📤 Invia notifica a tutti
+      </button>
+
+      <button
+        class="secondary-button"
+        id="logout-button"
+        type="button"
+      >
+        Esci dalla modalità amministratore
+      </button>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <script>
+    const ONESIGNAL_APP_ID = "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0";
+
+    let adminPin = "";
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function showToast(message) {
+      const toast = byId("toast");
+
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3500);
+    }
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+    window.OneSignalDeferred.push(async OneSignal => {
+      await OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        allowLocalhostAsSecureOrigin: true,
+        serviceWorkerPath: "OneSignalSDKWorker.js"
+      });
+
+      updateSubscriptionStatus(OneSignal);
+
+      OneSignal.User.PushSubscription.addEventListener(
+        "change",
+        () => updateSubscriptionStatus(OneSignal)
+      );
+    });
+
+    function updateSubscriptionStatus(OneSignal) {
+      const box = byId("subscription-status");
+      const optedIn = OneSignal.User.PushSubscription.optedIn;
+
+      if (optedIn) {
+        box.innerHTML =
+          "✅ Questo dispositivo è iscritto alle notifiche.";
+      } else {
+        box.innerHTML = `
+          ⚠️ Questo dispositivo non è iscritto alle notifiche.
+          <br>
+          Puoi comunque inviare notifiche agli altri iscritti.
+        `;
+      }
+    }
+
+    function login() {
+      const pin = byId("pin-input").value;
+
+      if (pin !== "nekton2026") {
+        byId("login-error").textContent = "❌ PIN non corretto";
+        return;
+      }
+
+      adminPin = pin;
+
+      byId("login-card").classList.remove("visible");
+      byId("login-card").style.display = "none";
+
+      byId("notification-card").classList.remove("locked");
+      byId("notification-card").classList.add("visible");
+
+      byId("pin-input").value = "";
+      byId("login-error").textContent = "";
+
+      showToast("✅ Accesso effettuato");
+    }
+
+    function logout() {
+      adminPin = "";
+
+      byId("notification-card").classList.add("locked");
+      byId("notification-card").classList.remove("visible");
+
+      byId("login-card").style.display = "block";
+
+      showToast("👋 Uscita effettuata");
+    }
+
+    async function sendNotification() {
+      const title = byId("notification-title").value.trim();
+      const message = byId("notification-message").value.trim();
+      const url = byId("notification-url").value;
+
+      if (!adminPin) {
+        showToast("⚠️ Effettua nuovamente l'accesso");
+        return;
+      }
+
+      if (!title) {
+        showToast("⚠️ Inserisci un titolo!");
+        return;
+      }
+
+      if (!message) {
+        showToast("⚠️ Inserisci il messaggio!");
+        return;
+      }
+
+      if (!confirm(
+        "Inviare la notifica a tutti gli utenti iscritti?"
+      )) {
+        return;
+      }
+
+      const button = byId("send-button");
+
+      button.disabled = true;
+      button.textContent = "⏳ Invio in corso…";
+
+      try {
+        const response = await fetch("/api/notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            titolo: title,
+            messaggio: message,
+            url,
+            pin: adminPin
+          })
+        });
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { error: text };
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || `Errore HTTP ${response.status}`
+          );
+        }
+
+        byId("notification-title").value = "";
+        byId("notification-message").value = "";
+
+        showToast(
+          `✅ Notifica inviata a ${data.recipients} dispositivi`
+        );
+      } catch (error) {
+        console.error("Errore invio notifica:", error);
+        showToast(`❌ ${error.message}`);
+      } finally {
+        button.disabled = false;
+        button.textContent = "📤 Invia notifica a tutti";
+      }
+    }
+
+    byId("login-button").addEventListener("click", login);
+    byId("logout-button").addEventListener("click", logout);
+    byId("send-button").addEventListener("click", sendNotification);
+
+    byId("pin-input").addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+  </script>
+</body>
+</html>
