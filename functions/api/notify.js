@@ -20,7 +20,15 @@ export async function onRequestPost({ request, env }) {
   try {
     if (!env.ADMIN_PIN || !env.ONESIGNAL_APP_ID || !env.ONESIGNAL_API_KEY) {
       return jsonResponse(
-        { error: "Configurazione OneSignal incompleta" },
+        {
+          error: "Configurazione OneSignal incompleta",
+          missing: {
+            ADMIN_PIN: !env.ADMIN_PIN,
+            ONESIGNAL_APP_ID: !env.ONESIGNAL_APP_ID,
+            ONESIGNAL_API_KEY: !env.ONESIGNAL_API_KEY
+          },
+          availableVariables: Object.keys(env)
+        },
         500
       );
     }
