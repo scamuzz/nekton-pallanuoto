@@ -9,86 +9,18 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nekton">
-   <!-- Impedisce il salvataggio in cache (HTTP 1.1) -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    
-    <!-- Impedisce il salvataggio in cache per i browser più vecchi (HTTP 1.0) -->
-    <meta http-equiv="Pragma" content="no-cache">
-    
-    <!-- Forza la scadenza immediata del contenuto -->
-    <meta http-equiv="Expires" content="0">
-  <!-- OneSignal SDK temporarily disabled because the app is hosted on Cloudflare Pages and not on the GitHub Pages domain allowed by the SDK -->
-  <!-- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script> -->
-  <!-- <script>
-  let oneSignalReady = false;
 
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "fc5206f6-d2c3-4c3a-aed3-6565679d422b",
-      serviceWorkerPath: "https://nekton-waterpolo.pages.dev/service-worker.js",
-      serviceWorkerParam: {
-        scope: "/"
-      }
-    });
-    oneSignalReady = true;
-    refreshNotifyUI();
-  });
-
-  async function refreshNotifyUI() {
-    const btn = document.getElementById('notify-btn');
-    if (!btn) return;
-
-    if (!isAppMode()) return;
-
-    // mostra la barra solo se le notifiche push sono supportate
-    if (!('Notification' in window && 'serviceWorker' in navigator)) return;
-
-    if (!oneSignalReady) return;
-
-    const opted = OneSignal.User.PushSubscription.optedIn;
-    if (opted) {
-      btn.textContent = '✅ Attive';
-      btn.classList.add('active');
-    } else {
-      btn.textContent = '🔔 Attiva';
-      btn.classList.remove('active');
-    }
-  }
-
-  async function toggleNotify() {
-    const btn = document.getElementById('notify-btn');
-    if (!btn) return;
-
-    if (!oneSignalReady) {
-      btn.textContent = '⏳ Caricamento…';
-      return;
-    }
-
-    const opted = OneSignal.User.PushSubscription.optedIn;
-    if (opted) {
-      await OneSignal.User.PushSubscription.optOut();
-    } else {
-      try {
-        await OneSignal.Notifications.requestPermission();
-      } catch (e) {
-        if (e && String(e.message || e).toLowerCase().includes('dismiss')) {
-          // User dismissed the permission prompt — nothing to do
-          await refreshNotifyUI();
-          return;
-        }
-        throw e;
-      }
-      if (Notification.permission === 'granted') {
-        await OneSignal.User.PushSubscription.optIn();
-      }
-    }
-    await refreshNotifyUI();
-  }
-</script> -->
+  <!-- Impedisce il salvataggio in cache (HTTP 1.1) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <!-- Impedisce il salvataggio in cache per i browser più vecchi (HTTP 1.0) -->
+  <meta http-equiv="Pragma" content="no-cache">
+  <!-- Forza la scadenza immediata del contenuto -->
+  <meta http-equiv="Expires" content="0">
 
   <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="nekton-img.jpg">
   <title>🤽 Nekton Treviglio Waterpolo</title>
+
   <style>
     :root { --news-border-color: #90caf9; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -211,16 +143,38 @@
     }
     .close-install:hover { opacity: 1; }
 
-    /* -- WELCOME BANNER -- */
-    .welcome-banner {
-      background: white; border-radius: 18px; padding: 20px 20px 18px;
+    /* -- NOTIFY BANNER -- */
+    .notify-banner {
+      background: white;
+      border-radius: 18px;
+      padding: 16px 16px 14px;
       margin-bottom: 24px;
-      box-shadow: 0 4px 22px rgba(0,77,122,0.10);
+      box-shadow: 0 3px 16px rgba(0,77,122,0.08);
       border: 2px solid #ddeeff;
-      text-align: center;
+      display: flex; align-items: center; gap: 14px;
     }
-    .welcome-banner h2 { font-size: 1.05rem; color: #006994; font-weight: 800; margin-bottom: 7px; }
-    .welcome-banner p { font-size: 0.80rem; color: #607d8b; line-height: 1.65; }
+    .notify-banner.hidden { display: none; }
+    .notify-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+    .notify-content { flex: 1; }
+    .notify-content h3 { font-size: 0.9rem; font-weight: 800; color: #006994; margin-bottom: 4px; }
+    .notify-content p { font-size: 0.75rem; color: #607d8b; line-height: 1.4; }
+    .notify-btn {
+      padding: 9px 14px;
+      border: 0; border-radius: 10px;
+      font-size: 0.78rem; font-weight: 800;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, #006994, #00b4d8);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .notify-btn:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+    .notify-btn.active {
+      background: #43a047;
+    }
 
     /* -- SECTION LABEL -- */
     .section-label {
@@ -336,11 +290,8 @@
       padding: 8px 0 24px; letter-spacing: 0.3px;
     }
   </style>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js');
-    } 
 
+  <script>
     let deferredPrompt;
     let isAppInstalled = false;
 
@@ -389,7 +340,6 @@
       const installBtn = document.getElementById('installBtn');
       const closeBtn = document.getElementById('closeInstallBtn');
 
-      // On iOS, we can't use beforeinstallprompt, so we show it ourselves
       if (isIOS) {
         if (!localStorage.getItem('nektoniPhonePromptDismissed')) {
           banner.classList.remove('hidden');
@@ -413,7 +363,6 @@
       btnContainer.innerHTML = '<button class="install-btn install-btn-secondary" onclick="document.getElementById(\'closeInstallBtn\').click()">Capito</button>';
     }
 
-    // Hide install banner for Android if chrome doesn't support it
     if (!deferredPrompt && !(/iPad|iPhone|iPod/.test(navigator.userAgent))) {
       setTimeout(() => {
         const banner = document.getElementById('installBanner');
@@ -428,34 +377,101 @@
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  <script>
+    let oneSignalReady = false;
 
-  window.OneSignalDeferred.push(async OneSignal => {
-    await OneSignal.init({
-      appId: "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0",
-      serviceWorkerPath: "OneSignalSDKWorker.js",
-      promptOptions: {
-        slidedown: {
-          prompts: [
-            {
-              type: "push",
-              autoPrompt: true,
-              text: {
-                actionMessage:
-                  "Vuoi ricevere le comunicazioni della Nekton Pallanuoto?",
-                acceptButton: "Sì, attiva",
-                cancelButton: "No, grazie"
-              }
-            }
-          ]
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+    window.OneSignalDeferred.push(async function (OneSignal) {
+      await OneSignal.init({
+        appId: "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0",
+        serviceWorkerPath: "/OneSignalSDKWorker.js",
+        serviceWorkerParam: {
+          scope: "/"
+        },
+        notifyButton: {
+          enable: false
         }
-      }
-    });
-  });
-</script>
+      });
 
-  
+      oneSignalReady = true;
+      refreshNotifyUI();
+
+      OneSignal.User.PushSubscription.addEventListener(
+        "change",
+        refreshNotifyUI
+      );
+    });
+
+    function refreshNotifyUI() {
+      const banner = document.getElementById('notifyBanner');
+      const btn = document.getElementById('notify-btn');
+
+      if (!banner || !btn || !oneSignalReady) {
+        return;
+      }
+
+      if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+        banner.classList.add('hidden');
+        return;
+      }
+
+      const permission = OneSignal.Notifications.permission;
+      const optedIn = OneSignal.User.PushSubscription.optedIn;
+
+      if (permission === 'granted' && optedIn) {
+        btn.textContent = '✅ Attive';
+        btn.classList.add('active');
+        btn.disabled = false;
+        return;
+      }
+
+      if (permission === 'denied') {
+        btn.textContent = '⚙️ Abilita dal browser';
+        btn.disabled = true;
+        return;
+      }
+
+      btn.textContent = '🔔 Attiva';
+      btn.classList.remove('active');
+      btn.disabled = false;
+      banner.classList.remove('hidden');
+    }
+
+    async function toggleNotify() {
+      const btn = document.getElementById('notify-btn');
+
+      if (!btn) {
+        return;
+      }
+
+      if (!oneSignalReady) {
+        btn.textContent = '⏳ Caricamento…';
+        return;
+      }
+
+      const optedIn = OneSignal.User.PushSubscription.optedIn;
+
+      btn.disabled = true;
+
+      try {
+        if (optedIn) {
+          await OneSignal.User.PushSubscription.optOut();
+        } else {
+          await OneSignal.Notifications.requestPermission();
+
+          if (OneSignal.Notifications.permission === 'granted') {
+            await OneSignal.User.PushSubscription.optIn();
+          }
+        }
+      } catch (error) {
+        console.error('Errore attivazione notifiche:', error);
+      }
+
+      refreshNotifyUI();
+    }
+  </script>
+
 <div class="header">
   <div class="particles">
     <div class="particle"></div><div class="particle"></div><div class="particle"></div>
@@ -488,10 +504,21 @@
     <span class="close-install" onclick="document.getElementById('closeInstallBtn').click()">✕</span>
   </div>
 
+  <!-- NOTIFY BANNER -->
+  <div id="notifyBanner" class="notify-banner hidden">
+    <div class="notify-icon">🔔</div>
+    <div class="notify-content">
+      <h3>Attiva le notifiche</h3>
+      <p>Ricevi subito gli avvisi della squadra</p>
+    </div>
+    <button id="notify-btn" class="notify-btn" type="button" onclick="toggleNotify()">
+      🔔 Attiva
+    </button>
+  </div>
+
   <!-- ORARI -->
   <div class="section-label">📅 Orari</div>
   <a class="menu-card" href="orari.html" style="margin-bottom:24px;">
-   <!-- <span class="card-icon">📅</span> -->
         <span class="card-icon"><img src ="orario-allenamenti.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/> </span>
     <div class="card-title">Orari allenamenti</div>
     <div class="card-desc">Allenamenti settimanali per tutti i gruppi</div>
@@ -500,7 +527,7 @@
   <!-- NEWS -->
   <div class="section-label">📰 News</div>
   <a class="menu-card" href="news.html" style="margin-bottom:24px;">
-    <span class="card-icon"><img src ="news-pallanuoto.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--📰--></span>
+    <span class="card-icon"><img src ="news-pallanuoto.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/></span>
     <div class="card-title">Comunicazioni</div>
     <div class="card-desc">Avvisi e notizie per tutta la squadra</div>
   </a>
@@ -508,12 +535,12 @@
   <!-- CALENDARIO -->
   <div class="section-label">📆 Calendario partite</div>
   <a class="menu-card" href="calendario-gem.html" style="margin-bottom:12px;">
-    <span class="card-icon"><img src ="calendario-partite.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--📆--></span>
+    <span class="card-icon"><img src ="calendario-partite.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/></span>
     <div class="card-title">Calendario partite</div>
     <div class="card-desc">Partite: Data e luogo - convocati</div>
   </a>
   <a class="menu-card" href="giocatori.html" style="margin-bottom:24px;">
-    <span class="card-icon-group"><img src ="squadre.png" style="height: 2em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--🤽🤽🏽🤽‍♀️--></span>
+    <span class="card-icon-group"><img src ="squadre.png" style="height: 2em; width: auto; vertical-align: -0.15em; display: inline-block;"/></span>
     <div class="card-title">Squadre</div>
     <div class="card-desc">Acquagol · Under · Senior</div>
   </a>
@@ -522,12 +549,12 @@
   <div class="section-label">📊 Sondaggi &amp; 💰 Pagamenti</div>
   <div class="menu-grid">
     <a class="menu-card" href="sondaggi.html">
-      <span class="card-icon"><img src ="sondaggi.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--📊--></span>
+      <span class="card-icon"><img src ="sondaggi.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/></span>
       <div class="card-title">Sondaggi</div>
       <div class="card-desc">Esprimi la tua opinione</div>
     </a>
     <a class="menu-card" href="pagamenti.html">
-      <span class="card-icon"><img src ="pagamenti.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/><!--💰--></span>
+      <span class="card-icon"><img src ="pagamenti.png" style="height: 1.5em; width: auto; vertical-align: -0.15em; display: inline-block;"/></span>
       <div class="card-title">Pagamenti</div>
       <div class="card-desc">Scadenze e quote da versare</div>
     </a>
