@@ -425,7 +425,37 @@
   </script>
 </head>
 <body>
+/*               NOTIFICHE */
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+  window.OneSignalDeferred.push(async OneSignal => {
+    await OneSignal.init({
+      appId: "95c7aa7c-69a1-4b0e-ac93-ea45a595d0c0",
+      serviceWorkerPath: "OneSignalSDKWorker.js",
+      promptOptions: {
+        slidedown: {
+          prompts: [
+            {
+              type: "push",
+              autoPrompt: true,
+              text: {
+                actionMessage:
+                  "Vuoi ricevere le comunicazioni della Nekton Pallanuoto?",
+                acceptButton: "Sì, attiva",
+                cancelButton: "No, grazie"
+              }
+            }
+          ]
+        }
+      }
+    });
+  });
+</script>
+/*               NOTIFICHE */
+  
 <div class="header">
   <div class="particles">
     <div class="particle"></div><div class="particle"></div><div class="particle"></div>
