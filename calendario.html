@@ -1032,8 +1032,10 @@
     const overlay = $('modal-overlay');
 
     $('pin-btn').onclick = () => {
-      if (admin()) {
-        sessionStorage.setItem('nektonManager', '0');
+     $('pin-btn').onclick = () => {
+  if (admin()) {
+        localStorage.removeItem('nektonManager');
+        localStorage.removeItem('nektonAdminPin');
         $('manager-panel').classList.remove('visible');
         $('pin-btn').textContent = '🔒';
         render();
@@ -1073,7 +1075,8 @@
     function checkPin() {
       const val = $('pin-input').value;
       if (val === 'nekton2026') {
-        sessionStorage.setItem('nektonManager', '1');
+        localStorage.setItem('nektonManager', '1');
+        localStorage.setItem('nektonAdminPin', val);
         overlay.classList.remove('open');
         $('modal-error').textContent = '';
         $('manager-panel').classList.add('visible');
