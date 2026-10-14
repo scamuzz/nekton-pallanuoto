@@ -513,55 +513,59 @@
       );
     }
 
-    function login() {
-      const pin = byId("pin-input").value;
+  function isAlreadyAuthenticated() {
+  return (
+    localStorage.getItem("nektonManager") === "1" &&
+    !!localStorage.getItem("nektonAdminPin")
+  );
+}
 
-      if (pin !== "nekton2026") {
-        byId("login-error").textContent =
-          "❌ PIN non corretto";
+function enterAdminArea() {
+  adminPin = localStorage.getItem("nektonAdminPin") || "";
 
-        return;
-      }
+  byId("login-card").style.display = "none";
 
-      adminPin = pin;
+  byId("notification-card").classList.remove("locked");
+  byId("notification-card").classList.add("visible");
+}
 
-      byId("login-card").style.display = "none";
+function login() {
+  const pin = byId("pin-input").value;
 
-      byId("notification-card")
-        .classList.remove("locked");
+  if (pin !== "nekton2026") {
+    byId("login-error").textContent = "❌ PIN non corretto";
+    return;
+  }
 
-      byId("notification-card")
-        .classList.add("visible");
+  adminPin = pin;
 
-      byId("pin-input").value = "";
-      byId("login-error").textContent = "";
+  localStorage.setItem("nektonManager", "1");
+  localStorage.setItem("nektonAdminPin", pin);
 
-      showToast(
-        "✅ Accesso effettuato",
-        "success"
-      );
-    }
+  enterAdminArea();
 
-    function logout() {
-      adminPin = "";
+  byId("pin-input").value = "";
+  byId("login-error").textContent = "";
 
-      byId("notification-card")
-        .classList.add("locked");
+  showToast("✅ Accesso effettuato", "success");
+}
 
-      byId("notification-card")
-        .classList.remove("visible");
+function logout() {
+  adminPin = "";
 
-      byId("login-card").style.display = "block";
+  localStorage.removeItem("nektonManager");
+  localStorage.removeItem("nektonAdminPin");
 
-      byId("notification-title").value = "";
-      byId("notification-message").value = "";
+  byId("notification-card").classList.add("locked");
+  byId("notification-card").classList.remove("visible");
 
-      showToast(
-        "👋 Uscita effettuata",
-        "success"
-      );
-    }
+  byId("login-card").style.display = "block";
 
+  byId("notification-title").value = "";
+  byId("notification-message").value = "";
+
+  showToast("👋 Uscita effettuata", "success");
+}
     function readRecipientCount(data) {
       const possibleValues = [
         data.recipients,
