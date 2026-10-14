@@ -679,7 +679,7 @@
     const $ = id => document.getElementById(id);
     const $$ = s => document.querySelectorAll(s);
     const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const admin = () => sessionStorage.getItem('nektonManager') === '1';
+    const admin = () => localStorage.getItem('nektonManager') === '1';
 
     function toast(s) {
       $('toast').textContent = s;
