@@ -290,16 +290,36 @@
 <div class="container">
 
   <!-- PANNELLO GESTORE -->
-  <div class="manager-panel" id="manager-panel">
-    <h3>⚙️ Pannello Gestore – Modifica Orari</h3>
-    <div class="week-selector">
-      <label>Applica a:</label>
-      <select id="edit-week-select">
-        <option value="default" selected>Tutte le settimane (predefinito)</option>
-        <option value="current">Solo settimana corrente</option>
-        <option value="next">Solo settimana prossima</option>
-      </select>
-    </div>
+ <div class="manager-panel" id="manager-panel">
+  <h3>⚙️ Pannello Gestore – Modifica Orari</h3>
+
+  <a
+    class="admin-notification-link"
+    href="notifiche.html"
+  >
+    🔔 Invia notifiche
+  </a>
+
+  <div class="week-selector">
+    <label>Applica a:</label>
+
+    <select id="edit-week-select">
+      <option
+        value="default"
+        selected
+      >
+        Tutte le settimane (predefinito)
+      </option>
+
+      <option value="current">
+        Solo settimana corrente
+      </option>
+
+      <option value="next">
+        Solo settimana prossima
+      </option>
+    </select>
+  </div>
     <div class="manager-filter-row">
       <!-- data-mfilter values must match group keys: acquagol, under13, senior -->
       <button class="manager-filter-btn active" data-mfilter="all">Tutti</button>
