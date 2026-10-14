@@ -596,37 +596,47 @@
       return null;
     }
 
-    function buildSuccessMessage(data) {
-      const recipientCount =
-        readRecipientCount(data);
+    <script>
+  function buildSuccessMessage(data) {
+    const recipients = Number(
+      data.recipients ??
+      data.successful ??
+      data.recipientCount
+    );
 
-      if (recipientCount !== null) {
-        const deviceLabel =
-          recipientCount === 1
-            ? "dispositivo"
-            : "dispositivi";
+    const queued = Number(data.queued);
 
-        return (
-          `✅ Notifica inviata a ` +
-          `${recipientCount} ${deviceLabel}`
-        );
-      }
+    if (Number.isFinite(recipients) && recipients > 0) {
+      const label =
+        recipients === 1
+          ? "dispositivo"
+          : "dispositivi";
 
-      /*
-       * Non mostriamo "0 dispositivi", perché il valore
-       * zero nella risposta immediata di OneSignal può
-       * essere provvisorio anche quando la notifica viene
-       * consegnata correttamente.
-       */
-      if (data.id) {
-        return (
-          "✅ Notifica accettata e inviata " +
-          "correttamente da OneSignal"
-        );
-      }
-
-      return "✅ Notifica inviata correttamente";
+      return `✅ Inviata a ${recipients} ${label}`;
     }
+
+    if (Number.isFinite(queued) && queued > 0) {
+      const label =
+        queued === 1
+          ? "dispositivo"
+          : "dispositivi";
+
+      return (
+        `✅ Presa in carico da OneSignal ` +
+        `per ${queued} ${label}`
+      );
+    }
+
+    if (data.id) {
+      return (
+        "✅ Notifica inviata. " +
+        "Conteggio dispositivi in aggiornamento."
+      );
+    }
+
+    return "✅ Notifica inviata correttamente";
+  }
+</script>}
 
     async function sendNotification() {
       const title =
