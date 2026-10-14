@@ -780,6 +780,9 @@ function logout() {
           }
         }
       );
+      if (isAlreadyAuthenticated()) {
+      enterAdminArea();
+    }
   </script>
 </body>
 </html>
