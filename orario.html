@@ -325,7 +325,14 @@ const db = firebase.database();
 
 // -- Auth
 function isManager() { return localStorage.getItem('nektonManager') === '1'; }
-function setManager(v) { localStorage.setItem('nektonManager', v ? '1' : '0'); }
+function setManager(v) {
+  if (v) {
+    localStorage.setItem('nektonManager', '1');
+  } else {
+    localStorage.removeItem('nektonManager');
+    localStorage.removeItem('nektonAdminPin');
+  }
+}
 
 // -- Hardcoded fallback schedules (used only when Firebase default is not set)
 const DEFAULT_ORARI = {
@@ -799,6 +806,7 @@ function checkPin() {
   const val = document.getElementById('pin-input').value;
   if (val === 'nekton2026') {
     setManager(true);
+    localStorage.setItem('nektonAdminPin', val);   
     overlay.classList.remove('open');
     document.getElementById('manager-panel').classList.add('visible');
     updatePinBtn();
