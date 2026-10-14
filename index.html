@@ -395,11 +395,16 @@
       });
 
       oneSignalReady = true;
+      console.log("[OneSignal] init completato");
+
       refreshNotifyUI();
 
       OneSignal.User.PushSubscription.addEventListener(
         "change",
-        refreshNotifyUI
+        () => {
+          console.log("[OneSignal] subscription change");
+          refreshNotifyUI();
+        }
       );
     });
 
@@ -416,19 +421,30 @@
         return;
       }
 
+      // IMPORTANTE: in OneSignal SDK v16, "permission" è un booleano (true/false),
+      // non una stringa "granted"/"denied" come nelle API native del browser.
       const permission = OneSignal.Notifications.permission;
       const optedIn = OneSignal.User.PushSubscription.optedIn;
+      const subscriptionId = OneSignal.User.PushSubscription.id;
 
-      if (permission === 'granted' && optedIn) {
+      console.log("[OneSignal] stato:", {
+        permission,
+        optedIn,
+        subscriptionId
+      });
+
+      if (permission === true && optedIn && subscriptionId) {
         btn.textContent = '✅ Attive';
         btn.classList.add('active');
         btn.disabled = false;
         return;
       }
 
-      if (permission === 'denied') {
+      if (permission === false) {
         btn.textContent = '⚙️ Abilita dal browser';
+        btn.classList.remove('active');
         btn.disabled = true;
+        banner.classList.remove('hidden');
         return;
       }
 
@@ -457,18 +473,29 @@
       try {
         if (optedIn) {
           await OneSignal.User.PushSubscription.optOut();
+          console.log("[OneSignal] opt-out eseguito");
         } else {
+          console.log("[OneSignal] richiesta permesso…");
+
           await OneSignal.Notifications.requestPermission();
 
-          if (OneSignal.Notifications.permission === 'granted') {
+          console.log(
+            "[OneSignal] permission dopo richiesta:",
+            OneSignal.Notifications.permission
+          );
+
+          if (OneSignal.Notifications.permission === true) {
             await OneSignal.User.PushSubscription.optIn();
+            console.log("[OneSignal] opt-in eseguito");
+          } else {
+            console.warn("[OneSignal] permesso non concesso");
           }
         }
       } catch (error) {
-        console.error('Errore attivazione notifiche:', error);
+        console.error('[OneSignal] errore attivazione notifiche:', error);
       }
 
-      refreshNotifyUI();
+      setTimeout(refreshNotifyUI, 800);
     }
   </script>
 
